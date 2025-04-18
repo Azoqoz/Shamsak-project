@@ -164,9 +164,7 @@ const TechniciansPage = () => {
                         </span>
                       )}
                     </div>
-                    <div className={`absolute bottom-3 ${direction === 'rtl' ? 'left-0' : 'right-0'} transform bg-yellow-500 text-xs text-neutral-800 px-2 py-1 rounded-full`}>
-                      <span>{t('technicians.certified')}</span>
-                    </div>
+
                   </div>
                   <div className="text-center">
                     <h3 className="text-xl font-bold mb-1">{technician.user.name}</h3>
