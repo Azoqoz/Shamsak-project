@@ -175,7 +175,7 @@ const CheckoutPage = () => {
     
     // Simulate payment processing delay
     setTimeout(() => {
-      updatePaymentStatus();
+      updatePaymentStatus(undefined);
     }, 2000);
   };
 
@@ -276,7 +276,11 @@ const CheckoutPage = () => {
               <div className="flex justify-between items-center">
                 <span className="font-medium">{t('checkout.bookingDate')}:</span>
                 <span className="text-neutral-600">
-                  {new Date(serviceRequest.createdAt).toLocaleDateString()}
+                  {typeof serviceRequest.createdAt === 'string' ? 
+                    new Date(serviceRequest.createdAt).toLocaleDateString() : 
+                    serviceRequest.createdAt instanceof Date ? 
+                      serviceRequest.createdAt.toLocaleDateString() : 
+                      '-'}
                 </span>
               </div>
               
@@ -324,23 +328,37 @@ const CheckoutPage = () => {
           </CardContent>
           <CardFooter>
             {!serviceRequest.isPaid && !paymentSuccess ? (
-              <Button 
-                onClick={handlePayNow} 
-                className="w-full py-6 text-lg"
-                disabled={isCreatingIntent || isPaymentProcessing || isUpdatingPayment}
-              >
-                {isCreatingIntent || isPaymentProcessing ? (
-                  <>
-                    <div className="mr-2 h-4 w-4 animate-spin rounded-full border-2 border-current border-t-transparent"></div>
-                    {t('checkout.processing')}
-                  </>
-                ) : (
-                  <>
-                    <CreditCard className="mr-2 h-5 w-5" />
-                    {t('checkout.payNow')} - {formattedPrice}
-                  </>
-                )}
-              </Button>
+              useStripeElements && clientSecret && stripePromise ? (
+                // Render Stripe payment form if Elements is available
+                <div className="w-full">
+                  <Elements stripe={stripePromise} options={{ clientSecret }}>
+                    <StripePaymentForm
+                      clientSecret={clientSecret}
+                      onSuccess={handleStripePaymentSuccess}
+                      onError={handleStripePaymentError}
+                    />
+                  </Elements>
+                </div>
+              ) : (
+                // Fallback to simple payment button
+                <Button 
+                  onClick={handlePayNow} 
+                  className="w-full py-6 text-lg"
+                  disabled={isCreatingIntent || isPaymentProcessing || isUpdatingPayment}
+                >
+                  {isCreatingIntent || isPaymentProcessing ? (
+                    <>
+                      <div className="mr-2 h-4 w-4 animate-spin rounded-full border-2 border-current border-t-transparent"></div>
+                      {t('checkout.processing')}
+                    </>
+                  ) : (
+                    <>
+                      <CreditCard className="mr-2 h-5 w-5" />
+                      {t('checkout.payNow')} - {formattedPrice}
+                    </>
+                  )}
+                </Button>
+              )
             ) : (
               <div className="flex gap-4 w-full">
                 <Button 
@@ -368,6 +386,15 @@ const CheckoutPage = () => {
             <CreditCard className="h-4 w-4" />
           </div>
         </div>
+        
+        {!stripePromise && !serviceRequest.isPaid && !paymentSuccess && (
+          <Alert className="mt-4 bg-yellow-50 border-yellow-200">
+            <AlertCircle className="h-5 w-5 text-yellow-500" />
+            <AlertDescription className="text-yellow-600">
+              {t('checkout.stripePublicKeyMissing')}
+            </AlertDescription>
+          </Alert>
+        )}
       </div>
     </div>
   );
