@@ -1,8 +1,8 @@
 import { useTranslation } from 'react-i18next';
 import { Link } from 'wouter';
 import { useLanguage } from '@/contexts/LanguageContext';
-import { FaSolarPanel, FaTools, FaClipboardCheck } from 'react-icons/fa';
-import { ArrowRight } from 'lucide-react';
+// Use Lucide icons instead of react-icons
+import { Sun, Wrench, ClipboardList, ArrowRight } from 'lucide-react';
 
 const ServicesSection = () => {
   const { t } = useTranslation();
@@ -10,19 +10,19 @@ const ServicesSection = () => {
 
   const services = [
     {
-      icon: <FaSolarPanel className="text-2xl" />,
+      icon: <Sun className="h-6 w-6" />,
       titleKey: 'services.installTitle',
       descriptionKey: 'services.installDesc',
       type: 'installation'
     },
     {
-      icon: <FaTools className="text-2xl" />,
+      icon: <Wrench className="h-6 w-6" />,
       titleKey: 'services.maintenanceTitle',
       descriptionKey: 'services.maintenanceDesc',
       type: 'maintenance'
     },
     {
-      icon: <FaClipboardCheck className="text-2xl" />,
+      icon: <ClipboardList className="h-6 w-6" />,
       titleKey: 'services.assessmentTitle',
       descriptionKey: 'services.assessmentDesc',
       type: 'assessment'
