@@ -32,7 +32,7 @@ const TechniciansPage = () => {
 
   // Filter technicians based on selected city and search query
   const filteredTechnicians = technicians?.filter(technician => {
-    const matchesCity = cityFilter ? technician.user.city === cityFilter : true;
+    const matchesCity = cityFilter && cityFilter !== 'all' ? technician.user.city === cityFilter : true;
     const matchesSearch = searchQuery 
       ? technician.user.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
         technician.specialty.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -116,7 +116,7 @@ const TechniciansPage = () => {
                   <SelectValue placeholder={t('serviceForm.cityPlaceholder')} />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="">
+                  <SelectItem value="all">
                     {t('serviceForm.cityPlaceholder')}
                   </SelectItem>
                   {CITIES.map((city) => (

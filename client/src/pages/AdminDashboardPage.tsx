@@ -104,7 +104,7 @@ const AdminDashboardPage = () => {
   });
 
   // Filter service requests by status
-  const filteredRequests = statusFilter 
+  const filteredRequests = statusFilter && statusFilter !== 'all'
     ? serviceRequests?.filter(req => req.status === statusFilter)
     : serviceRequests;
 
@@ -214,7 +214,7 @@ const AdminDashboardPage = () => {
                     <SelectValue placeholder="Filter by status" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="">All Statuses</SelectItem>
+                    <SelectItem value="all">All Statuses</SelectItem>
                     {REQUEST_STATUSES.map((status) => (
                       <SelectItem key={status.value} value={status.value}>
                         {t(status.labelKey)}
