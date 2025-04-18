@@ -101,11 +101,11 @@ const Footer = () => {
               </li>
               <li className={`flex items-start ${direction === 'rtl' ? 'flex-row-reverse' : ''}`}>
                 <FaPhone className={`mt-1 ${direction === 'rtl' ? 'ml-2' : 'mr-2'}`} />
-                <span dir="ltr" className="text-neutral-300 font-mono">+966 12 345 6789</span>
+                <span className="text-neutral-300 font-mono">{direction === 'rtl' ? '6789 345 12 966+' : '+966 12 345 6789'}</span>
               </li>
               <li className={`flex items-start ${direction === 'rtl' ? 'flex-row-reverse' : ''}`}>
                 <FaEnvelope className={`mt-1 ${direction === 'rtl' ? 'ml-2' : 'mr-2'}`} />
-                <span dir="ltr" className="text-neutral-300">info@shamsak.sa</span>
+                <span className="text-neutral-300 font-mono">{direction === 'rtl' ? 'as.kasmahS@ofni' : 'info@shamsak.sa'}</span>
               </li>
             </ul>
           </div>
