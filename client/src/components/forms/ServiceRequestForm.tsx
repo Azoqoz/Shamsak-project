@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { useLocation } from 'wouter';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
@@ -77,6 +78,7 @@ const renderStars = (rating: number) => {
 const ServiceRequestForm = () => {
   const { t } = useTranslation();
   const { toast } = useToast();
+  const [, setLocation] = useLocation();
   const [selectedTechnicianId, setSelectedTechnicianId] = useState<number | null>(null);
   const [servicePrice, setServicePrice] = useState<number | null>(null);
 
@@ -170,15 +172,23 @@ const ServiceRequestForm = () => {
       const res = await apiRequest('POST', '/api/service-requests', data);
       return res.json();
     },
-    onSuccess: () => {
+    onSuccess: (data) => {
       // Invalidate relevant queries
       queryClient.invalidateQueries({ queryKey: ['/api/service-requests'] });
+      
+      // Show success message
       toast({
         title: t('common.success'),
         description: t('serviceForm.successMessage'),
       });
-      // Reset form after successful submission
-      form.reset(defaultValues);
+      
+      // Redirect to checkout page with the new service request ID
+      if (data && data.id) {
+        setLocation(`/checkout/${data.id}`);
+      } else {
+        // If for some reason we don't get an ID back, reset the form
+        form.reset(defaultValues);
+      }
     },
     onError: (error) => {
       toast({
