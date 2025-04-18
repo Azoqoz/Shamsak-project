@@ -101,7 +101,7 @@ const Footer = () => {
               </li>
               <li className="flex items-start">
                 <FaPhone className="mt-1 mr-2" />
-                <span className="text-neutral-300">876 5432 15 699+</span>
+                <span className="text-neutral-300">+996 51 234 567</span>
               </li>
               <li className="flex items-start">
                 <FaEnvelope className="mt-1 mr-2" />

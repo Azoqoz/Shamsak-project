@@ -53,7 +53,7 @@ const ContactPage = ({ inHomePage = false }: ContactPageProps) => {
                     </div>
                     <div>
                       <h3 className="font-bold mb-1">{t('contact.phoneTitle')}</h3>
-                      <p className="text-neutral-800">+966 12 345 6789</p>
+                      <p className="text-neutral-800">+996 51 234 567</p>
                     </div>
                   </div>
                   
