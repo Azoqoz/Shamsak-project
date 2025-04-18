@@ -75,8 +75,25 @@ const TechniciansSection = () => {
               <div key={technician.id} className="bg-white p-6 rounded-lg shadow-md hover:shadow-lg transition-shadow">
                 <div className="mb-4 relative">
                   <div className="w-24 h-24 rounded-full mx-auto bg-gray-200 flex items-center justify-center overflow-hidden">
-                    {/* Always use the first letter initial instead of the profile image */}
-                    <span className="text-4xl text-gray-400 font-bold">
+                    {technician.profileImage ? (
+                      <img 
+                        src={technician.profileImage} 
+                        alt={technician.user.name} 
+                        className="w-full h-full object-cover" 
+                        onError={(e) => {
+                          const target = e.target as HTMLImageElement;
+                          target.onerror = null;
+                          // Replace with first letter of name
+                          target.style.display = 'none';
+                          target.parentElement?.querySelector('.fallback-initial')?.classList.remove('hidden');
+                        }}
+                      />
+                    ) : (
+                      <span className="text-4xl text-gray-400 font-bold">
+                        {technician.user.name.charAt(0).toUpperCase()}
+                      </span>
+                    )}
+                    <span className="fallback-initial hidden text-4xl text-gray-400 font-bold">
                       {technician.user.name.charAt(0).toUpperCase()}
                     </span>
                   </div>
