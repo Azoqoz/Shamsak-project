@@ -258,7 +258,7 @@ const AdminDashboardPage = () => {
                               </Badge>
                             </TableCell>
                             <TableCell>
-                              {new Date(request.createdAt).toLocaleDateString()}
+                              {request.createdAt ? new Date(request.createdAt).toLocaleDateString() : '-'}
                             </TableCell>
                             <TableCell>
                               <div className="flex space-x-2">
@@ -391,7 +391,7 @@ const AdminDashboardPage = () => {
                             <TableCell>{contact.email}</TableCell>
                             <TableCell>{contact.subject}</TableCell>
                             <TableCell>
-                              {new Date(contact.createdAt).toLocaleDateString()}
+                              {contact.createdAt ? new Date(contact.createdAt).toLocaleDateString() : '-'}
                             </TableCell>
                             <TableCell>
                               {contact.responded ? (
