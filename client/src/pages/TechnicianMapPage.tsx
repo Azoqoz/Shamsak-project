@@ -119,11 +119,8 @@ const TechnicianMapPage = () => {
                       >
                         <div className="flex items-start justify-between mb-2">
                           <div>
-                            <h3 className="font-medium flex items-center">
+                            <h3 className="font-medium">
                               {tech.user.name}
-                              <Badge variant="outline" className="ms-2 text-xs">
-                                {t('technicians.certified')}
-                              </Badge>
                             </h3>
                             <p className="text-sm text-gray-600">{tech.specialty}</p>
                           </div>
