@@ -255,22 +255,47 @@ export function registerServiceRequestRoutes(app: Express, prefix: string, stora
         return res.status(400).json({ message: 'Service request is already paid' });
       }
 
-      // Since we don't have Stripe fully integrated yet, we'll simulate creating a payment intent
-      // In a real implementation, this would call Stripe API to create a payment intent
-      const simulatedPaymentIntentId = `pi_${Date.now()}_${Math.floor(Math.random() * 10000)}`;
+      // Check if a payment intent already exists for this service request
+      if (serviceRequest.paymentIntentId) {
+        try {
+          // Retrieve the existing payment intent
+          const existingPaymentIntent = await stripe.paymentIntents.retrieve(
+            serviceRequest.paymentIntentId
+          );
+          
+          // If it exists and is not canceled, return its client secret
+          if (existingPaymentIntent.status !== 'canceled') {
+            return res.json({ 
+              clientSecret: existingPaymentIntent.client_secret,
+              paymentIntentId: existingPaymentIntent.id
+            });
+          }
+        } catch (error) {
+          // If the payment intent doesn't exist anymore, we'll create a new one
+          console.log('Payment intent not found or error retrieving it:', error);
+        }
+      }
       
-      // For now, we'll use a placeholder client secret
-      const clientSecret = `${simulatedPaymentIntentId}_secret_${Math.floor(Math.random() * 10000)}`;
-
-      // In a real implementation with Stripe, we would do something like:
-      // const paymentIntent = await stripe.paymentIntents.create({
-      //   amount: Math.round(serviceRequest.price * 100), // convert to cents
-      //   currency: 'sar',
-      //   metadata: {
-      //     serviceRequestId: id,
-      //   },
-      // });
-      // const clientSecret = paymentIntent.client_secret;
+      // Create a new payment intent using Stripe
+      const paymentIntent = await stripe.paymentIntents.create({
+        amount: Math.round(serviceRequest.price * 100), // convert to cents
+        currency: 'sar', // Saudi Riyal
+        metadata: {
+          serviceRequestId: id.toString(),
+          serviceType: serviceRequest.serviceType,
+          technicianId: serviceRequest.technicianId ? serviceRequest.technicianId.toString() : 'none',
+          customerName: serviceRequest.name,
+          customerEmail: serviceRequest.email
+        },
+        receipt_email: serviceRequest.email,
+        description: `Payment for ${serviceRequest.serviceType} service by Shamsak Solar`
+      });
+      
+      // Get the client secret to be used on the frontend
+      const clientSecret = paymentIntent.client_secret;
+      
+      // Update the service request with the payment intent ID
+      await storage.updateServiceRequestPaymentIntent(id, paymentIntent.id);
 
       // Return the client secret
       res.json({ clientSecret });

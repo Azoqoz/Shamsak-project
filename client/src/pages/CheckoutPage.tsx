@@ -5,6 +5,8 @@ import { useQuery, useMutation } from '@tanstack/react-query';
 import { apiRequest, queryClient } from '@/lib/queryClient';
 import { useToast } from '@/hooks/use-toast';
 import { Technician, User, ServiceRequest } from '@shared/schema';
+import { loadStripe } from '@stripe/stripe-js';
+import { Elements, PaymentElement, useStripe, useElements } from '@stripe/react-stripe-js';
 
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
@@ -14,6 +16,75 @@ import { Separator } from '@/components/ui/separator';
 import { Skeleton } from '@/components/ui/skeleton';
 import { CheckCircle2, CreditCard, Clock, DollarSign, AlertCircle } from 'lucide-react';
 
+// Try to load Stripe if public key is available
+const stripePromise = import.meta.env.VITE_STRIPE_PUBLIC_KEY 
+  ? loadStripe(import.meta.env.VITE_STRIPE_PUBLIC_KEY) 
+  : null;
+
+// Create Stripe payment form component
+const StripePaymentForm = ({ 
+  clientSecret, 
+  onSuccess, 
+  onError 
+}: { 
+  clientSecret: string; 
+  onSuccess: () => void; 
+  onError: (error: any) => void;
+}) => {
+  const stripe = useStripe();
+  const elements = useElements();
+  const [isProcessing, setIsProcessing] = useState(false);
+  const { t } = useTranslation();
+  
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    
+    if (!stripe || !elements) {
+      return;
+    }
+    
+    setIsProcessing(true);
+    
+    const result = await stripe.confirmPayment({
+      elements,
+      confirmParams: {
+        return_url: window.location.href,
+      },
+      redirect: 'if_required'
+    });
+    
+    if (result.error) {
+      setIsProcessing(false);
+      onError(result.error);
+    } else {
+      onSuccess();
+    }
+  };
+  
+  return (
+    <form onSubmit={handleSubmit}>
+      <PaymentElement className="mb-6" />
+      <Button 
+        type="submit" 
+        className="w-full py-6 text-lg"
+        disabled={!stripe || isProcessing}
+      >
+        {isProcessing ? (
+          <>
+            <div className="mr-2 h-4 w-4 animate-spin rounded-full border-2 border-current border-t-transparent"></div>
+            {t('checkout.processing')}
+          </>
+        ) : (
+          <>
+            <CreditCard className="mr-2 h-5 w-5" />
+            {t('checkout.confirmPayment')}
+          </>
+        )}
+      </Button>
+    </form>
+  );
+};
+
 const CheckoutPage = () => {
   const { id } = useParams();
   const [, setLocation] = useLocation();
@@ -21,6 +92,8 @@ const CheckoutPage = () => {
   const { toast } = useToast();
   const [isPaymentProcessing, setIsPaymentProcessing] = useState(false);
   const [paymentSuccess, setPaymentSuccess] = useState(false);
+  const [clientSecret, setClientSecret] = useState<string | null>(null);
+  const [useStripeElements, setUseStripeElements] = useState(false);
 
   // Fetch service request details
   const { data: serviceRequest, isLoading: isLoadingRequest, error } = useQuery<ServiceRequest>({
@@ -41,10 +114,15 @@ const CheckoutPage = () => {
       const res = await apiRequest('POST', `/api/service-requests/${id}/create-payment-intent`);
       return res.json();
     },
-    onSuccess: () => {
-      // In a real implementation, we would use the client secret from the response
-      // to initialize Stripe and confirm the payment
-      simulatePayment();
+    onSuccess: (data) => {
+      // If we have a client secret and Stripe is loaded, use Stripe Elements
+      if (data.clientSecret && stripePromise) {
+        setClientSecret(data.clientSecret);
+        setUseStripeElements(true);
+      } else {
+        // Otherwise fall back to simulated payment
+        simulatePayment();
+      }
     },
     onError: (error) => {
       toast({
@@ -57,16 +135,19 @@ const CheckoutPage = () => {
 
   // Update payment status mutation
   const { mutate: updatePaymentStatus, isPending: isUpdatingPayment } = useMutation({
-    mutationFn: async () => {
+    mutationFn: async (paymentIntentId?: string) => {
       const paymentData = {
         isPaid: true,
-        paymentIntentId: `pi_${Date.now()}` // Simulated payment intent ID
+        paymentIntentId: paymentIntentId || `pi_${Date.now()}` // Use real payment intent ID if available
       };
       const res = await apiRequest('PATCH', `/api/service-requests/${id}/payment`, paymentData);
       return res.json();
     },
     onSuccess: () => {
       setPaymentSuccess(true);
+      setUseStripeElements(false);
+      setClientSecret(null);
+      
       // Invalidate queries to refresh data
       queryClient.invalidateQueries({ queryKey: ['/api/service-requests'] });
       queryClient.invalidateQueries({ queryKey: ['/api/service-requests', id] });
@@ -83,6 +164,8 @@ const CheckoutPage = () => {
         variant: 'destructive',
       });
       setIsPaymentProcessing(false);
+      setUseStripeElements(false);
+      setClientSecret(null);
     },
   });
 
@@ -94,6 +177,23 @@ const CheckoutPage = () => {
     setTimeout(() => {
       updatePaymentStatus();
     }, 2000);
+  };
+
+  // Handle Stripe payment success
+  const handleStripePaymentSuccess = () => {
+    // Real payment successful through Stripe
+    updatePaymentStatus(clientSecret?.split('_secret_')[0]); // Extract payment intent ID from client secret
+  };
+
+  // Handle Stripe payment error
+  const handleStripePaymentError = (error: any) => {
+    toast({
+      title: t('checkout.paymentError'),
+      description: error.message || t('common.error'),
+      variant: 'destructive',
+    });
+    setUseStripeElements(false);
+    setClientSecret(null);
   };
 
   // Handle payment button click
