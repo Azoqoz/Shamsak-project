@@ -110,7 +110,7 @@ export class MemStorage implements IStorage {
       };
       this.users.set(techUser.id, techUser);
 
-      // Create technician profile
+      // Create technician profile with pricing
       const technician: Technician = {
         id: this.currentIds.technician++,
         userId: techUser.id,
@@ -128,6 +128,10 @@ export class MemStorage implements IStorage {
         rating: 4 + (index === 1 ? 1 : 0) - (index === 2 ? 0.5 : 0),
         reviewCount: 20 + index * 10,
         profileImage: `/images/tech${index + 1}.svg`,
+        // Different pricing for each technician based on experience and rating
+        installationPrice: 500 + (index * 100),
+        maintenancePrice: 300 + (index * 50),
+        assessmentPrice: 200 + (index * 50),
         createdAt: new Date()
       };
       this.technicians.set(technician.id, technician);
