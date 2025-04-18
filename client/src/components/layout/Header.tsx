@@ -27,7 +27,7 @@ const Header = () => {
           <div className="flex items-center">
             <div className="text-primary text-3xl font-bold">
               <Link href="/" className="flex items-center">
-                <Sun className="text-yellow-500 mr-2 h-6 w-6" />
+                <Sun className={`text-yellow-500 ${useLanguage().direction === 'rtl' ? 'ml-2' : 'mr-2'} h-6 w-6`} />
                 <span>{t('common.appName')}</span>
               </Link>
             </div>
