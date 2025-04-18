@@ -97,7 +97,7 @@ const TechniciansSection = () => {
                       {technician.user.name.charAt(0).toUpperCase()}
                     </span>
                   </div>
-                  <div className="absolute bottom-0 right-1/2 transform translate-x-12 bg-yellow-500 text-xs text-neutral-800 px-2 py-1 rounded-full">
+                  <div className="absolute bottom-3 right-0 bg-yellow-500 text-xs text-neutral-800 px-2 py-1 rounded-full">
                     <span>{t('technicians.certified')}</span>
                   </div>
                 </div>
