@@ -52,7 +52,7 @@ const LoginPage = () => {
     onSuccess: (data) => {
       toast({
         title: t('common.success'),
-        description: 'Successfully logged in',
+        description: t('login.successMessage'),
       });
       
       // Redirect based on user role
@@ -86,7 +86,7 @@ const LoginPage = () => {
             <CardHeader className="text-center">
               <CardTitle className="text-2xl">{t('login.title')}</CardTitle>
               <CardDescription>
-                Sign in to your Shamsak account
+                {t('login.subtitle')}
               </CardDescription>
             </CardHeader>
             <CardContent>
