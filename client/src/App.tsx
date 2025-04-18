@@ -1,0 +1,52 @@
+import { Switch, Route } from "wouter";
+import { QueryClientProvider } from "@tanstack/react-query";
+import { queryClient } from "./lib/queryClient";
+import { Toaster } from "@/components/ui/toaster";
+import { TooltipProvider } from "@/components/ui/tooltip";
+import { LanguageProvider } from "./contexts/LanguageContext";
+import NotFound from "@/pages/not-found";
+import HomePage from "@/pages/HomePage";
+import ServiceRequestPage from "@/pages/ServiceRequestPage";
+import TechniciansPage from "@/pages/TechniciansPage";
+import ContactPage from "@/pages/ContactPage";
+import LoginPage from "@/pages/LoginPage";
+import AdminDashboardPage from "@/pages/AdminDashboardPage";
+import TechnicianProfilePage from "@/pages/TechnicianProfilePage";
+import Header from "@/components/layout/Header";
+import Footer from "@/components/layout/Footer";
+
+function Router() {
+  return (
+    <div className="flex flex-col min-h-screen">
+      <Header />
+      <main className="flex-grow">
+        <Switch>
+          <Route path="/" component={HomePage} />
+          <Route path="/request-service" component={ServiceRequestPage} />
+          <Route path="/technicians" component={TechniciansPage} />
+          <Route path="/technicians/:id" component={TechnicianProfilePage} />
+          <Route path="/contact" component={ContactPage} />
+          <Route path="/login" component={LoginPage} />
+          <Route path="/admin" component={AdminDashboardPage} />
+          <Route component={NotFound} />
+        </Switch>
+      </main>
+      <Footer />
+    </div>
+  );
+}
+
+function App() {
+  return (
+    <QueryClientProvider client={queryClient}>
+      <LanguageProvider>
+        <TooltipProvider>
+          <Toaster />
+          <Router />
+        </TooltipProvider>
+      </LanguageProvider>
+    </QueryClientProvider>
+  );
+}
+
+export default App;
