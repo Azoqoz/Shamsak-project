@@ -95,9 +95,9 @@ const RegisterPage = () => {
         <div className="w-full max-w-md p-4">
           <Card>
             <CardHeader className="text-center">
-              <CardTitle className="text-2xl">Create an Account</CardTitle>
+              <CardTitle className="text-2xl">{t('register.title')}</CardTitle>
               <CardDescription>
-                Join Shamsak and connect with solar technicians
+                {t('register.subtitle')}
               </CardDescription>
             </CardHeader>
             <CardContent>
@@ -115,9 +115,9 @@ const RegisterPage = () => {
                     name="name"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Full Name</FormLabel>
+                        <FormLabel>{t('register.fullName')}</FormLabel>
                         <FormControl>
-                          <Input placeholder="Enter your full name" {...field} />
+                          <Input placeholder={t('register.fullName')} {...field} />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
@@ -129,9 +129,9 @@ const RegisterPage = () => {
                     name="username"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Username</FormLabel>
+                        <FormLabel>{t('register.username')}</FormLabel>
                         <FormControl>
-                          <Input placeholder="Choose a username" {...field} />
+                          <Input placeholder={t('register.username')} {...field} />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
