@@ -61,7 +61,7 @@ const ServicesSection = () => {
                 className="text-primary hover:underline flex items-center"
               >
                 {t('services.requestService')}
-                <ArrowRight className={`ml-2 h-4 w-4 ${direction === 'rtl' ? 'transform rotate-180' : ''}`} />
+                <ArrowRight className={`${direction === 'rtl' ? 'mr-2 transform rotate-180' : 'ml-2'} h-4 w-4`} />
               </Link>
             </div>
           ))}
