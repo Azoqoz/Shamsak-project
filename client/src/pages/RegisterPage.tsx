@@ -71,12 +71,12 @@ const RegisterPage = () => {
     onSuccess: (data) => {
       toast({
         title: t('common.success'),
-        description: 'Registration successful! You can now log in.',
+        description: t('register.successMessage'),
       });
       navigate('/login');
     },
     onError: (error: any) => {
-      setRegisterError(error.message || 'Registration failed. Please try again.');
+      setRegisterError(error.message || t('register.error'));
     },
   });
 
@@ -143,9 +143,9 @@ const RegisterPage = () => {
                     name="email"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Email</FormLabel>
+                        <FormLabel>{t('register.email')}</FormLabel>
                         <FormControl>
-                          <Input type="email" placeholder="Enter your email address" {...field} />
+                          <Input type="email" placeholder={t('register.email')} {...field} />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
@@ -157,7 +157,7 @@ const RegisterPage = () => {
                     name="phone"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Phone Number</FormLabel>
+                        <FormLabel>{t('register.phone')}</FormLabel>
                         <FormControl>
                           <Input placeholder="+996 51 234 567" {...field} />
                         </FormControl>
@@ -171,14 +171,14 @@ const RegisterPage = () => {
                     name="city"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>City</FormLabel>
+                        <FormLabel>{t('register.city')}</FormLabel>
                         <Select
                           onValueChange={field.onChange}
                           defaultValue={field.value}
                         >
                           <FormControl>
                             <SelectTrigger>
-                              <SelectValue placeholder="Select your city" />
+                              <SelectValue placeholder={t('register.cityPlaceholder')} />
                             </SelectTrigger>
                           </FormControl>
                           <SelectContent>
@@ -197,12 +197,12 @@ const RegisterPage = () => {
                     name="password"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Password</FormLabel>
+                        <FormLabel>{t('register.password')}</FormLabel>
                         <FormControl>
-                          <Input type="password" placeholder="Create a password" {...field} />
+                          <Input type="password" placeholder={t('register.password')} {...field} />
                         </FormControl>
                         <FormDescription>
-                          Password must be at least 6 characters long
+                          {t('register.passwordRequirements')}
                         </FormDescription>
                         <FormMessage />
                       </FormItem>
@@ -214,9 +214,9 @@ const RegisterPage = () => {
                     name="confirmPassword"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Confirm Password</FormLabel>
+                        <FormLabel>{t('register.confirmPassword')}</FormLabel>
                         <FormControl>
-                          <Input type="password" placeholder="Confirm your password" {...field} />
+                          <Input type="password" placeholder={t('register.confirmPassword')} {...field} />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
@@ -228,14 +228,14 @@ const RegisterPage = () => {
                     className="w-full" 
                     disabled={isPending}
                   >
-                    {isPending ? 'Creating account...' : 'Register'}
+                    {isPending ? t('register.creatingAccount') : t('register.register')}
                   </Button>
                 </form>
               </Form>
             </CardContent>
             <CardFooter className="text-center">
               <div className="w-full text-sm">
-                Already have an account? <Link href="/login" className="text-primary font-medium">Login</Link>
+                {t('register.alreadyHaveAccount')} <Link href="/login" className="text-primary font-medium">{t('register.login')}</Link>
               </div>
             </CardFooter>
           </Card>
