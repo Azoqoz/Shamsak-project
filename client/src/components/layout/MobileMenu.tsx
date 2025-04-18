@@ -52,6 +52,15 @@ const MobileMenu = ({ isOpen, onClose }: MobileMenuProps) => {
         </li>
         <li>
           <Link 
+            href="/find-technicians" 
+            className={`block py-2 ${isActive('/find-technicians') ? 'text-primary' : 'text-neutral-800'} hover:text-primary transition-colors`}
+            onClick={handleLinkClick}
+          >
+            {t('navigation.findNearby')}
+          </Link>
+        </li>
+        <li>
+          <Link 
             href="/contact" 
             className={`block py-2 ${isActive('/contact') ? 'text-primary' : 'text-neutral-800'} hover:text-primary transition-colors`}
             onClick={handleLinkClick}
