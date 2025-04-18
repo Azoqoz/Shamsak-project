@@ -91,7 +91,7 @@ export class MemStorage implements IStorage {
     const cities = ["riyadh", "jeddah", "dammam"];
     const technicianNames = [
       { name: "Mohammed Al-Harbi", city: cities[0] },
-      { name: "Fatima Al-Qahtani", city: cities[1] },
+      { name: "Khaled Al-Ghamdi", city: cities[1] },
       { name: "Ahmed Al-Otaibi", city: cities[2] }
     ];
 
@@ -127,7 +127,7 @@ export class MemStorage implements IStorage {
         available: true,
         rating: 4 + (index === 1 ? 1 : 0) - (index === 2 ? 0.5 : 0),
         reviewCount: 20 + index * 10,
-        profileImage: null,
+        profileImage: `/images/tech${index + 1}.jpg`,
         createdAt: new Date()
       };
       this.technicians.set(technician.id, technician);
