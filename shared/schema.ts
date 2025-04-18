@@ -32,6 +32,10 @@ export const technicians = pgTable("technicians", {
   rating: integer("rating"),
   reviewCount: integer("review_count").default(0),
   profileImage: text("profile_image"),
+  // Service pricing in SAR
+  installationPrice: integer("installation_price").notNull().default(500),
+  maintenancePrice: integer("maintenance_price").notNull().default(300),
+  assessmentPrice: integer("assessment_price").notNull().default(200),
   createdAt: timestamp("created_at").defaultNow(),
 });
 
@@ -41,7 +45,7 @@ export const insertTechnicianSchema = createInsertSchema(technicians).omit({
   createdAt: true,
 });
 
-// Service Request schema
+// Service Request schema (now Booking)
 export const serviceRequests = pgTable("service_requests", {
   id: serial("id").primaryKey(),
   serviceType: text("service_type").notNull(),
@@ -51,15 +55,20 @@ export const serviceRequests = pgTable("service_requests", {
   city: text("city").notNull(),
   propertyType: text("property_type").notNull(),
   additionalDetails: text("additional_details"),
-  status: text("status").notNull().default("pending"), // pending, assigned, completed, cancelled
+  status: text("status").notNull().default("pending"), // pending, assigned, completed, cancelled, paid
   technicianId: integer("technician_id").references(() => technicians.id),
+  price: integer("price"), // Price in SAR
+  isPaid: boolean("is_paid").default(false),
+  paymentIntentId: text("payment_intent_id"), // For Stripe integration
   createdAt: timestamp("created_at").defaultNow(),
 });
 
 export const insertServiceRequestSchema = createInsertSchema(serviceRequests).omit({
   id: true,
-  technicianId: true,
   status: true,
+  isPaid: true,
+  paymentIntentId: true,
+  price: true,
   createdAt: true,
 });
 
