@@ -127,7 +127,7 @@ export class MemStorage implements IStorage {
         available: true,
         rating: 4 + (index === 1 ? 1 : 0) - (index === 2 ? 0.5 : 0),
         reviewCount: 20 + index * 10,
-        profileImage: `/images/tech${index + 1}.jpg`,
+        profileImage: `/images/tech${index + 1}.svg`,
         createdAt: new Date()
       };
       this.technicians.set(technician.id, technician);
