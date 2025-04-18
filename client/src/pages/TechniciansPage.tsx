@@ -167,7 +167,12 @@ const TechniciansPage = () => {
 
                   </div>
                   <div className="text-center">
-                    <h3 className="text-xl font-bold mb-1">{technician.user.name}</h3>
+                    <div className="flex items-center justify-center gap-2 mb-1">
+                      <h3 className="text-xl font-bold">{technician.user.name}</h3>
+                      <span className="bg-yellow-500 text-xs text-neutral-800 px-2 py-1 rounded-full">
+                        {t('technicians.certified')}
+                      </span>
+                    </div>
                     <p className="text-primary mb-2">{technician.user.city}</p>
                     <div className="flex justify-center mb-3">
                       <div className="flex text-accent">
