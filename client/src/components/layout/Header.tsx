@@ -73,8 +73,7 @@ const Header = () => {
           <div className="flex items-center space-x-4 rtl:space-x-reverse">
             <Button 
               onClick={toggleLanguage} 
-              variant="secondary" 
-              className="text-white px-3 py-1"
+              className="bg-green-600 hover:bg-green-700 text-white px-3 py-1"
             >
               {t('common.language')}
             </Button>
