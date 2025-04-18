@@ -12,6 +12,7 @@ import ContactPage from "@/pages/ContactPage";
 import LoginPage from "@/pages/LoginPage";
 import AdminDashboardPage from "@/pages/AdminDashboardPage";
 import TechnicianProfilePage from "@/pages/TechnicianProfilePage";
+import CheckoutPage from "@/pages/CheckoutPage";
 import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
 
@@ -28,6 +29,7 @@ function Router() {
           <Route path="/contact" component={ContactPage} />
           <Route path="/login" component={LoginPage} />
           <Route path="/admin" component={AdminDashboardPage} />
+          <Route path="/checkout/:id" component={CheckoutPage} />
           <Route component={NotFound} />
         </Switch>
       </main>
