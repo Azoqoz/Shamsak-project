@@ -129,6 +129,14 @@ export class MemStorage implements IStorage {
         rating: 4 + (index === 1 ? 1 : 0) - (index === 2 ? 0.5 : 0),
         reviewCount: 20 + index * 10,
         profileImage: `/images/tech${index + 1}.svg`,
+        // Geolocation data - Using approximate coordinates for Saudi cities
+        latitude: index === 0 ? "24.7136" : // Riyadh
+                  index === 1 ? "21.4858" : // Jeddah
+                  "26.4367", // Dammam
+        longitude: index === 0 ? "46.6753" : // Riyadh
+                   index === 1 ? "39.1925" : // Jeddah
+                   "50.1040", // Dammam
+        serviceRadius: 25 + (index * 10), // Different service radius for each technician
         // Different pricing for each technician based on experience and rating
         installationPrice: 500 + (index * 100),
         maintenancePrice: 300 + (index * 50),

@@ -32,6 +32,10 @@ export const technicians = pgTable("technicians", {
   rating: integer("rating"),
   reviewCount: integer("review_count").default(0),
   profileImage: text("profile_image"),
+  // Geolocation data
+  latitude: text("latitude"),
+  longitude: text("longitude"),
+  serviceRadius: integer("service_radius").default(25), // Service radius in kilometers
   // Service pricing in SAR
   installationPrice: integer("installation_price").notNull().default(500),
   maintenancePrice: integer("maintenance_price").notNull().default(300),
@@ -55,6 +59,9 @@ export const serviceRequests = pgTable("service_requests", {
   city: text("city").notNull(),
   propertyType: text("property_type").notNull(),
   additionalDetails: text("additional_details"),
+  // Geolocation data
+  latitude: text("latitude"),
+  longitude: text("longitude"),
   status: text("status").notNull().default("pending"), // pending, assigned, completed, cancelled, paid
   technicianId: integer("technician_id").references(() => technicians.id),
   price: integer("price"), // Price in SAR
