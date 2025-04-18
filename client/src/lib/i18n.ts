@@ -14,6 +14,7 @@ const enTranslations = {
     success: 'Success!',
     required: 'Required field',
     backHome: 'Back to Home',
+    search: 'Search',
   },
   navigation: {
     home: 'Home',
@@ -177,6 +178,21 @@ const enTranslations = {
     invalidRequest: 'The service request you are looking for does not exist',
     stripePublicKeyMissing: 'Stripe payment is not available at the moment. Simple payment will be used instead.',
   },
+  map: {
+    selectRadius: 'Select Service Radius',
+    findNearby: 'Find Nearby Technicians',
+    km: 'km',
+    yourLocation: 'Your Location',
+    techniciansInRadius: 'Technicians in Your Area',
+    noTechniciansFound: 'No technicians found in this area',
+    searchingLocation: 'Searching for your location...',
+    locationError: 'Could not determine your location. Please enable location services.',
+    locationPermissionDenied: 'Location permission denied',
+    adjustRadius: 'Adjust radius to find more technicians',
+    solarInstallation: 'Solar Panel Installation',
+    energyAssessment: 'Energy Efficiency Assessment',
+    maintenanceRepair: 'Maintenance and Repair',
+  },
 };
 
 // Arabic translations
@@ -192,6 +208,7 @@ const arTranslations = {
     success: 'تم بنجاح!',
     required: 'حقل مطلوب',
     backHome: 'العودة إلى الرئيسية',
+    search: 'بحث',
   },
   navigation: {
     home: 'الرئيسية',
@@ -354,6 +371,21 @@ const arTranslations = {
     serviceNotFound: 'طلب الخدمة غير موجود',
     invalidRequest: 'طلب الخدمة الذي تبحث عنه غير موجود',
     stripePublicKeyMissing: 'الدفع عبر Stripe غير متاح حاليًا. سيتم استخدام الدفع البسيط بدلاً من ذلك.',
+  },
+  map: {
+    selectRadius: 'اختر نطاق الخدمة',
+    findNearby: 'ابحث عن الفنيين القريبين',
+    km: 'كم',
+    yourLocation: 'موقعك',
+    techniciansInRadius: 'الفنيون في منطقتك',
+    noTechniciansFound: 'لم يتم العثور على فنيين في هذه المنطقة',
+    searchingLocation: 'جارٍ البحث عن موقعك...',
+    locationError: 'تعذر تحديد موقعك. الرجاء تفعيل خدمات الموقع.',
+    locationPermissionDenied: 'تم رفض إذن الموقع',
+    adjustRadius: 'اضبط النطاق للعثور على المزيد من الفنيين',
+    solarInstallation: 'تركيب الألواح الشمسية',
+    energyAssessment: 'تقييم كفاءة الطاقة',
+    maintenanceRepair: 'الصيانة والإصلاح',
   },
 };
 
