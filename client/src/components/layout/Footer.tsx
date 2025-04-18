@@ -93,19 +93,19 @@ const Footer = () => {
           <div>
             <h3 className="text-lg font-bold mb-4">{t('footer.contact')}</h3>
             <ul className="space-y-2">
-              <li className="flex items-start">
-                <FaMapMarkerAlt className="mt-1 mr-2" />
+              <li className={`flex items-start ${direction === 'rtl' ? 'flex-row-reverse' : ''}`}>
+                <FaMapMarkerAlt className={`mt-1 ${direction === 'rtl' ? 'ml-2' : 'mr-2'}`} />
                 <span className="text-neutral-300">
                   {t('contact.address')}
                 </span>
               </li>
-              <li className="flex items-start">
-                <FaPhone className="mt-1 mr-2" />
-                <span className="text-neutral-300">+966 12 345 6789</span>
+              <li className={`flex items-start ${direction === 'rtl' ? 'flex-row-reverse' : ''}`}>
+                <FaPhone className={`mt-1 ${direction === 'rtl' ? 'ml-2' : 'mr-2'}`} />
+                <span dir="ltr" className="text-neutral-300">+966 12 345 6789</span>
               </li>
-              <li className="flex items-start">
-                <FaEnvelope className="mt-1 mr-2" />
-                <span className="text-neutral-300">info@shamsak.sa</span>
+              <li className={`flex items-start ${direction === 'rtl' ? 'flex-row-reverse' : ''}`}>
+                <FaEnvelope className={`mt-1 ${direction === 'rtl' ? 'ml-2' : 'mr-2'}`} />
+                <span dir="ltr" className="text-neutral-300">info@shamsak.sa</span>
               </li>
             </ul>
           </div>
