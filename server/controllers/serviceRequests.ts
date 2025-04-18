@@ -1,6 +1,7 @@
 import { Express, Request, Response } from 'express';
 import { z } from 'zod';
 import { IStorage } from '../storage';
+import { stripe } from '../routes';
 import { insertServiceRequestSchema } from '@shared/schema';
 
 // Add new status 'paid' to the enum
