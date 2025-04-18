@@ -276,14 +276,19 @@ const arTranslations = {
 // Configure i18next
 i18n.use(initReactI18next).init({
   resources: {
-    en: enTranslations,
-    ar: arTranslations,
+    en: {
+      translation: enTranslations
+    },
+    ar: {
+      translation: arTranslations
+    }
   },
   lng: localStorage.getItem('language') || 'en',
   fallbackLng: 'en',
   interpolation: {
     escapeValue: false,
   },
+  debug: true, // Enable debug mode to see console logs
 });
 
 export default i18n;
