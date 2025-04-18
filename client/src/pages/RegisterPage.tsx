@@ -183,7 +183,7 @@ const RegisterPage = () => {
                           </FormControl>
                           <SelectContent>
                             {CITIES.map((city) => (
-                              <SelectItem key={city} value={city}>{t(`serviceForm.${city.toLowerCase()}`)}</SelectItem>
+                              <SelectItem key={city.value} value={city.value}>{t(city.labelKey)}</SelectItem>
                             ))}
                           </SelectContent>
                         </Select>
