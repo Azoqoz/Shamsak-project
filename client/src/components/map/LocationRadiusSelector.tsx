@@ -126,7 +126,8 @@ const LocationRadiusSelector = ({
     // A technician is available if:
     // 1. The user is within the technician's service radius
     // 2. The technician is within the user's selected radius
-    return distance <= technician.serviceRadius && distance <= radius;
+    const techServiceRadius = technician.serviceRadius || 0;
+    return distance <= techServiceRadius && distance <= radius;
   });
 
   // Custom marker colors for technicians
@@ -219,7 +220,7 @@ const LocationRadiusSelector = ({
                   <Marker position={techLatLng} icon={techIcon} />
                   <Circle
                     center={techLatLng}
-                    radius={technician.serviceRadius * 1000}
+                    radius={(technician.serviceRadius || 0) * 1000}
                     pathOptions={{ 
                       fillColor: specialtyColors[technician.specialty] || 'gray', 
                       fillOpacity: 0.1, 

@@ -13,6 +13,7 @@ import LoginPage from "@/pages/LoginPage";
 import AdminDashboardPage from "@/pages/AdminDashboardPage";
 import TechnicianProfilePage from "@/pages/TechnicianProfilePage";
 import CheckoutPage from "@/pages/CheckoutPage";
+import TechnicianMapPage from "@/pages/TechnicianMapPage";
 import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
 
@@ -26,6 +27,7 @@ function Router() {
           <Route path="/request-service" component={ServiceRequestPage} />
           <Route path="/technicians" component={TechniciansPage} />
           <Route path="/technicians/:id" component={TechnicianProfilePage} />
+          <Route path="/find-technicians" component={TechnicianMapPage} />
           <Route path="/contact" component={ContactPage} />
           <Route path="/login" component={LoginPage} />
           <Route path="/admin" component={AdminDashboardPage} />
