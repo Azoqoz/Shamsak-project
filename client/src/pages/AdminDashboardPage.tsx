@@ -119,10 +119,10 @@ const AdminDashboardPage = () => {
   };
 
   // Get badge color based on status
-  const getStatusBadgeVariant = (status: string) => {
+  const getStatusBadgeVariant = (status: string): "default" | "destructive" | "secondary" | "outline" | "success" | "warning" => {
     switch (status) {
-      case 'pending': return 'secondary';
-      case 'assigned': return 'warning';
+      case 'pending': return 'warning';
+      case 'assigned': return 'secondary';
       case 'completed': return 'success';
       case 'cancelled': return 'destructive';
       default: return 'outline';
