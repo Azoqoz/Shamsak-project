@@ -164,11 +164,8 @@ const TechnicianProfilePage = () => {
                   </div>
                 </div>
                 <div className="md:w-2/3">
-                  <div className="flex items-center gap-3 mb-2">
+                  <div className="mb-2">
                     <h1 className="text-3xl font-bold">{technician.user.name}</h1>
-                    <span className="bg-yellow-500 text-sm text-neutral-800 px-3 py-1 rounded-full">
-                      {t('technicians.certified')}
-                    </span>
                   </div>
                   <div className="flex items-center mb-2">
                     <MapPin className={`h-4 w-4 text-primary ${direction === 'rtl' ? 'ml-2' : 'mr-2'}`} />
