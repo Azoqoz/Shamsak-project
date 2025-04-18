@@ -4,6 +4,7 @@ import { useTranslation } from 'react-i18next';
 import { useParams, Link } from 'wouter';
 import { useQuery } from '@tanstack/react-query';
 import { useToast } from '@/hooks/use-toast';
+import { useLanguage } from '@/contexts/LanguageContext';
 import { Calendar, Mail, MapPin, Phone, Star, StarIcon, Award, Drill, Clock } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
@@ -16,6 +17,7 @@ import type { Technician, User } from '@shared/schema';
 const TechnicianProfilePage = () => {
   const { t } = useTranslation();
   const { toast } = useToast();
+  const { direction } = useLanguage();
   const { id } = useParams();
   const technicianId = parseInt(id);
 
@@ -165,11 +167,11 @@ const TechnicianProfilePage = () => {
                 <div className="md:w-2/3">
                   <h1 className="text-3xl font-bold mb-2">{technician.user.name}</h1>
                   <div className="flex items-center mb-2">
-                    <MapPin className="h-4 w-4 text-primary mr-2" />
+                    <MapPin className={`h-4 w-4 text-primary ${direction === 'rtl' ? 'ml-2' : 'mr-2'}`} />
                     <span>{technician.user.city}</span>
                   </div>
                   <div className="flex items-center mb-4">
-                    <div className="flex text-accent mr-2">{renderStars(technician.rating || 0)}</div>
+                    <div className={`flex text-accent ${direction === 'rtl' ? 'ml-2' : 'mr-2'}`}>{renderStars(technician.rating || 0)}</div>
                     <span className="text-sm text-neutral-800">
                       {technician.rating
                         ? `${technician.rating.toFixed(1)} (${technician.reviewCount} ${t('technicians.reviews')})`
@@ -179,25 +181,23 @@ const TechnicianProfilePage = () => {
                   <p className="mb-6">{technician.bio}</p>
                   <div className="flex flex-wrap gap-3 mb-6">
                     <Badge variant="outline" className="flex items-center">
-                      <Drill className="h-3 w-3 mr-1" />
+                      <Drill className={`h-3 w-3 ${direction === 'rtl' ? 'ml-1' : 'mr-1'}`} />
                       {technician.specialty}
                     </Badge>
                     <Badge variant="outline" className="flex items-center">
-                      <Award className="h-3 w-3 mr-1" />
+                      <Award className={`h-3 w-3 ${direction === 'rtl' ? 'ml-1' : 'mr-1'}`} />
                       {technician.certifications}
                     </Badge>
                     <Badge variant="outline" className="flex items-center">
-                      <Clock className="h-3 w-3 mr-1" />
+                      <Clock className={`h-3 w-3 ${direction === 'rtl' ? 'ml-1' : 'mr-1'}`} />
                       {technician.experience} {t('technicians.years')}
                     </Badge>
                   </div>
-                  <Button
-                    as={Link}
-                    href={`/request-service?technician=${technician.id}`}
-                    className="bg-primary text-white"
-                  >
-                    {t('services.requestService')}
-                  </Button>
+                  <Link href={`/request-service?technician=${technician.id}`}>
+                    <Button className="bg-primary text-white">
+                      {t('services.requestService')}
+                    </Button>
+                  </Link>
                 </div>
               </div>
 
