@@ -11,9 +11,14 @@ const HeroSection = () => {
       <div className="absolute inset-0 overflow-hidden">
         <div className="absolute inset-0 bg-black bg-opacity-40"></div>
         <img
-          src="https://images.unsplash.com/photo-1611365892117-bede7a4f1651?ixlib=rb-1.2.1&auto=format&fit=crop&w=1200&q=80"
+          src="https://images.unsplash.com/photo-1611365892117-bede7a4f1651?auto=format&fit=crop&w=1200&q=80"
           alt="Solar panels on rooftop"
           className="w-full h-full object-cover"
+          onError={(e) => {
+            const target = e.target as HTMLImageElement;
+            target.onerror = null;
+            target.src = 'https://images.pexels.com/photos/9875441/pexels-photo-9875441.jpeg?auto=compress&cs=tinysrgb&w=1200';
+          }}
         />
       </div>
       

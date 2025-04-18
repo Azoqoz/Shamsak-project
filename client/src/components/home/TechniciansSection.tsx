@@ -80,12 +80,22 @@ const TechniciansSection = () => {
                         src={technician.profileImage} 
                         alt={technician.user.name} 
                         className="w-full h-full object-cover" 
+                        onError={(e) => {
+                          const target = e.target as HTMLImageElement;
+                          target.onerror = null;
+                          // Replace with first letter of name
+                          target.style.display = 'none';
+                          target.parentElement?.querySelector('span')?.classList.remove('hidden');
+                        }}
                       />
                     ) : (
                       <span className="text-4xl text-gray-400">
                         {technician.user.name.charAt(0)}
                       </span>
                     )}
+                    <span className="hidden text-4xl text-gray-400">
+                      {technician.user.name.charAt(0)}
+                    </span>
                   </div>
                   <div className="absolute bottom-0 right-1/2 transform translate-x-12 bg-yellow-500 text-xs text-neutral-800 px-2 py-1 rounded-full">
                     <span>{t('technicians.certified')}</span>
