@@ -60,7 +60,8 @@ const TechnicianMapPage = () => {
         // A technician is visible if:
         // 1. The user is within the technician's service radius
         // 2. The technician is within the user's selected radius
-        return distance <= tech.serviceRadius && distance <= locationFilter.radius;
+        const techServiceRadius = tech.serviceRadius || 0;
+        return distance <= techServiceRadius && distance <= locationFilter.radius;
       })
     : [];
     

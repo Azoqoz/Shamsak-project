@@ -61,6 +61,14 @@ const Header = () => {
               </li>
               <li>
                 <Link 
+                  href="/find-technicians" 
+                  className={`${isActive('/find-technicians') ? 'text-primary' : 'text-neutral-800'} hover:text-primary transition-colors`}
+                >
+                  {t('navigation.findNearby')}
+                </Link>
+              </li>
+              <li>
+                <Link 
                   href="/contact" 
                   className={`${isActive('/contact') ? 'text-primary' : 'text-neutral-800'} hover:text-primary transition-colors`}
                 >

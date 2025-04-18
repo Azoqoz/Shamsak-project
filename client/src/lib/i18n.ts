@@ -20,6 +20,7 @@ const enTranslations = {
     home: 'Home',
     services: 'Services',
     technicians: 'Technicians',
+    findNearby: 'Find Nearby',
     contact: 'Contact',
   },
   hero: {
@@ -214,6 +215,7 @@ const arTranslations = {
     home: 'الرئيسية',
     services: 'الخدمات',
     technicians: 'الفنيون',
+    findNearby: 'ابحث بالقرب',
     contact: 'اتصل بنا',
   },
   hero: {
