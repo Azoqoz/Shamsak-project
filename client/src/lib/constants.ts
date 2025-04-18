@@ -1,8 +1,8 @@
-// Service types
+// Service types with base prices in SAR
 export const SERVICE_TYPES = [
-  { value: 'installation', labelKey: 'serviceForm.installation' },
-  { value: 'maintenance', labelKey: 'serviceForm.maintenance' },
-  { value: 'assessment', labelKey: 'serviceForm.assessment' },
+  { value: 'installation', labelKey: 'serviceForm.installation', basePrice: 500 },
+  { value: 'maintenance', labelKey: 'serviceForm.maintenance', basePrice: 300 },
+  { value: 'assessment', labelKey: 'serviceForm.assessment', basePrice: 200 },
 ];
 
 // Cities in Saudi Arabia
