@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Helmet } from 'react-helmet';
 import { useTranslation } from 'react-i18next';
-import { useLocation } from 'wouter';
+import { useLocation, Link } from 'wouter';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
@@ -142,7 +142,7 @@ const LoginPage = () => {
                 {t('login.forgotPassword')}
               </Button>
               <div className="text-sm text-center">
-                {t('login.noAccount')} <Button variant="link" className="p-0 h-auto">{t('login.register')}</Button>
+                {t('login.noAccount')} <Link href="/register"><Button variant="link" className="p-0 h-auto">{t('login.register')}</Button></Link>
               </div>
             </CardFooter>
           </Card>
