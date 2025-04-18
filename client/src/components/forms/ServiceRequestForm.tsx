@@ -99,7 +99,7 @@ const ServiceRequestForm = () => {
     email: '',
     city: '',
     propertyType: '',
-    additionalDetails: '',
+    additionalDetails: '', // Initialize with empty string to avoid null/undefined issues
     terms: false,
   };
 
@@ -137,16 +137,20 @@ const ServiceRequestForm = () => {
       return;
     }
 
+    // Get the technician's specific price for the service type, or fallback to base price
     let price = null;
+    const serviceTypeObj = SERVICE_TYPES.find(type => type.value === serviceType);
+    const basePrice = serviceTypeObj?.basePrice || 0;
+    
     switch (serviceType) {
       case 'installation':
-        price = technician.installationPrice;
+        price = technician.installationPrice || basePrice;
         break;
       case 'maintenance':
-        price = technician.maintenancePrice;
+        price = technician.maintenancePrice || basePrice;
         break;
       case 'assessment':
-        price = technician.assessmentPrice;
+        price = technician.assessmentPrice || basePrice;
         break;
     }
     
@@ -402,7 +406,11 @@ const ServiceRequestForm = () => {
                     </FormLabel>
                     <FormControl>
                       <Textarea 
-                        {...field} 
+                        value={field.value || ''}
+                        onChange={field.onChange}
+                        onBlur={field.onBlur}
+                        name={field.name}
+                        ref={field.ref}
                         rows={4} 
                         className="resize-none"
                       />
@@ -432,15 +440,18 @@ const ServiceRequestForm = () => {
                     {technicians
                       .filter(tech => tech.available)
                       .map((technician) => {
-                        // Get price for the selected service type
+                        // Get price for the selected service type with base price fallback
                         let price = 0;
                         const serviceType = form.getValues('serviceType');
+                        const serviceTypeObj = SERVICE_TYPES.find(type => type.value === serviceType);
+                        const basePrice = serviceTypeObj?.basePrice || 0;
+                        
                         if (serviceType === 'installation') {
-                          price = technician.installationPrice;
+                          price = technician.installationPrice || basePrice;
                         } else if (serviceType === 'maintenance') {
-                          price = technician.maintenancePrice;
+                          price = technician.maintenancePrice || basePrice;
                         } else if (serviceType === 'assessment') {
-                          price = technician.assessmentPrice;
+                          price = technician.assessmentPrice || basePrice;
                         }
                         
                         return (
