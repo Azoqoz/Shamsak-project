@@ -35,6 +35,7 @@ export interface IStorage {
   createServiceRequest(serviceRequest: InsertServiceRequest): Promise<ServiceRequest>;
   updateServiceRequestStatus(id: number, status: string): Promise<ServiceRequest | undefined>;
   assignTechnicianToServiceRequest(id: number, technicianId: number): Promise<ServiceRequest | undefined>;
+  updateServiceRequestPaymentIntent(id: number, paymentIntentId: string): Promise<ServiceRequest | undefined>;
   
   // Contact methods
   getContact(id: number): Promise<Contact | undefined>;
@@ -153,6 +154,9 @@ export class MemStorage implements IStorage {
         additionalDetails: `Details for request ${i + 1}`,
         status: i < 2 ? "pending" : i < 4 ? "assigned" : "completed",
         technicianId: i < 2 ? null : (i % 3) + 1,
+        price: i < 2 ? null : 300 + (i * 50), // Sample price
+        isPaid: i === 4, // Only the completed one is paid
+        paymentIntentId: i === 4 ? `pi_sample_${i}` : null,
         createdAt: new Date(Date.now() - i * 86400000) // Each a day apart
       };
       this.serviceRequests.set(serviceRequest.id, serviceRequest);
@@ -314,7 +318,10 @@ export class MemStorage implements IStorage {
       ...insertServiceRequest, 
       id, 
       status: "pending",
-      technicianId: null,
+      technicianId: insertServiceRequest.technicianId || null,
+      price: insertServiceRequest.price || null,
+      isPaid: false,
+      paymentIntentId: null,
       createdAt: new Date() 
     };
     this.serviceRequests.set(id, serviceRequest);
@@ -338,6 +345,19 @@ export class MemStorage implements IStorage {
       ...request, 
       technicianId, 
       status: request.status === "pending" ? "assigned" : request.status 
+    };
+    
+    this.serviceRequests.set(id, updatedRequest);
+    return updatedRequest;
+  }
+
+  async updateServiceRequestPaymentIntent(id: number, paymentIntentId: string): Promise<ServiceRequest | undefined> {
+    const request = this.serviceRequests.get(id);
+    if (!request) return undefined;
+    
+    const updatedRequest = { 
+      ...request, 
+      paymentIntentId
     };
     
     this.serviceRequests.set(id, updatedRequest);
