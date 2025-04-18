@@ -1,4 +1,13 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="200" height="200" viewBox="0 0 200 200">
-  <circle cx="100" cy="100" r="100" fill="#e2e8f0"/>
-  <text x="100" y="120" font-family="Arial, sans-serif" font-size="80" font-weight="bold" fill="#94a3b8" text-anchor="middle">K</text>
+<svg width="200" height="200" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+  <!-- Circle background -->
+  <circle cx="100" cy="100" r="100" fill="#E2E8F0"/>
+  
+  <!-- Letter K -->
+  <text x="100" y="120" font-family="Arial" font-size="80" font-weight="bold" text-anchor="middle" fill="#94A3B8">K</text>
+  
+  <!-- Certified badge -->
+  <g transform="translate(100, 160)">
+    <rect x="-40" y="-15" width="80" height="30" rx="15" fill="#EAB308"/>
+    <text x="0" y="5" font-family="Arial" font-size="14" font-weight="bold" text-anchor="middle" fill="#1F2937">Certified</text>
+  </g>
 </svg>
