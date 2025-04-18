@@ -1,8 +1,8 @@
 import { useTranslation } from 'react-i18next';
 import { Link } from 'wouter';
 import { useLanguage } from '@/contexts/LanguageContext';
-// Use Lucide icons instead of react-icons
-import { Sun, Wrench, ClipboardList, ArrowRight } from 'lucide-react';
+// Enhanced Lucide icons for solar services
+import { PanelTop, Wrench, Gauge, ArrowRight } from 'lucide-react';
 
 const ServicesSection = () => {
   const { t } = useTranslation();
@@ -10,19 +10,19 @@ const ServicesSection = () => {
 
   const services = [
     {
-      icon: <Sun className="h-6 w-6" />,
+      icon: <PanelTop className="h-8 w-8" />,
       titleKey: 'services.installTitle',
       descriptionKey: 'services.installDesc',
       type: 'installation'
     },
     {
-      icon: <Wrench className="h-6 w-6" />,
+      icon: <Wrench className="h-8 w-8" />,
       titleKey: 'services.maintenanceTitle',
       descriptionKey: 'services.maintenanceDesc',
       type: 'maintenance'
     },
     {
-      icon: <ClipboardList className="h-6 w-6" />,
+      icon: <Gauge className="h-8 w-8" />,
       titleKey: 'services.assessmentTitle',
       descriptionKey: 'services.assessmentDesc',
       type: 'assessment'
@@ -47,7 +47,7 @@ const ServicesSection = () => {
               key={index} 
               className="bg-white p-6 rounded-lg shadow-md hover:shadow-lg transition-shadow"
             >
-              <div className="bg-primary bg-opacity-10 text-primary text-2xl p-4 rounded-full w-16 h-16 flex items-center justify-center mb-4">
+              <div className="bg-green-600 text-white p-4 rounded-full w-16 h-16 flex items-center justify-center mb-4 shadow-md">
                 {service.icon}
               </div>
               <h3 className="text-xl font-bold mb-2">
