@@ -18,7 +18,8 @@ const TechnicianProfilePage = () => {
   const { t } = useTranslation();
   const { toast } = useToast();
   const { direction } = useLanguage();
-  const { id } = useParams();
+  const params = useParams();
+  const id = params?.id || '0';
   const technicianId = parseInt(id);
 
   // Fetch technician data
@@ -159,7 +160,7 @@ const TechnicianProfilePage = () => {
                         <span className="text-7xl text-gray-400">{technician.user.name.charAt(0)}</span>
                       )}
                     </div>
-                    <div className="absolute -bottom-2 right-0 bg-yellow-500 text-xs text-neutral-800 px-3 py-1 rounded-full">
+                    <div className={`absolute -bottom-2 ${direction === 'rtl' ? 'left-0' : 'right-0'} bg-yellow-500 text-xs text-neutral-800 px-3 py-1 rounded-full`}>
                       <span>{t('technicians.certified')}</span>
                     </div>
                   </div>
@@ -236,14 +237,14 @@ const TechnicianProfilePage = () => {
                     <div className="bg-neutral-100 p-6 rounded-lg">
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
                         <div className="flex items-start">
-                          <Phone className="text-primary mt-1 h-5 w-5 mr-3" />
+                          <Phone className={`text-primary mt-1 h-5 w-5 ${direction === 'rtl' ? 'ml-3' : 'mr-3'}`} />
                           <div>
                             <h3 className="font-bold mb-1">{t('contact.phoneTitle')}</h3>
                             <p>{technician.user.phone}</p>
                           </div>
                         </div>
                         <div className="flex items-start">
-                          <Mail className="text-primary mt-1 h-5 w-5 mr-3" />
+                          <Mail className={`text-primary mt-1 h-5 w-5 ${direction === 'rtl' ? 'ml-3' : 'mr-3'}`} />
                           <div>
                             <h3 className="font-bold mb-1">{t('contact.emailTitle')}</h3>
                             <p>{technician.user.email}</p>
@@ -251,13 +252,11 @@ const TechnicianProfilePage = () => {
                         </div>
                       </div>
                       <div className="mt-6">
-                        <Button
-                          as={Link}
-                          href={`/request-service?technician=${technician.id}`}
-                          className="bg-primary text-white"
-                        >
-                          {t('services.requestService')}
-                        </Button>
+                        <Link href={`/request-service?technician=${technician.id}`}>
+                          <Button className="bg-primary text-white">
+                            {t('services.requestService')}
+                          </Button>
+                        </Link>
                       </div>
                     </div>
                   </TabsContent>

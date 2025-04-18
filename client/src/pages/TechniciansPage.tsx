@@ -164,7 +164,7 @@ const TechniciansPage = () => {
                         </span>
                       )}
                     </div>
-                    <div className="absolute bottom-0 right-1/2 transform translate-x-12 bg-yellow-500 text-xs text-neutral-800 px-2 py-1 rounded-full">
+                    <div className={`absolute bottom-0 ${direction === 'rtl' ? 'left-1/2 -translate-x-12' : 'right-1/2 translate-x-12'} transform bg-yellow-500 text-xs text-neutral-800 px-2 py-1 rounded-full`}>
                       <span>{t('technicians.certified')}</span>
                     </div>
                   </div>
@@ -175,7 +175,7 @@ const TechniciansPage = () => {
                       <div className="flex text-accent">
                         {renderStars(technician.rating || 0)}
                       </div>
-                      <span className="text-sm text-neutral-800 ml-2">
+                      <span className={`text-sm text-neutral-800 ${direction === 'rtl' ? 'mr-2' : 'ml-2'}`}>
                         {technician.rating ? `${technician.rating.toFixed(1)} (${technician.reviewCount} ${t('technicians.reviews')})` : 'New'}
                       </span>
                     </div>
