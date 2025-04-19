@@ -3,6 +3,12 @@ import { initReactI18next } from 'react-i18next';
 
 // English translations
 const enTranslations = {
+  serviceTypes: {
+    installation: 'Solar Panel Installation',
+    maintenance: 'Maintenance & Repair',
+    assessment: 'System Assessment',
+    consultation: 'Solar Consultation',
+  },
   serviceProgress: {
     pending: 'Request Submitted',
     assigned: 'Technician Assigned',
