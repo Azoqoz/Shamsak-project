@@ -1,4 +1,4 @@
-import { Switch, Route } from "wouter";
+import { Switch, Route, RouteComponentProps } from "wouter";
 import { QueryClientProvider } from "@tanstack/react-query";
 import { queryClient } from "./lib/queryClient";
 import { Toaster } from "@/components/ui/toaster";
@@ -15,8 +15,16 @@ import AdminDashboardPage from "@/pages/AdminDashboardPage";
 import TechnicianProfilePage from "@/pages/TechnicianProfilePage";
 import CheckoutPage from "@/pages/CheckoutPage";
 import TechnicianMapPage from "@/pages/TechnicianMapPage";
+import AboutPage from "@/pages/AboutPage";
+import FAQPage from "@/pages/FAQPage";
+import PrivacyPolicyPage from "@/pages/PrivacyPolicyPage";
+import TermsPage from "@/pages/TermsPage";
+import BecomeTechnicianPage from "@/pages/BecomeTechnicianPage";
 import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
+
+// Wrapper component for ContactPage
+const ContactPageWrapper = (_props: RouteComponentProps) => <ContactPage />;
 
 function Router() {
   return (
@@ -34,6 +42,11 @@ function Router() {
           <Route path="/register" component={RegisterPage} />
           <Route path="/admin" component={AdminDashboardPage} />
           <Route path="/checkout/:id" component={CheckoutPage} />
+          <Route path="/about" component={AboutPage} />
+          <Route path="/faq" component={FAQPage} />
+          <Route path="/privacy" component={PrivacyPolicyPage} />
+          <Route path="/terms" component={TermsPage} />
+          <Route path="/become-technician" component={BecomeTechnicianPage} />
           <Route component={NotFound} />
         </Switch>
       </main>
