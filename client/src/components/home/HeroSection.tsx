@@ -7,9 +7,9 @@ const HeroSection = () => {
   const { direction } = useLanguage();
 
   return (
-    <section id="home" className="relative bg-gradient-to-r from-primary to-secondary text-white py-16 md:py-28 overflow-hidden">
+    <section id="home" className="relative bg-eco-gradient text-white py-16 md:py-28 overflow-hidden">
       <div className="absolute inset-0 overflow-hidden">
-        <div className="absolute inset-0 bg-black bg-opacity-50"></div>
+        <div className="absolute inset-0 bg-black bg-opacity-30"></div>
         <img
           src="https://images.unsplash.com/photo-1611365892117-bede7a4f1651?auto=format&fit=crop&w=1200&q=80"
           alt="Solar panels on rooftop"
@@ -35,13 +35,13 @@ const HeroSection = () => {
               <div className={`flex flex-col sm:flex-row space-y-4 sm:space-y-0 sm:space-x-4 ${direction === 'rtl' ? 'sm:space-x-reverse' : ''}`}>
                 <Link 
                   href="/request-service" 
-                  className="bg-yellow-500 text-neutral-800 font-bold py-4 px-8 rounded-md text-center hover:bg-yellow-400 transition-colors hover:shadow-lg transform hover:-translate-y-1 transition-transform"
+                  className="bg-sunny-yellow text-neutral-900 font-bold py-4 px-8 rounded-md text-center hover:bg-opacity-90 transition-all hover:shadow-lg transform hover:-translate-y-1"
                 >
                   {t('hero.exploreServices')}
                 </Link>
                 <Link 
                   href="/technicians" 
-                  className="bg-white text-primary font-bold py-4 px-8 rounded-md text-center hover:bg-gray-100 transition-colors hover:shadow-lg transform hover:-translate-y-1 transition-transform"
+                  className="bg-eco-green text-white font-bold py-4 px-8 rounded-md text-center hover:bg-opacity-90 transition-all hover:shadow-lg transform hover:-translate-y-1"
                 >
                   {t('hero.findTechnicians')}
                 </Link>
@@ -62,7 +62,7 @@ const HeroSection = () => {
                   }}
                 />
                 <div className="p-4">
-                  <h3 className="text-primary text-xl font-bold">{t('hero.sustainableEnergy')}</h3>
+                  <h3 className="text-eco-green text-xl font-bold">{t('hero.sustainableEnergy')}</h3>
                   <p className="text-gray-800">{t('hero.solarAdvantage')}</p>
                 </div>
               </div>

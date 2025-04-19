@@ -30,13 +30,13 @@ const ServicesSection = () => {
   ];
 
   return (
-    <section id="services" className="py-16 bg-neutral-100">
+    <section id="services" className="py-16 bg-white">
       <div className="container mx-auto px-4">
         <div className="text-center mb-12">
           <h2 className="text-3xl font-bold text-neutral-800 mb-4">
             {t('services.title')}
           </h2>
-          <p className="text-lg text-neutral-800 max-w-2xl mx-auto">
+          <p className="text-lg text-neutral-600 max-w-2xl mx-auto">
             {t('services.subtitle')}
           </p>
         </div>
@@ -48,23 +48,23 @@ const ServicesSection = () => {
               className="bg-white p-6 rounded-lg shadow-md hover:shadow-lg transition-all hover:transform hover:-translate-y-1 group"
             >
               <div className="relative mb-6">
-                <div className="absolute inset-0 bg-green-200 rounded-lg opacity-50 transform group-hover:scale-110 transition-transform"></div>
-                <div className="bg-gradient-to-r from-green-500 to-green-600 text-white p-5 rounded-xl w-20 h-20 flex items-center justify-center shadow-md relative z-10 transform group-hover:rotate-3 transition-transform">
+                <div className="absolute inset-0 bg-sunny-yellow bg-opacity-20 rounded-lg transform group-hover:scale-110 transition-transform"></div>
+                <div className="bg-eco-green text-white p-5 rounded-xl w-20 h-20 flex items-center justify-center shadow-md relative z-10 transform group-hover:rotate-3 transition-transform">
                   {service.icon}
                 </div>
               </div>
-              <h3 className="text-2xl font-bold mb-3 text-gray-800 group-hover:text-green-600 transition-colors">
+              <h3 className="text-2xl font-bold mb-3 text-gray-800 group-hover:text-eco-green transition-colors">
                 {t(service.titleKey)}
               </h3>
               <div className="bg-gray-50 p-4 rounded-md my-4 min-h-[100px] flex items-center">
-                <p className="text-neutral-700">
+                <p className="text-neutral-600">
                   {t(service.descriptionKey)}
                 </p>
               </div>
               <div className="mt-4 flex justify-end">
                 <Link 
                   href={`/request-service?service=${service.type}`} 
-                  className="bg-primary text-white px-5 py-2 rounded-md inline-flex items-center hover:bg-opacity-90 transition-colors group-hover:shadow-md"
+                  className="bg-sunny-yellow text-neutral-900 font-medium px-5 py-2 rounded-md inline-flex items-center hover:bg-opacity-90 transition-all group-hover:shadow-md"
                 >
                   {t('services.requestService')}
                   <ArrowRight className={`${direction === 'rtl' ? 'mr-2 transform rotate-180' : 'ml-2'} h-4 w-4 transform group-hover:translate-x-1 transition-transform`} />

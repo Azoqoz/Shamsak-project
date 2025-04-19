@@ -18,15 +18,15 @@ const TechniciansSection = () => {
     const hasHalfStar = rating % 1 >= 0.5;
 
     for (let i = 0; i < fullStars; i++) {
-      stars.push(<StarIcon key={`full-${i}`} className="fill-yellow-500 text-yellow-500 h-4 w-4" />);
+      stars.push(<StarIcon key={`full-${i}`} className="fill-sunny-yellow text-sunny-yellow h-4 w-4" />);
     }
 
     if (hasHalfStar) {
       stars.push(
         <div key="half" className="relative">
-          <StarIcon className="text-yellow-500 h-4 w-4" />
+          <StarIcon className="text-sunny-yellow h-4 w-4" />
           <div className="absolute top-0 left-0 overflow-hidden w-1/2">
-            <StarIcon className="fill-yellow-500 text-yellow-500 h-4 w-4" />
+            <StarIcon className="fill-sunny-yellow text-sunny-yellow h-4 w-4" />
           </div>
         </div>
       );
@@ -34,20 +34,20 @@ const TechniciansSection = () => {
 
     const emptyStars = 5 - fullStars - (hasHalfStar ? 1 : 0);
     for (let i = 0; i < emptyStars; i++) {
-      stars.push(<StarIcon key={`empty-${i}`} className="text-yellow-500 h-4 w-4" />);
+      stars.push(<StarIcon key={`empty-${i}`} className="text-sunny-yellow h-4 w-4" />);
     }
 
     return stars;
   };
 
   return (
-    <section id="technicians" className="py-16 bg-neutral-100">
+    <section id="technicians" className="py-16 bg-gray-50">
       <div className="container mx-auto px-4">
         <div className="text-center mb-12">
           <h2 className="text-3xl font-bold text-neutral-800 mb-4">
             {t('technicians.title')}
           </h2>
-          <p className="text-lg text-neutral-800 max-w-2xl mx-auto">
+          <p className="text-lg text-neutral-600 max-w-2xl mx-auto">
             {t('technicians.subtitle')}
           </p>
         </div>
