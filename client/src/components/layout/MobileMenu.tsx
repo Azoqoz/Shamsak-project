@@ -109,18 +109,7 @@ const MobileMenu = ({ isOpen, onClose }: MobileMenuProps) => {
               </li>
             )}
             
-            {user.role === 'technician' && (
-              <li>
-                <Link
-                  href="/technician-dashboard"
-                  className="flex items-center py-2 text-neutral-800 hover:text-primary transition-colors"
-                  onClick={handleLinkClick}
-                >
-                  <Settings className="h-4 w-4 mr-2" />
-                  <span>{t('technician.dashboard')}</span>
-                </Link>
-              </li>
-            )}
+
             
             <li>
               <button

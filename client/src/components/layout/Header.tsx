@@ -134,14 +134,7 @@ const Header = () => {
                       </Link>
                     </DropdownMenuItem>
                   )}
-                  {user.role === 'technician' && (
-                    <DropdownMenuItem asChild>
-                      <Link href="/technician-dashboard" className="cursor-pointer flex w-full items-center">
-                        <Settings className={`mr-2 h-4 w-4 ${direction === 'rtl' ? 'ml-2 mr-0' : 'mr-2'}`} />
-                        <span>{t('technician.dashboard')}</span>
-                      </Link>
-                    </DropdownMenuItem>
-                  )}
+
                   <DropdownMenuSeparator />
                   <DropdownMenuItem 
                     onClick={() => logout()}
