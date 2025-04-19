@@ -96,6 +96,23 @@ export const insertContactSchema = createInsertSchema(contacts).omit({
   createdAt: true,
 });
 
+// Reviews schema
+export const reviews = pgTable("reviews", {
+  id: serial("id").primaryKey(),
+  technicianId: integer("technician_id").notNull().references(() => technicians.id),
+  userId: integer("user_id").references(() => users.id),
+  userName: text("user_name").notNull(),
+  serviceType: text("service_type").notNull(),
+  rating: integer("rating").notNull(),
+  comment: text("comment").notNull(),
+  date: timestamp("date").defaultNow(),
+});
+
+export const insertReviewSchema = createInsertSchema(reviews).omit({
+  id: true,
+  date: true,
+});
+
 // Export types
 export type User = typeof users.$inferSelect;
 export type InsertUser = z.infer<typeof insertUserSchema>;
@@ -108,3 +125,6 @@ export type InsertServiceRequest = z.infer<typeof insertServiceRequestSchema>;
 
 export type Contact = typeof contacts.$inferSelect;
 export type InsertContact = z.infer<typeof insertContactSchema>;
+
+export type Review = typeof reviews.$inferSelect;
+export type InsertReview = z.infer<typeof insertReviewSchema>;
