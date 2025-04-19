@@ -28,6 +28,8 @@ const enTranslations = {
     subtitle: 'Connect with certified solar technicians for installation and maintenance of solar panels for your home or business.',
     exploreServices: 'Explore Services',
     findTechnicians: 'Find Technicians',
+    sustainableEnergy: 'Sustainable Energy',
+    solarAdvantage: 'Harness the power of the sun with professional solar solutions',
   },
   features: {
     title: 'Why Choose Shamsak?',
@@ -97,6 +99,7 @@ const enTranslations = {
     certifications: 'Certifications',
     experience: 'Experience',
     bio: 'Bio',
+    noBio: 'No bio information available',
     contact: 'Contact Information',
     availability: 'Availability Status',
     available: 'Available',
@@ -245,6 +248,8 @@ const arTranslations = {
     subtitle: 'تواصل مع فنيي الطاقة الشمسية المعتمدين لتركيب وصيانة الألواح الشمسية لمنزلك أو عملك.',
     exploreServices: 'استكشف الخدمات',
     findTechnicians: 'ابحث عن فنيين',
+    sustainableEnergy: 'الطاقة المستدامة',
+    solarAdvantage: 'استفد من قوة الشمس مع حلول الطاقة الشمسية الاحترافية',
   },
   features: {
     title: 'لماذا تختار شمسك؟',
@@ -314,6 +319,7 @@ const arTranslations = {
     certifications: 'الشهادات',
     experience: 'الخبرة',
     bio: 'نبذة عن الفني',
+    noBio: 'لا توجد معلومات سيرة ذاتية متاحة',
     contact: 'معلومات الاتصال',
     availability: 'حالة التوفر',
     available: 'متاح',
