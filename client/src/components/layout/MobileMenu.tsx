@@ -1,5 +1,8 @@
 import { Link, useLocation } from 'wouter';
 import { useTranslation } from 'react-i18next';
+import { useAuth } from '@/contexts/AuthContext';
+import { Separator } from '@/components/ui/separator';
+import { User, Settings, LogOut } from 'lucide-react';
 
 interface MobileMenuProps {
   isOpen: boolean;
@@ -9,6 +12,7 @@ interface MobileMenuProps {
 const MobileMenu = ({ isOpen, onClose }: MobileMenuProps) => {
   const { t } = useTranslation();
   const [location] = useLocation();
+  const { user, logout } = useAuth();
 
   if (!isOpen) return null;
 
@@ -69,6 +73,87 @@ const MobileMenu = ({ isOpen, onClose }: MobileMenuProps) => {
           </Link>
         </li>
       </ul>
+      
+      <Separator className="my-4" />
+      
+      {user ? (
+        <div className="space-y-3">
+          {user.name && (
+            <div className="text-sm font-medium">
+              {t('profile.welcome')}, {user.name}
+            </div>
+          )}
+          
+          <ul className="space-y-2">
+            <li>
+              <Link
+                href="/profile"
+                className="flex items-center py-2 text-neutral-800 hover:text-primary transition-colors"
+                onClick={handleLinkClick}
+              >
+                <User className="h-4 w-4 mr-2" />
+                <span>{t('profile.myProfile')}</span>
+              </Link>
+            </li>
+            
+            {user.role === 'admin' && (
+              <li>
+                <Link
+                  href="/admin"
+                  className="flex items-center py-2 text-neutral-800 hover:text-primary transition-colors"
+                  onClick={handleLinkClick}
+                >
+                  <Settings className="h-4 w-4 mr-2" />
+                  <span>{t('admin.dashboard')}</span>
+                </Link>
+              </li>
+            )}
+            
+            {user.role === 'technician' && (
+              <li>
+                <Link
+                  href="/technician-dashboard"
+                  className="flex items-center py-2 text-neutral-800 hover:text-primary transition-colors"
+                  onClick={handleLinkClick}
+                >
+                  <Settings className="h-4 w-4 mr-2" />
+                  <span>{t('technician.dashboard')}</span>
+                </Link>
+              </li>
+            )}
+            
+            <li>
+              <button
+                onClick={() => {
+                  logout();
+                  handleLinkClick();
+                }}
+                className="flex items-center py-2 text-red-500 hover:text-red-600 transition-colors w-full text-left"
+              >
+                <LogOut className="h-4 w-4 mr-2" />
+                <span>{t('common.logout')}</span>
+              </button>
+            </li>
+          </ul>
+        </div>
+      ) : (
+        <div className="flex flex-col space-y-2">
+          <Link
+            href="/login"
+            className="py-2 text-primary hover:text-primary/80 transition-colors"
+            onClick={handleLinkClick}
+          >
+            {t('common.login')}
+          </Link>
+          <Link
+            href="/register"
+            className="py-2 text-primary hover:text-primary/80 transition-colors"
+            onClick={handleLinkClick}
+          >
+            {t('common.register')}
+          </Link>
+        </div>
+      )}
     </div>
   );
 };

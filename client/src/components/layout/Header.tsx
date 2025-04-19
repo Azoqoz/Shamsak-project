@@ -2,15 +2,26 @@ import { useState } from 'react';
 import { Link, useLocation } from 'wouter';
 import { useTranslation } from 'react-i18next';
 import { useLanguage } from '@/contexts/LanguageContext';
+import { useAuth } from '@/contexts/AuthContext';
 import { Button } from '@/components/ui/button';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import MobileMenu from './MobileMenu';
-import { Sun } from 'lucide-react';
+import { Sun, User, Settings, LogOut } from 'lucide-react';
 
 const Header = () => {
   const [isOpen, setIsOpen] = useState(false);
   const { t } = useTranslation();
-  const { toggleLanguage } = useLanguage();
+  const { toggleLanguage, direction } = useLanguage();
   const [location] = useLocation();
+  const { user, logout } = useAuth();
 
   const handleMobileMenuToggle = () => {
     setIsOpen(!isOpen);
@@ -81,13 +92,78 @@ const Header = () => {
           <div className="flex items-center space-x-4 rtl:space-x-reverse">
             <Button 
               onClick={toggleLanguage} 
-              className="bg-green-600 hover:bg-green-700 text-white px-3 py-1"
+              className="bg-primary hover:bg-primary/90 text-white px-3 py-1"
             >
               {t('common.language')}
             </Button>
-            <Link href="/login" className="text-primary hover:underline">
-              {t('common.login')}
-            </Link>
+            
+            {user ? (
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button variant="ghost" className="relative h-10 w-10 rounded-full">
+                    <Avatar className="h-9 w-9">
+                      {user.profileImage ? (
+                        <AvatarImage src={user.profileImage} alt={user.name} />
+                      ) : (
+                        <AvatarFallback className="bg-primary/10">
+                          <User className="h-5 w-5 text-primary" />
+                        </AvatarFallback>
+                      )}
+                    </Avatar>
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent className="w-56" align={direction === 'rtl' ? 'start' : 'end'}>
+                  <DropdownMenuLabel>
+                    <div className="flex flex-col space-y-1">
+                      <p className="text-sm font-medium leading-none">{user.name}</p>
+                      <p className="text-xs leading-none text-muted-foreground">{user.email}</p>
+                    </div>
+                  </DropdownMenuLabel>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem asChild>
+                    <Link href="/profile" className="cursor-pointer flex w-full items-center">
+                      <User className={`mr-2 h-4 w-4 ${direction === 'rtl' ? 'ml-2 mr-0' : 'mr-2'}`} />
+                      <span>{t('profile.myProfile')}</span>
+                    </Link>
+                  </DropdownMenuItem>
+                  {user.role === 'admin' && (
+                    <DropdownMenuItem asChild>
+                      <Link href="/admin" className="cursor-pointer flex w-full items-center">
+                        <Settings className={`mr-2 h-4 w-4 ${direction === 'rtl' ? 'ml-2 mr-0' : 'mr-2'}`} />
+                        <span>{t('admin.dashboard')}</span>
+                      </Link>
+                    </DropdownMenuItem>
+                  )}
+                  {user.role === 'technician' && (
+                    <DropdownMenuItem asChild>
+                      <Link href="/technician-dashboard" className="cursor-pointer flex w-full items-center">
+                        <Settings className={`mr-2 h-4 w-4 ${direction === 'rtl' ? 'ml-2 mr-0' : 'mr-2'}`} />
+                        <span>{t('technician.dashboard')}</span>
+                      </Link>
+                    </DropdownMenuItem>
+                  )}
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem 
+                    onClick={() => logout()}
+                    className="cursor-pointer text-red-500 focus:text-red-500"
+                  >
+                    <LogOut className={`mr-2 h-4 w-4 ${direction === 'rtl' ? 'ml-2 mr-0' : 'mr-2'}`} />
+                    <span>{t('common.logout')}</span>
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+            ) : (
+              <div className="flex items-center space-x-2 rtl:space-x-reverse">
+                <Link href="/login" className="text-primary hover:underline">
+                  {t('common.login')}
+                </Link>
+                <span className="text-neutral-300">|</span>
+                <Link href="/register" className="text-primary hover:underline">
+                  {t('common.register')}
+                </Link>
+              </div>
+            )}
+            
             <button 
               className="md:hidden text-neutral-800" 
               onClick={handleMobileMenuToggle}
