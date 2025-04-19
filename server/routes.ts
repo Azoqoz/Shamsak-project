@@ -22,12 +22,13 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Set up session middleware
   app.use(session({
     secret: process.env.SESSION_SECRET || 'shamsak-secret-key',
-    resave: false,
-    saveUninitialized: false,
+    resave: true,
+    saveUninitialized: true,
     cookie: {
       secure: process.env.NODE_ENV === 'production',
       httpOnly: true,
-      maxAge: 24 * 60 * 60 * 1000 // 24 hours
+      maxAge: 24 * 60 * 60 * 1000, // 24 hours
+      sameSite: 'lax'
     }
   }));
   

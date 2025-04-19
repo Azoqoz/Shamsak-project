@@ -27,6 +27,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     const fetchCurrentUser = async () => {
       try {
         setLoading(true);
+        setError(null);
         const response = await apiRequest('GET', '/api/auth/user');
         
         if (response.ok) {
@@ -49,6 +50,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
   const login = async (username: string, password: string): Promise<User> => {
     try {
+      setError(null);
       const response = await apiRequest('POST', '/api/auth/login', { username, password });
       
       if (!response.ok) {
@@ -58,6 +60,20 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       
       const userData = await response.json();
       setUser(userData);
+      
+      // After successful login, re-fetch user data to ensure session is working
+      setTimeout(async () => {
+        try {
+          const userCheckResponse = await apiRequest('GET', '/api/auth/user');
+          if (userCheckResponse.ok) {
+            const updatedUserData = await userCheckResponse.json();
+            setUser(updatedUserData);
+          }
+        } catch (e) {
+          console.error('Error validating session after login:', e);
+        }
+      }, 100);
+      
       return userData;
     } catch (error) {
       if (error instanceof Error) {
