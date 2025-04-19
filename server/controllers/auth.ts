@@ -4,6 +4,46 @@ import { IStorage } from '../storage';
 import { insertUserSchema } from '@shared/schema';
 
 export function registerAuthRoutes(app: Express, prefix: string, storage: IStorage) {
+  // Logout endpoint
+  app.post(`${prefix}/auth/logout`, async (req: Request, res: Response) => {
+    try {
+      // Clear the session
+      req.session.destroy((err) => {
+        if (err) {
+          console.error('Error destroying session:', err);
+          return res.status(500).json({ message: 'Error during logout' });
+        }
+        res.status(200).json({ message: 'Logged out successfully' });
+      });
+    } catch (error) {
+      console.error('Error during logout:', error);
+      res.status(500).json({ message: 'Error during logout' });
+    }
+  });
+  // Get current user endpoint
+  app.get(`${prefix}/auth/user`, async (req: Request, res: Response) => {
+    try {
+      // Check if there's a userId in the session (this would be set after login in a real app)
+      // In a real application, we would use passport or a similar library to handle sessions
+      const userId = req.session?.userId;
+      
+      if (!userId) {
+        return res.status(401).json({ message: 'Not authenticated' });
+      }
+      
+      const user = await storage.getUser(userId);
+      if (!user) {
+        return res.status(404).json({ message: 'User not found' });
+      }
+      
+      // Return user info (excluding password)
+      const { password, ...userWithoutPassword } = user;
+      res.json(userWithoutPassword);
+    } catch (error) {
+      console.error('Error getting current user:', error);
+      res.status(500).json({ message: 'Error retrieving user data' });
+    }
+  });
   // Login endpoint
   app.post(`${prefix}/auth/login`, async (req: Request, res: Response) => {
     try {
@@ -35,6 +75,9 @@ export function registerAuthRoutes(app: Express, prefix: string, storage: IStora
         return res.status(401).json({ message: 'Invalid credentials' });
       }
 
+      // Store user ID in session
+      req.session.userId = user.id;
+      
       // Return user info (excluding password)
       const { password: _, ...userWithoutPassword } = user;
       res.json(userWithoutPassword);
@@ -74,6 +117,9 @@ export function registerAuthRoutes(app: Express, prefix: string, storage: IStora
 
       // Create user
       const newUser = await storage.createUser(userData);
+      
+      // Store user ID in session
+      req.session.userId = newUser.id;
 
       // Return user info (excluding password)
       const { password, ...userWithoutPassword } = newUser;
