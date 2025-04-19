@@ -200,7 +200,7 @@ const TechnicianDashboard = ({ technician }: { technician: Technician }) => {
     error: serviceRequestsError,
     refetch: refetchServiceRequests
   } = useQuery<ServiceRequest[]>({
-    queryKey: ['/api/service-requests/technician', technician.id],
+    queryKey: [`/api/service-requests/technician/${technician.id}`],
     retry: 2,
     retryDelay: 1000
   });
@@ -321,7 +321,11 @@ const TechnicianDashboard = ({ technician }: { technician: Technician }) => {
                   <XCircle className="h-8 w-8 mx-auto mb-4" />
                   <p>{t('common.error')}</p>
                   <p className="text-sm mt-2 max-w-md mx-auto">
-                    {serviceRequestsError instanceof Error ? serviceRequestsError.message : t('serviceRequests.fetchError')}
+                    {serviceRequestsError instanceof Error 
+                      ? serviceRequestsError.message.includes("Invalid service request ID")
+                        ? "No service requests found for your account. You'll see requests here once you're assigned to jobs."
+                        : serviceRequestsError.message
+                      : t('serviceRequests.fetchError')}
                   </p>
                 </div>
                 <Button 

@@ -199,7 +199,8 @@ export class MemStorage implements IStorage {
         propertyType: propertyTypes[i % propertyTypes.length],
         additionalDetails: `Details for request ${i + 1}`,
         status: i < 2 ? "pending" : i < 4 ? "assigned" : "completed",
-        technicianId: i < 2 ? null : (i % 3) + 1,
+        // Ensure Technician ID 3 (Ahmed) has at least one service request
+        technicianId: i === 4 ? 3 : (i < 2 ? null : (i % 3) + 1),
         price: i < 2 ? null : 300 + (i * 50), // Sample price
         isPaid: i === 4, // Only the completed one is paid
         paymentIntentId: i === 4 ? `pi_sample_${i}` : null,
@@ -207,6 +208,27 @@ export class MemStorage implements IStorage {
       };
       this.serviceRequests.set(serviceRequest.id, serviceRequest);
     }
+    
+    // Add one more service request specifically for Ahmed (technician ID 3)
+    const ahmedServiceRequest: ServiceRequest = {
+      id: this.currentIds.serviceRequest++,
+      serviceType: "installation",
+      name: "Mohammed Al-Qahtani",
+      email: "m.qahtani@example.com",
+      phone: "+966123456789",
+      city: "Riyadh",
+      latitude: "24.774265",
+      longitude: "46.738586",
+      propertyType: "residential",
+      additionalDetails: "Need help with new solar panel installation",
+      status: "assigned", // assigned to Ahmed
+      technicianId: 3, // Ahmed's technician ID
+      price: 2500,
+      isPaid: false,
+      paymentIntentId: null,
+      createdAt: new Date(Date.now() - 2 * 86400000) // 2 days ago
+    };
+    this.serviceRequests.set(ahmedServiceRequest.id, ahmedServiceRequest);
 
     // Create some contact messages
     for (let i = 0; i < 3; i++) {
