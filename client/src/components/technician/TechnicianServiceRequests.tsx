@@ -32,7 +32,8 @@ import {
   Home, 
   CheckCircle2, 
   Loader2,
-  AlertTriangle
+  AlertTriangle,
+  Phone
 } from 'lucide-react';
 import { ServiceRequestProgress } from '@/components/service-requests/ServiceRequestProgress';
 
@@ -51,6 +52,14 @@ export function TechnicianServiceRequests({ technician }: TechnicianServiceReque
   const { data: serviceRequests, isLoading, error } = useQuery<ServiceRequest[]>({
     queryKey: [`/api/service-requests/technician/${technician.id}`],
   });
+  
+  // Function to fetch user details for each service request
+  const useUserDetails = (userId: number) => {
+    return useQuery<User>({
+      queryKey: [`/api/auth/profile/${userId}`],
+      enabled: !!userId, // Only fetch if we have a userId
+    });
+  };
   
   // Mutation to update service request status
   const updateStatusMutation = useMutation({
@@ -149,113 +158,130 @@ export function TechnicianServiceRequests({ technician }: TechnicianServiceReque
   };
 
   // Render each service request card
-  const renderServiceCard = (request: ServiceRequest) => (
-    <Card key={request.id} className="mb-4">
-      <CardHeader className="pb-2">
-        <div className="flex justify-between items-start">
-          <CardTitle className="text-lg">{request.title}</CardTitle>
-          <Badge className={getStatusColor(request.status)}>
-            <div className="flex items-center">
-              {getStatusIcon(request.status)}
-              {t(`technician.status${request.status.charAt(0).toUpperCase() + request.status.slice(1)}`)}
-            </div>
-          </Badge>
-        </div>
-        <CardDescription>
-          {t('technician.date')}: {formatDate(request.createdAt)}
-        </CardDescription>
-      </CardHeader>
-      
-      <CardContent>
-        <div className="space-y-4">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {/* Client info */}
-            <div>
-              <h4 className="text-sm font-medium mb-2">{t('technician.clientDetails')}</h4>
-              <div className="space-y-2 text-sm">
-                <div className="flex items-center">
-                  <UserIcon className="h-4 w-4 mr-2 text-neutral-500" />
-                  <span>User #{request.userId}</span>
+  const renderServiceCard = (request: ServiceRequest) => {
+    // Fetch customer details
+    const { data: customerData, isLoading: customerLoading } = useUserDetails(request.userId);
+    
+    return (
+      <Card key={request.id} className="mb-4">
+        <CardHeader className="pb-2">
+          <div className="flex justify-between items-start">
+            <CardTitle className="text-lg">{request.title}</CardTitle>
+            <Badge className={getStatusColor(request.status)}>
+              <div className="flex items-center">
+                {getStatusIcon(request.status)}
+                {t(`technician.status${request.status.charAt(0).toUpperCase() + request.status.slice(1)}`)}
+              </div>
+            </Badge>
+          </div>
+          <CardDescription>
+            {t('technician.date')}: {formatDate(request.createdAt)}
+          </CardDescription>
+        </CardHeader>
+        
+        <CardContent>
+          <div className="space-y-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {/* Client info */}
+              <div>
+                <h4 className="text-sm font-medium mb-2">{t('technician.clientDetails')}</h4>
+                <div className="space-y-2 text-sm">
+                  <div className="flex items-center">
+                    <UserIcon className="h-4 w-4 mr-2 text-neutral-500" />
+                    {customerLoading ? (
+                      <span className="flex items-center"><Loader2 className="h-3 w-3 mr-1 animate-spin" /> {t('common.loading')}</span>
+                    ) : customerData ? (
+                      <span>{customerData.name}</span>
+                    ) : (
+                      <span>User #{request.userId}</span>
+                    )}
+                  </div>
+                  {customerData && customerData.phone && (
+                    <div className="flex items-center">
+                      <Phone className="h-4 w-4 mr-2 text-neutral-500" />
+                      <span>{customerData.phone}</span>
+                    </div>
+                  )}
+                  <div className="flex items-center">
+                    <MapPin className="h-4 w-4 mr-2 text-neutral-500" />
+                    <span>{request.city}, {request.address}</span>
+                  </div>
                 </div>
-                <div className="flex items-center">
-                  <MapPin className="h-4 w-4 mr-2 text-neutral-500" />
-                  <span>{request.city}, {request.address}</span>
+              </div>
+              
+              {/* Job info */}
+              <div>
+                <h4 className="text-sm font-medium mb-2">{t('technician.jobDetails')}</h4>
+                <div className="space-y-2 text-sm">
+                  <div className="flex items-center">
+                    <Wrench className="h-4 w-4 mr-2 text-neutral-500" />
+                    <span>{t(`serviceTypes.${request.serviceType}`)}</span>
+                  </div>
+                  <div className="flex items-center">
+                    <Home className="h-4 w-4 mr-2 text-neutral-500" />
+                    <span>{t(`serviceForm.${request.propertyType}`)}</span>
+                  </div>
+                  {request.scheduledDate && (
+                    <div className="flex items-center">
+                      <Calendar className="h-4 w-4 mr-2 text-neutral-500" />
+                      <span>{formatDate(request.scheduledDate)}</span>
+                    </div>
+                  )}
                 </div>
               </div>
             </div>
             
-            {/* Job info */}
-            <div>
-              <h4 className="text-sm font-medium mb-2">{t('technician.jobDetails')}</h4>
-              <div className="space-y-2 text-sm">
-                <div className="flex items-center">
-                  <Wrench className="h-4 w-4 mr-2 text-neutral-500" />
-                  <span>{t(`serviceTypes.${request.serviceType}`)}</span>
-                </div>
-                <div className="flex items-center">
-                  <Home className="h-4 w-4 mr-2 text-neutral-500" />
-                  <span>{t(`serviceForm.${request.propertyType}`)}</span>
-                </div>
-                {request.scheduledDate && (
-                  <div className="flex items-center">
-                    <Calendar className="h-4 w-4 mr-2 text-neutral-500" />
-                    <span>{formatDate(request.scheduledDate)}</span>
-                  </div>
-                )}
-              </div>
-            </div>
+            <Separator />
+            
+            {/* Progress tracker */}
+            <ServiceRequestProgress status={request.status} />
           </div>
-          
-          <Separator />
-          
-          {/* Progress tracker */}
-          <ServiceRequestProgress status={request.status} />
-        </div>
-      </CardContent>
-      
-      <CardFooter className="flex justify-end pt-0">
-        {request.status === 'pending' && (
-          <Button 
-            variant="default"
-            onClick={() => handleStatusUpdate(request.id, 'assigned')}
-            disabled={updatingRequestId === request.id}
-          >
-            {updatingRequestId === request.id ? (
-              <><Loader2 className="mr-2 h-4 w-4 animate-spin" /> {t('common.loading')}</>
-            ) : (
-              <><UserIcon className="mr-2 h-4 w-4" /> {t('technician.acceptRequest')}</>
-            )}
-          </Button>
-        )}
-        {request.status === 'assigned' && (
-          <Button 
-            variant="default"
-            onClick={() => handleStatusUpdate(request.id, 'in_progress')}
-            disabled={updatingRequestId === request.id}
-          >
-            {updatingRequestId === request.id ? (
-              <><Loader2 className="mr-2 h-4 w-4 animate-spin" /> {t('common.loading')}</>
-            ) : (
-              <><Wrench className="mr-2 h-4 w-4" /> {t('technician.startJob')}</>
-            )}
-          </Button>
-        )}
-        {request.status === 'in_progress' && (
-          <Button 
-            variant="default"
-            onClick={() => handleStatusUpdate(request.id, 'completed')}
-            disabled={updatingRequestId === request.id}
-          >
-            {updatingRequestId === request.id ? (
-              <><Loader2 className="mr-2 h-4 w-4 animate-spin" /> {t('common.loading')}</>
-            ) : (
-              <><CheckCircle2 className="mr-2 h-4 w-4" /> {t('technician.completeJob')}</>
-            )}
-          </Button>
-        )}
-      </CardFooter>
-    </Card>
-  );
+        </CardContent>
+        
+        <CardFooter className="flex justify-end pt-0">
+          {request.status === 'pending' && (
+            <Button 
+              variant="default"
+              onClick={() => handleStatusUpdate(request.id, 'assigned')}
+              disabled={updatingRequestId === request.id}
+            >
+              {updatingRequestId === request.id ? (
+                <><Loader2 className="mr-2 h-4 w-4 animate-spin" /> {t('common.loading')}</>
+              ) : (
+                <><UserIcon className="mr-2 h-4 w-4" /> {t('technician.acceptRequest')}</>
+              )}
+            </Button>
+          )}
+          {request.status === 'assigned' && (
+            <Button 
+              variant="default"
+              onClick={() => handleStatusUpdate(request.id, 'in_progress')}
+              disabled={updatingRequestId === request.id}
+            >
+              {updatingRequestId === request.id ? (
+                <><Loader2 className="mr-2 h-4 w-4 animate-spin" /> {t('common.loading')}</>
+              ) : (
+                <><Wrench className="mr-2 h-4 w-4" /> {t('technician.startJob')}</>
+              )}
+            </Button>
+          )}
+          {request.status === 'in_progress' && (
+            <Button 
+              variant="default"
+              onClick={() => handleStatusUpdate(request.id, 'completed')}
+              disabled={updatingRequestId === request.id}
+            >
+              {updatingRequestId === request.id ? (
+                <><Loader2 className="mr-2 h-4 w-4 animate-spin" /> {t('common.loading')}</>
+              ) : (
+                <><CheckCircle2 className="mr-2 h-4 w-4" /> {t('technician.completeJob')}</>
+              )}
+            </Button>
+          )}
+        </CardFooter>
+      </Card>
+    );
+  };
 
   return (
     <div className="space-y-4">
