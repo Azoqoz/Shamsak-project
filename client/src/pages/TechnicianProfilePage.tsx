@@ -13,6 +13,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Skeleton } from '@/components/ui/skeleton';
 import { FaSolarPanel, FaTools, FaClipboardCheck } from 'react-icons/fa';
 import type { Technician, User } from '@shared/schema';
+import ReviewsSection from '@/components/technician/ReviewsSection';
 
 const TechnicianProfilePage = () => {
   const { t } = useTranslation();
@@ -206,6 +207,7 @@ const TechnicianProfilePage = () => {
                 <Tabs defaultValue="services">
                   <TabsList className="mb-6">
                     <TabsTrigger value="services">{t('navigation.services')}</TabsTrigger>
+                    <TabsTrigger value="reviews">{t('technicians.reviews')}</TabsTrigger>
                     <TabsTrigger value="contact">{t('navigation.contact')}</TabsTrigger>
                   </TabsList>
 
@@ -232,6 +234,11 @@ const TechnicianProfilePage = () => {
                         </Card>
                       ))}
                     </div>
+                  </TabsContent>
+
+                  <TabsContent value="reviews">
+                    <h2 className="text-2xl font-bold mb-6">{t('technicians.customerReviews')}</h2>
+                    <ReviewsSection technician={technician} />
                   </TabsContent>
 
                   <TabsContent value="contact">
