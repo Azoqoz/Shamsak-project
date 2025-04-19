@@ -1,8 +1,11 @@
-import React, { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useQuery, useMutation } from '@tanstack/react-query';
 import { useToast } from '@/hooks/use-toast';
-import { apiRequest, queryClient } from '@/lib/queryClient';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { apiRequest } from '@/lib/queryClient';
+import { useLanguage } from '@/contexts/LanguageContext';
+import { Technician, ServiceRequest } from '@shared/schema';
+
 import {
   Card,
   CardContent,
@@ -10,12 +13,20 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/ui/card';
-import {
-  Tabs,
-  TabsContent,
-  TabsList,
-  TabsTrigger,
-} from '@/components/ui/tabs';
+import { 
+  Dialog,
+  DialogContent,
+  DialogDescription, 
+  DialogHeader, 
+  DialogTitle,
+  DialogTrigger,
+  DialogFooter,
+} from '@/components/ui/dialog';
+import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
+import { Switch } from '@/components/ui/switch';
+import { ScrollArea } from '@/components/ui/scroll-area';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import {
   Table,
   TableBody,
@@ -24,114 +35,86 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
-import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
-import { Progress } from '@/components/ui/progress';
-import { Switch } from '@/components/ui/switch';
-import { Label } from '@/components/ui/label';
-import { CircleCheckBig, Wrench, FileText, Clock, Calendar, MapPin, User, Mail, Phone } from 'lucide-react';
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
-import { ServiceRequest, Technician } from '@shared/schema';
-import { format } from 'date-fns';
-
-// Status badge component based on service request status
-const StatusBadge = ({ status }: { status: string }) => {
-  const { t } = useTranslation();
-  
-  const getVariant = () => {
-    switch (status) {
-      case 'pending':
-        return 'secondary';
-      case 'assigned':
-        return 'outline';
-      case 'in_progress':
-        return 'default';
-      case 'completed':
-        return 'success';
-      case 'cancelled':
-        return 'destructive';
-      case 'paid':
-        return 'success';
-      default:
-        return 'outline';
-    }
-  };
-
-  const getLabel = () => {
-    switch (status) {
-      case 'pending':
-        return t('technician.statusPending');
-      case 'assigned':
-        return t('technician.statusAssigned');
-      case 'in_progress':
-        return t('technician.statusInProgress');
-      case 'completed':
-        return t('technician.statusCompleted');
-      case 'cancelled':
-        return t('technician.statusCancelled');
-      case 'paid':
-        return t('technician.statusPaid');
-      default:
-        return status;
-    }
-  };
-
-  return (
-    <Badge variant={getVariant() as any}>{getLabel()}</Badge>
-  );
-};
+import { 
+  Calendar, 
+  CheckCircle, 
+  Clock, 
+  ClipboardList, 
+  MapPin,
+  PhoneCall,
+  User,
+  XCircle,
+  LoaderCircle,
+  Wrench,
+} from 'lucide-react';
 
 // Service request details dialog component
 const ServiceRequestDetailsDialog = ({ serviceRequest, userId }: { serviceRequest: ServiceRequest; userId: number }) => {
   const { t } = useTranslation();
   const { toast } = useToast();
-  
-  // Define mutation for updating service request status
-  const statusMutation = useMutation({
-    mutationFn: async ({ id, status }: { id: number; status: string }) => {
-      const res = await apiRequest('PATCH', `/api/service-requests/${id}/status`, { status });
+  const queryClient = useQueryClient();
+  const [isUpdating, setIsUpdating] = useState(false);
+
+  // Mutation to update service request status
+  const updateStatusMutation = useMutation({
+    mutationFn: async (newStatus: string) => {
+      setIsUpdating(true);
+      const res = await apiRequest(
+        'PATCH',
+        `/api/service-requests/${serviceRequest.id}/status`,
+        { status: newStatus }
+      );
       return await res.json();
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: [`/api/service-requests/technician/${userId}`] });
+      queryClient.invalidateQueries({ queryKey: ['/api/service-requests/technician', userId] });
       toast({
+        variant: 'success',
         title: t('common.success'),
         description: t('technician.jobUpdated'),
-        variant: 'success',
       });
+      setIsUpdating(false);
     },
     onError: (error: Error) => {
       toast({
-        title: t('common.error'),
-        description: error.message,
         variant: 'destructive',
+        title: t('common.error'),
+        description: error.message || t('common.error'),
       });
+      setIsUpdating(false);
     },
   });
 
-  // Function to handle status update buttons
+  // Handler for updating status
   const handleStatusUpdate = (newStatus: string) => {
-    statusMutation.mutate({ id: serviceRequest.id, status: newStatus });
+    updateStatusMutation.mutate(newStatus);
   };
 
-  // Determine which buttons to show based on current status
-  const renderActionButtons = () => {
-    switch (serviceRequest.status) {
-      case 'pending':
-        return (
-          <Button onClick={() => handleStatusUpdate('assigned')} className="w-full">
-            {t('technician.acceptRequest')}
-          </Button>
-        );
+  // Get display status based on the status code
+  const getStatusDisplay = (status: string) => {
+    return t(`technician.status${status.charAt(0).toUpperCase() + status.slice(1)}`);
+  };
+
+  // Determine which actions to show based on current status
+  const renderStatusActions = (status: string) => {
+    switch (status) {
       case 'assigned':
         return (
-          <Button onClick={() => handleStatusUpdate('in_progress')} className="w-full">
+          <Button 
+            onClick={() => handleStatusUpdate('in_progress')}
+            disabled={isUpdating}
+          >
+            {isUpdating ? <LoaderCircle className="mr-2 h-4 w-4 animate-spin" /> : <Wrench className="mr-2 h-4 w-4" />}
             {t('technician.startJob')}
           </Button>
         );
       case 'in_progress':
         return (
-          <Button onClick={() => handleStatusUpdate('completed')} className="w-full">
+          <Button 
+            onClick={() => handleStatusUpdate('completed')}
+            disabled={isUpdating}
+          >
+            {isUpdating ? <LoaderCircle className="mr-2 h-4 w-4 animate-spin" /> : <CheckCircle className="mr-2 h-4 w-4" />}
             {t('technician.completeJob')}
           </Button>
         );
@@ -141,180 +124,123 @@ const ServiceRequestDetailsDialog = ({ serviceRequest, userId }: { serviceReques
   };
 
   return (
-    <Dialog>
-      <DialogTrigger asChild>
-        <Button variant="outline">{t('technician.viewRequest')}</Button>
-      </DialogTrigger>
-      <DialogContent className="max-w-xl">
-        <DialogHeader>
-          <DialogTitle>{t('technician.jobDetails')}</DialogTitle>
-          <DialogDescription>{serviceRequest.title}</DialogDescription>
-        </DialogHeader>
-        
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div className="space-y-4">
-            <div>
-              <h4 className="text-sm font-medium flex items-center gap-2">
-                <FileText className="h-4 w-4" /> {t('technician.jobType')}
-              </h4>
-              <p className="text-sm">{serviceRequest.serviceType}</p>
-            </div>
-            
-            <div>
-              <h4 className="text-sm font-medium flex items-center gap-2">
-                <Clock className="h-4 w-4" /> {t('technician.jobStatus')}
-              </h4>
-              <StatusBadge status={serviceRequest.status} />
-            </div>
-            
-            {serviceRequest.scheduledDate && (
-              <div>
-                <h4 className="text-sm font-medium flex items-center gap-2">
-                  <Calendar className="h-4 w-4" /> {t('technician.jobDate')}
-                </h4>
-                <p className="text-sm">{format(new Date(serviceRequest.scheduledDate), 'PPP')}</p>
-              </div>
-            )}
-            
-            <div>
-              <h4 className="text-sm font-medium flex items-center gap-2">
-                <MapPin className="h-4 w-4" /> {t('technician.jobLocation')}
-              </h4>
-              <p className="text-sm">{serviceRequest.city}, {serviceRequest.address}</p>
-            </div>
+    <DialogContent className="max-w-md">
+      <DialogHeader>
+        <DialogTitle>{serviceRequest.title}</DialogTitle>
+        <DialogDescription>
+          {t('serviceForm.serviceType')}: {t(`serviceForm.${serviceRequest.serviceType}`)}
+        </DialogDescription>
+      </DialogHeader>
+      
+      <div className="space-y-4">
+        <div className="grid grid-cols-2 gap-4">
+          <div>
+            <h4 className="text-sm font-medium">{t('profile.client')}</h4>
+            <p className="text-sm flex items-center">
+              <User className="h-4 w-4 mr-2 text-neutral-500" />
+              {serviceRequest.name}
+            </p>
+            <p className="text-sm flex items-center">
+              <PhoneCall className="h-4 w-4 mr-2 text-neutral-500" />
+              {serviceRequest.phone}
+            </p>
           </div>
-          
-          <div className="space-y-4">
-            <div>
-              <h4 className="text-sm font-medium">{t('technician.clientDetails')}</h4>
-              <div className="mt-2 space-y-2">
-                <p className="text-sm flex items-center gap-2">
-                  <User className="h-4 w-4" /> {serviceRequest.userId}
-                </p>
-                <p className="text-sm flex items-center gap-2">
-                  <Mail className="h-4 w-4" /> client@example.com
-                </p>
-                <p className="text-sm flex items-center gap-2">
-                  <Phone className="h-4 w-4" /> +966 XXXXXXXX
-                </p>
-              </div>
-            </div>
+          <div>
+            <h4 className="text-sm font-medium">{t('profile.location')}</h4>
+            <p className="text-sm flex items-center">
+              <MapPin className="h-4 w-4 mr-2 text-neutral-500" />
+              {serviceRequest.city}, {serviceRequest.address}
+            </p>
           </div>
         </div>
         
-        <div className="space-y-2">
+        <div>
           <h4 className="text-sm font-medium">{t('serviceForm.additionalDetails')}</h4>
-          <p className="text-sm">{serviceRequest.description}</p>
+          <p className="text-sm mt-1">{serviceRequest.description}</p>
         </div>
         
-        <div className="flex justify-end mt-4">
-          {renderActionButtons()}
+        <div>
+          <h4 className="text-sm font-medium">{t('checkout.status')}</h4>
+          <Badge className="mt-1">
+            {getStatusDisplay(serviceRequest.status)}
+          </Badge>
         </div>
-      </DialogContent>
-    </Dialog>
+        
+        <div>
+          <h4 className="text-sm font-medium">{t('checkout.bookingDate')}</h4>
+          <p className="text-sm flex items-center">
+            <Calendar className="h-4 w-4 mr-2 text-neutral-500" />
+            {new Date(serviceRequest.scheduledDate || serviceRequest.createdAt || '').toLocaleDateString()}
+          </p>
+        </div>
+      </div>
+      
+      <DialogFooter>
+        {renderStatusActions(serviceRequest.status)}
+      </DialogFooter>
+    </DialogContent>
   );
 };
 
-// Main Technician Dashboard Component
+// Main TechnicianDashboard component
 const TechnicianDashboard = ({ technician }: { technician: Technician }) => {
   const { t } = useTranslation();
+  const { direction } = useLanguage();
   const { toast } = useToast();
-  const [activeTab, setActiveTab] = useState('upcoming');
-  
-  // Fetch service requests for the technician
-  const { data: serviceRequests = [], isLoading } = useQuery<ServiceRequest[]>({
+  const queryClient = useQueryClient();
+  const [isUpdatingAvailability, setIsUpdatingAvailability] = useState(false);
+
+  // Fetch service requests for this technician
+  const { 
+    data: serviceRequests, 
+    isLoading: serviceRequestsLoading,
+    error: serviceRequestsError,
+  } = useQuery<ServiceRequest[]>({
     queryKey: [`/api/service-requests/technician/${technician.id}`],
-    refetchOnWindowFocus: true,
   });
-  
-  // Filter service requests by status
-  const pendingRequests = serviceRequests.filter(req => req.status === 'pending' || req.status === 'assigned');
-  const activeRequests = serviceRequests.filter(req => req.status === 'in_progress');
-  const completedRequests = serviceRequests.filter(req => req.status === 'completed' || req.status === 'paid');
-  
-  // Calculate performance metrics
-  const totalJobs = serviceRequests.length;
-  const completionRate = totalJobs > 0 ? (completedRequests.length / totalJobs) * 100 : 0;
-  
-  // Toggle availability mutation
-  const toggleAvailabilityMutation = useMutation({
+
+  // Mutation to update technician availability
+  const updateAvailabilityMutation = useMutation({
     mutationFn: async (available: boolean) => {
-      const res = await apiRequest('PATCH', `/api/technicians/${technician.id}`, { available });
+      setIsUpdatingAvailability(true);
+      const res = await apiRequest(
+        'PATCH', 
+        `/api/technicians/${technician.id}/availability`, 
+        { available }
+      );
       return await res.json();
     },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: [`/api/technicians/${technician.userId}`] });
+    onSuccess: (data) => {
+      queryClient.setQueryData([`/api/technicians/user/${technician.userId}`], data);
       toast({
-        title: t('common.success'),
-        description: technician.available 
-          ? t('technician.currentlyUnavailable') 
-          : t('technician.currentlyAvailable'),
         variant: 'success',
+        title: t('common.success'),
+        description: available 
+          ? t('technician.availabilityOn') 
+          : t('technician.availabilityOff'),
       });
+      setIsUpdatingAvailability(false);
     },
     onError: (error: Error) => {
       toast({
-        title: t('common.error'),
-        description: error.message,
         variant: 'destructive',
+        title: t('common.error'),
+        description: error.message || t('common.error'),
       });
+      setIsUpdatingAvailability(false);
     },
   });
-  
-  // Handle availability toggle
+
+  // Filter service requests by status
+  const pendingJobs = serviceRequests?.filter(req => req.status === 'assigned') || [];
+  const activeJobs = serviceRequests?.filter(req => req.status === 'in_progress') || [];
+  const completedJobs = serviceRequests?.filter(req => ['completed', 'paid'].includes(req.status)) || [];
+
+  // Toggle technician availability
   const handleAvailabilityToggle = () => {
-    toggleAvailabilityMutation.mutate(!technician.available);
+    updateAvailabilityMutation.mutate(!technician.available);
   };
-  
-  // Render service request table
-  const renderServiceRequestTable = (requests: ServiceRequest[]) => {
-    if (requests.length === 0) {
-      return (
-        <div className="text-center py-8">
-          <p className="text-muted-foreground">{t('technician.noRequests')}</p>
-        </div>
-      );
-    }
-    
-    return (
-      <Table>
-        <TableHeader>
-          <TableRow>
-            <TableHead>{t('serviceForm.serviceType')}</TableHead>
-            <TableHead>{t('technician.clientName')}</TableHead>
-            <TableHead>{t('technician.jobLocation')}</TableHead>
-            <TableHead>{t('technician.jobStatus')}</TableHead>
-            <TableHead>{t('admin.actions')}</TableHead>
-          </TableRow>
-        </TableHeader>
-        <TableBody>
-          {requests.map((request) => (
-            <TableRow key={request.id}>
-              <TableCell>{request.serviceType}</TableCell>
-              <TableCell>Client #{request.userId}</TableCell>
-              <TableCell>{request.city}</TableCell>
-              <TableCell>
-                <StatusBadge status={request.status} />
-              </TableCell>
-              <TableCell>
-                <ServiceRequestDetailsDialog serviceRequest={request} userId={technician.userId} />
-              </TableCell>
-            </TableRow>
-          ))}
-        </TableBody>
-      </Table>
-    );
-  };
-  
-  // If loading, show loading state
-  if (isLoading) {
-    return (
-      <div className="p-8 text-center">
-        <p>{t('common.loading')}</p>
-      </div>
-    );
-  }
-  
+
   return (
     <div className="space-y-6">
       <Card>
@@ -323,91 +249,227 @@ const TechnicianDashboard = ({ technician }: { technician: Technician }) => {
           <CardDescription>{t('technician.manageTasks')}</CardDescription>
         </CardHeader>
         <CardContent>
-          <div className="flex flex-col md:flex-row gap-4 items-start justify-between mb-6">
-            {/* Availability Toggle */}
-            <div className="flex items-center space-x-2">
-              <Switch 
-                id="availability" 
-                checked={technician.available}
-                onCheckedChange={handleAvailabilityToggle}
-              />
-              <Label htmlFor="availability" className="font-medium">
-                {technician.available ? t('technicians.available') : t('technicians.unavailable')}
-              </Label>
-              <p className="text-sm text-muted-foreground ml-2">
+          <div className="flex items-center justify-between mb-6">
+            <div>
+              <h3 className="text-lg font-medium mb-1">{t('technicians.availability')}</h3>
+              <p className="text-sm text-neutral-500">
                 {technician.available 
-                  ? t('technician.currentlyAvailable') 
+                  ? t('technician.currentlyAvailable')
                   : t('technician.currentlyUnavailable')}
               </p>
             </div>
-            
-            {/* Overview Stats */}
-            <div className="flex flex-wrap gap-4">
-              <div className="bg-secondary/20 rounded-lg p-3 text-center min-w-[100px]">
-                <p className="text-3xl font-bold">{totalJobs}</p>
-                <p className="text-sm text-muted-foreground">{t('technician.totalJobs')}</p>
-              </div>
-              <div className="bg-secondary/20 rounded-lg p-3 text-center min-w-[100px]">
-                <p className="text-3xl font-bold">{technician.rating || '-'}</p>
-                <p className="text-sm text-muted-foreground">{t('technician.avgRating')}</p>
-              </div>
-              <div className="bg-secondary/20 rounded-lg p-3 text-center min-w-[100px]">
-                <p className="text-3xl font-bold">{completionRate.toFixed(0)}%</p>
-                <p className="text-sm text-muted-foreground">{t('technician.completionRate')}</p>
-              </div>
+            <div className="flex items-center space-x-2">
+              <Switch 
+                checked={technician.available} 
+                onCheckedChange={handleAvailabilityToggle}
+                disabled={isUpdatingAvailability}
+              />
+              <span className="font-medium text-sm">
+                {technician.available ? t('technicians.available') : t('technicians.unavailable')}
+              </span>
             </div>
           </div>
-          
-          {/* Job Tabs */}
-          <Tabs defaultValue={activeTab} onValueChange={setActiveTab}>
-            <TabsList className="grid grid-cols-3 mb-6">
-              <TabsTrigger value="upcoming">
-                {t('technician.upcomingJobs')} ({pendingRequests.length})
+
+          <Tabs defaultValue="pending" className="w-full">
+            <TabsList className="grid w-full grid-cols-3">
+              <TabsTrigger value="pending" className="relative">
+                {t('technician.pendingJobs')}
+                {pendingJobs.length > 0 && (
+                  <Badge 
+                    className="absolute top-0 right-0 transform translate-x-1/2 -translate-y-1/2 h-5 w-5 p-0 flex items-center justify-center rounded-full"
+                    variant="destructive"
+                  >
+                    {pendingJobs.length}
+                  </Badge>
+                )}
               </TabsTrigger>
-              <TabsTrigger value="active">
-                {t('technician.pendingJobs')} ({activeRequests.length})
+              <TabsTrigger value="active" className="relative">
+                {t('technician.activeJobs')}
+                {activeJobs.length > 0 && (
+                  <Badge 
+                    className="absolute top-0 right-0 transform translate-x-1/2 -translate-y-1/2 h-5 w-5 p-0 flex items-center justify-center rounded-full"
+                    variant="default"
+                  >
+                    {activeJobs.length}
+                  </Badge>
+                )}
               </TabsTrigger>
               <TabsTrigger value="completed">
-                {t('technician.completedJobs')} ({completedRequests.length})
+                {t('technician.completedJobs')}
               </TabsTrigger>
             </TabsList>
-            
-            <TabsContent value="upcoming">
-              {renderServiceRequestTable(pendingRequests)}
-            </TabsContent>
-            <TabsContent value="active">
-              {renderServiceRequestTable(activeRequests)}
-            </TabsContent>
-            <TabsContent value="completed">
-              {renderServiceRequestTable(completedRequests)}
-            </TabsContent>
+
+            {serviceRequestsLoading ? (
+              <div className="py-8 text-center">
+                <LoaderCircle className="h-8 w-8 animate-spin mx-auto mb-4 text-primary" />
+                <p>{t('common.loading')}</p>
+              </div>
+            ) : serviceRequestsError ? (
+              <div className="py-8 text-center text-destructive">
+                <XCircle className="h-8 w-8 mx-auto mb-4" />
+                <p>{t('common.error')}</p>
+              </div>
+            ) : (
+              <>
+                {/* Pending Jobs Tab */}
+                <TabsContent value="pending">
+                  <ScrollArea className="h-[400px]">
+                    {pendingJobs.length === 0 ? (
+                      <div className="py-8 text-center text-neutral-500">
+                        <ClipboardList className="h-8 w-8 mx-auto mb-4 text-neutral-400" />
+                        <p>{t('technician.noPendingJobs')}</p>
+                      </div>
+                    ) : (
+                      <Table>
+                        <TableHeader>
+                          <TableRow>
+                            <TableHead>{t('serviceForm.serviceType')}</TableHead>
+                            <TableHead>{t('profile.client')}</TableHead>
+                            <TableHead>{t('profile.location')}</TableHead>
+                            <TableHead>{t('technician.date')}</TableHead>
+                            <TableHead>{t('common.actions')}</TableHead>
+                          </TableRow>
+                        </TableHeader>
+                        <TableBody>
+                          {pendingJobs.map((job) => (
+                            <TableRow key={job.id}>
+                              <TableCell>
+                                {t(`serviceForm.${job.serviceType}`)}
+                              </TableCell>
+                              <TableCell>{job.name}</TableCell>
+                              <TableCell>{job.city}</TableCell>
+                              <TableCell>
+                                {new Date(job.scheduledDate || job.createdAt || '').toLocaleDateString()}
+                              </TableCell>
+                              <TableCell>
+                                <Dialog>
+                                  <DialogTrigger asChild>
+                                    <Button variant="outline" size="sm">
+                                      {t('serviceRequests.viewDetails')}
+                                    </Button>
+                                  </DialogTrigger>
+                                  <ServiceRequestDetailsDialog 
+                                    serviceRequest={job} 
+                                    userId={technician.userId} 
+                                  />
+                                </Dialog>
+                              </TableCell>
+                            </TableRow>
+                          ))}
+                        </TableBody>
+                      </Table>
+                    )}
+                  </ScrollArea>
+                </TabsContent>
+
+                {/* Active Jobs Tab */}
+                <TabsContent value="active">
+                  <ScrollArea className="h-[400px]">
+                    {activeJobs.length === 0 ? (
+                      <div className="py-8 text-center text-neutral-500">
+                        <Wrench className="h-8 w-8 mx-auto mb-4 text-neutral-400" />
+                        <p>{t('technician.noActiveJobs')}</p>
+                      </div>
+                    ) : (
+                      <Table>
+                        <TableHeader>
+                          <TableRow>
+                            <TableHead>{t('serviceForm.serviceType')}</TableHead>
+                            <TableHead>{t('profile.client')}</TableHead>
+                            <TableHead>{t('profile.location')}</TableHead>
+                            <TableHead>{t('technician.startedOn')}</TableHead>
+                            <TableHead>{t('common.actions')}</TableHead>
+                          </TableRow>
+                        </TableHeader>
+                        <TableBody>
+                          {activeJobs.map((job) => (
+                            <TableRow key={job.id}>
+                              <TableCell>
+                                {t(`serviceForm.${job.serviceType}`)}
+                              </TableCell>
+                              <TableCell>{job.name}</TableCell>
+                              <TableCell>{job.city}</TableCell>
+                              <TableCell>
+                                {new Date(job.updatedAt || job.createdAt || '').toLocaleDateString()}
+                              </TableCell>
+                              <TableCell>
+                                <Dialog>
+                                  <DialogTrigger asChild>
+                                    <Button variant="outline" size="sm">
+                                      {t('serviceRequests.viewDetails')}
+                                    </Button>
+                                  </DialogTrigger>
+                                  <ServiceRequestDetailsDialog 
+                                    serviceRequest={job} 
+                                    userId={technician.userId} 
+                                  />
+                                </Dialog>
+                              </TableCell>
+                            </TableRow>
+                          ))}
+                        </TableBody>
+                      </Table>
+                    )}
+                  </ScrollArea>
+                </TabsContent>
+
+                {/* Completed Jobs Tab */}
+                <TabsContent value="completed">
+                  <ScrollArea className="h-[400px]">
+                    {completedJobs.length === 0 ? (
+                      <div className="py-8 text-center text-neutral-500">
+                        <CheckCircle className="h-8 w-8 mx-auto mb-4 text-neutral-400" />
+                        <p>{t('technician.noCompletedJobs')}</p>
+                      </div>
+                    ) : (
+                      <Table>
+                        <TableHeader>
+                          <TableRow>
+                            <TableHead>{t('serviceForm.serviceType')}</TableHead>
+                            <TableHead>{t('profile.client')}</TableHead>
+                            <TableHead>{t('checkout.status')}</TableHead>
+                            <TableHead>{t('technician.completedOn')}</TableHead>
+                            <TableHead>{t('common.actions')}</TableHead>
+                          </TableRow>
+                        </TableHeader>
+                        <TableBody>
+                          {completedJobs.map((job) => (
+                            <TableRow key={job.id}>
+                              <TableCell>
+                                {t(`serviceForm.${job.serviceType}`)}
+                              </TableCell>
+                              <TableCell>{job.name}</TableCell>
+                              <TableCell>
+                                <Badge className={job.status === 'paid' ? 'bg-green-600' : ''}>
+                                  {t(`technician.status${job.status.charAt(0).toUpperCase() + job.status.slice(1)}`)}
+                                </Badge>
+                              </TableCell>
+                              <TableCell>
+                                {new Date(job.completedDate || job.updatedAt || job.createdAt || '').toLocaleDateString()}
+                              </TableCell>
+                              <TableCell>
+                                <Dialog>
+                                  <DialogTrigger asChild>
+                                    <Button variant="outline" size="sm">
+                                      {t('serviceRequests.viewDetails')}
+                                    </Button>
+                                  </DialogTrigger>
+                                  <ServiceRequestDetailsDialog 
+                                    serviceRequest={job} 
+                                    userId={technician.userId} 
+                                  />
+                                </Dialog>
+                              </TableCell>
+                            </TableRow>
+                          ))}
+                        </TableBody>
+                      </Table>
+                    )}
+                  </ScrollArea>
+                </TabsContent>
+              </>
+            )}
           </Tabs>
-        </CardContent>
-      </Card>
-      
-      {/* Performance Card */}
-      <Card>
-        <CardHeader>
-          <CardTitle>{t('technician.myPerformance')}</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="space-y-4">
-            <div className="space-y-2">
-              <div className="flex items-center justify-between">
-                <Label>{t('technician.completionRate')}</Label>
-                <span>{completionRate.toFixed(0)}%</span>
-              </div>
-              <Progress value={completionRate} />
-            </div>
-            
-            <div className="space-y-2">
-              <div className="flex items-center justify-between">
-                <Label>{t('technician.avgRating')}</Label>
-                <span>{technician.rating || 0}/5</span>
-              </div>
-              <Progress value={(technician.rating || 0) * 20} />
-            </div>
-          </div>
         </CardContent>
       </Card>
     </div>

@@ -37,6 +37,33 @@ export function registerTechnicianRoutes(app: Express, prefix: string, storage: 
       res.status(500).json({ message: 'Error retrieving technicians' });
     }
   });
+  
+  // Get technician by user ID
+  app.get(`${prefix}/technicians/user/:userId`, async (req: Request, res: Response) => {
+    try {
+      const userId = parseInt(req.params.userId);
+      if (isNaN(userId)) {
+        return res.status(400).json({ message: 'Invalid user ID' });
+      }
+
+      // First, check if the technician exists for the user
+      const technician = await storage.getTechnicianByUserId(userId);
+      if (!technician) {
+        return res.status(404).json({ message: 'No technician profile found for this user' });
+      }
+      
+      // Get the full technician profile with user data
+      const technicianWithUser = await storage.getTechnician(technician.id);
+      if (!technicianWithUser) {
+        return res.status(404).json({ message: 'Technician not found' });
+      }
+
+      res.json(technicianWithUser);
+    } catch (error) {
+      console.error('Error getting technician by user ID:', error);
+      res.status(500).json({ message: 'Error retrieving technician data' });
+    }
+  });
 
   // Get a single technician by ID
   app.get(`${prefix}/technicians/:id`, async (req: Request, res: Response) => {
