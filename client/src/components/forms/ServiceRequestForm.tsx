@@ -7,6 +7,7 @@ import { z } from 'zod';
 import { useMutation, useQuery } from '@tanstack/react-query';
 import { queryClient, apiRequest } from '@/lib/queryClient';
 import { useToast } from '@/hooks/use-toast';
+import { useAuth } from '@/contexts/AuthContext';
 import { insertServiceRequestSchema, type InsertServiceRequest, type Technician, type User } from '@shared/schema';
 import { SERVICE_TYPES, CITIES, PROPERTY_TYPES } from '@/lib/constants';
 
@@ -83,6 +84,7 @@ const renderStars = (rating: number) => {
 const ServiceRequestForm = () => {
   const { t } = useTranslation();
   const { toast } = useToast();
+  const { user } = useAuth();
   const [, setLocation] = useLocation();
   const [selectedTechnicianId, setSelectedTechnicianId] = useState<number | null>(null);
   const [servicePrice, setServicePrice] = useState<number | null>(null);
@@ -225,11 +227,27 @@ const ServiceRequestForm = () => {
     // Omit the terms field as it's only for UI validation
     const { terms, ...requestData } = data;
     
-    // Add technician ID and price to request data
+    // Check if user is logged in
+    if (!user) {
+      toast({
+        title: t('common.error'),
+        description: t('serviceForm.loginRequired'),
+        variant: 'destructive',
+      });
+      console.log("Submission blocked: User not logged in");
+      return;
+    }
+
+    // Add technician ID and price to request data along with required fields
     const bookingData = {
       ...requestData,
       technicianId: selectedTechnicianId,
-      price: servicePrice
+      price: servicePrice,
+      // Add missing required fields that aren't in the form UI
+      userId: user.id,
+      title: `${requestData.serviceType} Service Request`,
+      description: requestData.additionalDetails || `Service request for ${requestData.serviceType}`,
+      address: requestData.address || requestData.city // Use city as address if no specific address is provided
     };
     
     console.log("Sending booking data:", bookingData);
