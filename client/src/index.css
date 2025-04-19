@@ -1,14 +1,23 @@
+@import url('https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;500;600;700&family=Poppins:wght@300;400;500;600;700&display=swap');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
 @layer base {
+  :root {
+    --eco-green: 150 70% 50%;
+    --sunny-yellow: 48 100% 50%;
+    --light-bg: 0 0% 98%;
+  }
+
   * {
     @apply border-border;
   }
 
   body {
     @apply font-sans antialiased bg-background text-foreground;
+    background-color: hsl(var(--light-bg));
   }
 
   /* RTL specific styles */
@@ -23,7 +32,7 @@
   
   /* Add English font family */
   [dir="ltr"] {
-    font-family: 'Nunito', sans-serif;
+    font-family: 'Poppins', sans-serif;
   }
   
   /* Animation for page transitions */
@@ -43,5 +52,35 @@
   
   .fade-in {
     animation: fadeIn 0.5s ease-in-out;
+  }
+  
+  /* Custom utility classes for our eco-friendly theme */
+  .bg-eco-green {
+    background-color: hsl(var(--eco-green));
+  }
+  
+  .text-eco-green {
+    color: hsl(var(--eco-green));
+  }
+  
+  .border-eco-green {
+    border-color: hsl(var(--eco-green));
+  }
+  
+  .bg-sunny-yellow {
+    background-color: hsl(var(--sunny-yellow));
+  }
+  
+  .text-sunny-yellow {
+    color: hsl(var(--sunny-yellow));
+  }
+  
+  .border-sunny-yellow {
+    border-color: hsl(var(--sunny-yellow));
+  }
+  
+  /* Soft gradient backgrounds */
+  .bg-eco-gradient {
+    background: linear-gradient(135deg, hsl(var(--eco-green)), hsl(var(--sunny-yellow) / 0.7));
   }
 }
