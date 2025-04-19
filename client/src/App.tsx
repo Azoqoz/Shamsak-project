@@ -5,6 +5,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { LanguageProvider } from "./contexts/LanguageContext";
 import { AuthProvider } from "./contexts/AuthContext";
+import { ProtectedRoute } from "./lib/ProtectedRoute";
 import NotFound from "@/pages/not-found";
 import HomePage from "@/pages/HomePage";
 import ServiceRequestPage from "@/pages/ServiceRequestPage";
@@ -42,9 +43,21 @@ function Router() {
           <Route path="/contact" component={ContactPageWrapper} />
           <Route path="/login" component={LoginPage} />
           <Route path="/register" component={RegisterPage} />
-          <Route path="/profile" component={ProfilePage} />
-          <Route path="/admin" component={AdminDashboardPage} />
-          <Route path="/checkout/:id" component={CheckoutPage} />
+          <Route path="/profile">
+            <ProtectedRoute>
+              <ProfilePage />
+            </ProtectedRoute>
+          </Route>
+          <Route path="/admin">
+            <ProtectedRoute allowedRoles={['admin']}>
+              <AdminDashboardPage />
+            </ProtectedRoute>
+          </Route>
+          <Route path="/checkout/:id">
+            <ProtectedRoute>
+              <CheckoutPage />
+            </ProtectedRoute>
+          </Route>
           <Route path="/about" component={AboutPage} />
           <Route path="/faq" component={FAQPage} />
           <Route path="/privacy" component={PrivacyPolicyPage} />

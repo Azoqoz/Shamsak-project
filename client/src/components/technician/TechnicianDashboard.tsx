@@ -49,7 +49,11 @@ import {
 } from 'lucide-react';
 
 // Service request details dialog component
-const ServiceRequestDetailsDialog = ({ serviceRequest, userId }: { serviceRequest: ServiceRequest; userId: number }) => {
+const ServiceRequestDetailsDialog = ({ serviceRequest, userId, technicianId }: { 
+  serviceRequest: ServiceRequest; 
+  userId: number;
+  technicianId: number;
+}) => {
   const { t } = useTranslation();
   const { toast } = useToast();
   const queryClient = useQueryClient();
@@ -67,7 +71,7 @@ const ServiceRequestDetailsDialog = ({ serviceRequest, userId }: { serviceReques
       return await res.json();
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['/api/service-requests/technician', technician.id] });
+      queryClient.invalidateQueries({ queryKey: ['/api/service-requests/technician', technicianId] });
       toast({
         variant: 'success',
         title: t('common.success'),
