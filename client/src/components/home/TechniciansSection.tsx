@@ -18,15 +18,15 @@ const TechniciansSection = () => {
     const hasHalfStar = rating % 1 >= 0.5;
 
     for (let i = 0; i < fullStars; i++) {
-      stars.push(<StarIcon key={`full-${i}`} className="fill-sunny-yellow text-sunny-yellow h-4 w-4" />);
+      stars.push(<StarIcon key={`full-${i}`} className="fill-yellow-500 text-yellow-500 h-4 w-4" />);
     }
 
     if (hasHalfStar) {
       stars.push(
         <div key="half" className="relative">
-          <StarIcon className="text-sunny-yellow h-4 w-4" />
+          <StarIcon className="text-yellow-500 h-4 w-4" />
           <div className="absolute top-0 left-0 overflow-hidden w-1/2">
-            <StarIcon className="fill-sunny-yellow text-sunny-yellow h-4 w-4" />
+            <StarIcon className="fill-yellow-500 text-yellow-500 h-4 w-4" />
           </div>
         </div>
       );
@@ -34,20 +34,20 @@ const TechniciansSection = () => {
 
     const emptyStars = 5 - fullStars - (hasHalfStar ? 1 : 0);
     for (let i = 0; i < emptyStars; i++) {
-      stars.push(<StarIcon key={`empty-${i}`} className="text-sunny-yellow h-4 w-4" />);
+      stars.push(<StarIcon key={`empty-${i}`} className="text-yellow-500 h-4 w-4" />);
     }
 
     return stars;
   };
 
   return (
-    <section id="technicians" className="py-16 bg-gray-50">
+    <section id="technicians" className="py-16 bg-neutral-100">
       <div className="container mx-auto px-4">
         <div className="text-center mb-12">
           <h2 className="text-3xl font-bold text-neutral-800 mb-4">
             {t('technicians.title')}
           </h2>
-          <p className="text-lg text-neutral-600 max-w-2xl mx-auto">
+          <p className="text-lg text-neutral-800 max-w-2xl mx-auto">
             {t('technicians.subtitle')}
           </p>
         </div>
@@ -72,9 +72,9 @@ const TechniciansSection = () => {
             ))
           ) : technicians && technicians.length > 0 ? (
             technicians.map((technician) => (
-              <div key={technician.id} className="bg-white p-6 rounded-lg shadow-md hover:shadow-lg transition-all hover:transform hover:scale-[1.02] border border-transparent hover:border-eco-green hover:border-opacity-20">
+              <div key={technician.id} className="bg-white p-6 rounded-lg shadow-md hover:shadow-lg transition-all hover:transform hover:scale-[1.02] border border-transparent hover:border-green-100">
                 <div className="mb-4 relative flex justify-center">
-                  <div className="w-28 h-28 rounded-full bg-gradient-to-br from-green-50 to-green-100 flex items-center justify-center overflow-hidden shadow-md ring-2 ring-eco-green ring-opacity-30">
+                  <div className="w-28 h-28 rounded-full bg-gradient-to-br from-green-50 to-green-100 flex items-center justify-center overflow-hidden shadow-md ring-2 ring-green-200 ring-opacity-50">
                     {technician.profileImage ? (
                       <img 
                         src={technician.profileImage} 
@@ -89,15 +89,15 @@ const TechniciansSection = () => {
                         }}
                       />
                     ) : (
-                      <span className="text-5xl text-eco-green font-bold">
+                      <span className="text-5xl text-green-500 font-bold">
                         {technician.user.name.charAt(0).toUpperCase()}
                       </span>
                     )}
-                    <span className="fallback-initial hidden text-5xl text-eco-green font-bold">
+                    <span className="fallback-initial hidden text-5xl text-green-500 font-bold">
                       {technician.user.name.charAt(0).toUpperCase()}
                     </span>
                   </div>
-                  <div className="absolute -bottom-2 bg-sunny-yellow bg-opacity-20 text-neutral-800 px-3 py-1 rounded-full text-xs font-semibold">
+                  <div className="absolute -bottom-2 bg-green-100 text-green-800 px-3 py-1 rounded-full text-xs font-semibold">
                     {technician.specialty}
                   </div>
                 </div>
@@ -105,7 +105,7 @@ const TechniciansSection = () => {
                   <div className="mb-1">
                     <h3 className="text-xl font-bold text-gray-800">{technician.user.name}</h3>
                   </div>
-                  <p className="text-eco-green mb-2 flex items-center justify-center">
+                  <p className="text-primary mb-2 flex items-center justify-center">
                     <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
@@ -113,7 +113,7 @@ const TechniciansSection = () => {
                     {technician.user.city}
                   </p>
                   <div className="flex justify-center mb-3">
-                    <div className="flex">
+                    <div className="flex text-yellow-500">
                       {renderStars(technician.rating || 0)}
                     </div>
                     <span className="text-sm text-neutral-600 ml-2">
@@ -125,7 +125,7 @@ const TechniciansSection = () => {
                   </div>
                   <Link 
                     href={`/technicians/${technician.id}`} 
-                    className="bg-eco-green text-white px-5 py-2 rounded-md inline-block hover:bg-opacity-90 transition-all hover:shadow-md text-sm font-medium"
+                    className="bg-primary text-white px-5 py-2 rounded-md inline-block hover:bg-opacity-90 transition-colors text-sm font-medium"
                   >
                     {t('technicians.viewProfile')}
                   </Link>
@@ -144,8 +144,8 @@ const TechniciansSection = () => {
         <div className="mt-10 text-center">
           <Link href="/technicians">
             <Button
-              variant="default"
-              className="bg-sunny-yellow hover:bg-sunny-yellow hover:bg-opacity-90 text-neutral-900 font-medium px-6 py-2 rounded-md"
+              variant="secondary"
+              className="font-bold text-white"
             >
               {t('technicians.viewAll')}
             </Button>
