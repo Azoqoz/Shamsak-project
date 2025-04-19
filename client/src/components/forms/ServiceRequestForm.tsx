@@ -574,7 +574,7 @@ const ServiceRequestForm = () => {
                 className="w-full bg-primary text-white font-bold py-3 px-6"
                 disabled={isPending || !selectedTechnicianId || !servicePrice}
               >
-                {isPending ? t('common.loading') : `${t('serviceForm.bookNow')} - ${servicePrice || 0} SAR`}
+                {isPending ? t('common.loading') : `${t('serviceForm.bookNow')} - ${t('serviceForm.totalPrice')}: ${servicePrice || 0} SAR`}
               </Button>
             </form>
           </Form>
