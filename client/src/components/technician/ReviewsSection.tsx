@@ -3,11 +3,12 @@ import { useQuery } from "@tanstack/react-query";
 import { Review, Technician, User } from "@shared/schema";
 import { formatDistanceToNow } from "date-fns";
 import { useTranslation } from "react-i18next";
+import AddReviewForm from "./AddReviewForm";
 
 // UI components 
 import { Card, CardContent } from "@/components/ui/card";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
-import { Star, StarHalf } from "lucide-react";
+import { Star, StarHalf, PlusCircle, MinusCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Badge } from "@/components/ui/badge";
@@ -19,8 +20,9 @@ interface ReviewsSectionProps {
 const ReviewsSection = ({ technician }: ReviewsSectionProps) => {
   const { t } = useTranslation();
   const [visibleReviews, setVisibleReviews] = useState(3);
+  const [showAddReviewForm, setShowAddReviewForm] = useState(false);
   
-  const { data: reviews, isLoading, error } = useQuery<Review[]>({
+  const { data: reviews, isLoading, error, refetch } = useQuery<Review[]>({
     queryKey: ['/api/reviews/technician', technician.id],
     queryFn: async () => {
       const res = await fetch(`/api/reviews/technician/${technician.id}`);
@@ -80,8 +82,39 @@ const ReviewsSection = ({ technician }: ReviewsSectionProps) => {
     );
   }
 
+  const toggleAddReviewForm = () => {
+    setShowAddReviewForm(!showAddReviewForm);
+  };
+
+  const handleReviewSuccess = () => {
+    setShowAddReviewForm(false);
+    refetch();
+  };
+
   return (
     <div className="mt-4">
+      <div className="mb-6 flex justify-between items-center">
+        <Button 
+          onClick={toggleAddReviewForm} 
+          variant="outline" 
+          className="flex items-center gap-2"
+        >
+          {showAddReviewForm ? (
+            <>
+              <MinusCircle className="h-4 w-4" /> Close Form
+            </>
+          ) : (
+            <>
+              <PlusCircle className="h-4 w-4" /> Write a Review
+            </>
+          )}
+        </Button>
+      </div>
+
+      {showAddReviewForm && (
+        <AddReviewForm technician={technician} onSuccess={handleReviewSuccess} />
+      )}
+
       {reviews && reviews.length > 0 ? (
         <>
           <div className="space-y-6">
