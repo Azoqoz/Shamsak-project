@@ -240,6 +240,7 @@ const enTranslations = {
     selectCity: 'Select city',
     address: 'Address',
     oldPassword: 'Current Password',
+    currentPassword: 'Current Password',
     newPassword: 'New Password',
     confirmPassword: 'Confirm New Password',
     passwordChanged: 'Password changed successfully',
@@ -251,6 +252,7 @@ const enTranslations = {
     passwordsMustMatch: 'Passwords must match',
     passwordSuccess: 'Password changed successfully',
     notLoggedIn: 'You need to log in to view your profile',
+    passwordRequirements: 'Password must be at least 6 characters',
   },
 };
 
@@ -499,6 +501,7 @@ const arTranslations = {
     selectCity: 'اختر المدينة',
     address: 'العنوان',
     oldPassword: 'كلمة المرور الحالية',
+    currentPassword: 'كلمة المرور الحالية',
     newPassword: 'كلمة المرور الجديدة',
     confirmPassword: 'تأكيد كلمة المرور الجديدة',
     passwordChanged: 'تم تغيير كلمة المرور بنجاح',
@@ -510,6 +513,7 @@ const arTranslations = {
     passwordsMustMatch: 'يجب أن تتطابق كلمات المرور',
     passwordSuccess: 'تم تغيير كلمة المرور بنجاح',
     notLoggedIn: 'تحتاج إلى تسجيل الدخول لعرض ملفك الشخصي',
+    passwordRequirements: 'يجب أن تكون كلمة المرور على الأقل 6 أحرف',
   },
 };
 
