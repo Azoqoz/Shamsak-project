@@ -22,67 +22,149 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [error, setError] = useState<Error | null>(null);
   const { toast } = useToast();
 
-  // Fetch current user on mount
+  // Fetch current user on mount and periodically check session
   useEffect(() => {
+    let mounted = true;
+    let sessionCheckInterval: NodeJS.Timeout | null = null;
+
     const fetchCurrentUser = async () => {
+      if (!mounted) return;
+      
       try {
         setLoading(true);
         setError(null);
-        const response = await apiRequest('GET', '/api/auth/user');
+        
+        const response = await fetch('/api/auth/user', {
+          credentials: 'include',
+          cache: 'no-cache',
+          headers: {
+            'Accept': 'application/json',
+            'Cache-Control': 'no-cache'
+          }
+        });
         
         if (response.ok) {
           const userData = await response.json();
-          setUser(userData);
+          if (mounted) setUser(userData);
+          
+          // Set up a periodic session check if user is logged in
+          if (!sessionCheckInterval && mounted) {
+            sessionCheckInterval = setInterval(() => {
+              // Silently check session status every 5 minutes
+              fetch('/api/auth/user', { 
+                credentials: 'include',
+                cache: 'no-cache',
+                headers: { 'Accept': 'application/json' }
+              }).then(res => {
+                if (!res.ok && user !== null && mounted) {
+                  // Session expired
+                  setUser(null);
+                  clearInterval(sessionCheckInterval!);
+                  sessionCheckInterval = null;
+                }
+              }).catch(err => {
+                console.warn("Session check error:", err);
+              });
+            }, 5 * 60 * 1000); // 5 minutes
+          }
         } else {
           // Not authenticated, that's okay
-          setUser(null);
+          if (mounted) setUser(null);
         }
       } catch (error) {
         console.error('Error fetching current user:', error);
-        setUser(null);
+        if (mounted) {
+          setUser(null);
+          setError(error instanceof Error ? error : new Error('Authentication error'));
+        }
       } finally {
-        setLoading(false);
+        if (mounted) setLoading(false);
       }
     };
 
     fetchCurrentUser();
+    
+    // Cleanup
+    return () => {
+      mounted = false;
+      if (sessionCheckInterval) {
+        clearInterval(sessionCheckInterval);
+      }
+    };
   }, []);
 
   const login = async (username: string, password: string): Promise<User> => {
     try {
+      setLoading(true);
       setError(null);
-      const response = await apiRequest('POST', '/api/auth/login', { username, password });
+      
+      // Direct fetch for better control over the request
+      const response = await fetch('/api/auth/login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json'
+        },
+        body: JSON.stringify({ username, password }),
+        credentials: 'include',
+        cache: 'no-cache'
+      });
       
       if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.message || 'Login failed');
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(errorData?.message || `Login failed (${response.status})`);
       }
       
       const userData = await response.json();
       setUser(userData);
       
       // After successful login, re-fetch user data to ensure session is working
-      setTimeout(async () => {
+      // Use a more robust approach with retries
+      const validateSession = async (attempt = 1, maxAttempts = 3): Promise<void> => {
+        if (attempt > maxAttempts) {
+          console.error('Max session validation attempts reached');
+          return;
+        }
+        
         try {
-          const userCheckResponse = await apiRequest('GET', '/api/auth/user');
+          const userCheckResponse = await fetch('/api/auth/user', {
+            credentials: 'include',
+            cache: 'no-cache',
+            headers: { 'Accept': 'application/json' }
+          });
+          
           if (userCheckResponse.ok) {
             const updatedUserData = await userCheckResponse.json();
             setUser(updatedUserData);
+            console.log('Session validated successfully');
+          } else {
+            // If session validation fails, retry after a delay
+            console.warn(`Session validation failed (${userCheckResponse.status}), retrying...`);
+            setTimeout(() => validateSession(attempt + 1, maxAttempts), 500 * attempt);
           }
         } catch (e) {
           console.error('Error validating session after login:', e);
+          // Retry after a delay
+          setTimeout(() => validateSession(attempt + 1, maxAttempts), 500 * attempt);
         }
-      }, 100);
+      };
+      
+      // Start session validation after a short delay
+      setTimeout(() => validateSession(), 300);
       
       return userData;
     } catch (error) {
       if (error instanceof Error) {
         setError(error);
+        console.error('Login error:', error);
         throw error;
       }
-      const newError = new Error('Login failed');
+      const newError = new Error('Login failed due to an unexpected error');
       setError(newError);
+      console.error('Login error (generic):', error);
       throw newError;
+    } finally {
+      setLoading(false);
     }
   };
 
