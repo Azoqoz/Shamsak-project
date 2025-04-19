@@ -37,20 +37,24 @@ import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
 import { CheckCircle2, StarIcon, Drill, Clock } from 'lucide-react';
 
-// Extend the schema with validation
-const extendedSchema = insertServiceRequestSchema.extend({
+// Create a custom validation schema for the form
+// This is separate from the insertServiceRequestSchema which is used for API requests
+const formSchema = z.object({
   name: z.string().min(1, { message: 'serviceForm.requiredField' }),
   phone: z.string().min(1, { message: 'serviceForm.requiredField' }),
   email: z.string().min(1, { message: 'serviceForm.requiredField' }).email({ message: 'serviceForm.invalidEmail' }),
   city: z.string().min(1, { message: 'serviceForm.requiredField' }),
   propertyType: z.string().min(1, { message: 'serviceForm.requiredField' }),
   serviceType: z.string().min(1, { message: 'serviceForm.requiredField' }),
+  address: z.string().optional(),
+  additionalDetails: z.string().optional(),
   terms: z.boolean().refine(val => val === true, {
     message: 'serviceForm.requiredField',
   }),
 });
 
-type FormValues = z.infer<typeof extendedSchema>;
+// Define FormValues based on our custom schema
+type FormValues = z.infer<typeof formSchema>;
 
 // Helper function to render star ratings
 const renderStars = (rating: number) => {
@@ -111,7 +115,7 @@ const ServiceRequestForm = () => {
   };
 
   const form = useForm<FormValues>({
-    resolver: zodResolver(extendedSchema),
+    resolver: zodResolver(formSchema),
     defaultValues,
   });
 
@@ -224,9 +228,6 @@ const ServiceRequestForm = () => {
       return;
     }
     
-    // Omit the terms field as it's only for UI validation
-    const { terms, ...requestData } = data;
-    
     // Check if user is logged in
     if (!user) {
       toast({
@@ -237,23 +238,33 @@ const ServiceRequestForm = () => {
       console.log("Submission blocked: User not logged in");
       return;
     }
-
-    // Add technician ID and price to request data along with required fields
-    const bookingData = {
-      ...requestData,
-      technicianId: selectedTechnicianId,
-      price: servicePrice,
-      // Add missing required fields that aren't in the form UI
+    
+    // Omit the terms field as it's only for UI validation
+    const { terms, ...formData } = data;
+    
+    // Create a properly typed service request object that matches InsertServiceRequest
+    const serviceRequest: InsertServiceRequest = {
       userId: user.id,
-      title: `${requestData.serviceType} Service Request`,
-      description: requestData.additionalDetails || `Service request for ${requestData.serviceType}`,
-      address: requestData.address || requestData.city // Use city as address if no specific address is provided
+      technicianId: selectedTechnicianId,
+      title: `${formData.serviceType} Service Request`,
+      description: formData.additionalDetails || `Service request for ${formData.serviceType}`,
+      address: formData.address || formData.city,
+      city: formData.city,
+      name: formData.name,
+      email: formData.email,
+      phone: formData.phone,
+      serviceType: formData.serviceType as any, // Cast to match expected enum
+      propertyType: formData.propertyType as any, // Cast to match expected enum
+      // Other required fields with defaults or null values
+      latitude: null,
+      longitude: null,
+      scheduledDate: null
     };
     
-    console.log("Sending booking data:", bookingData);
+    console.log("Sending service request:", serviceRequest);
     
     try {
-      mutate(bookingData);
+      mutate(serviceRequest);
     } catch (error) {
       console.error("Error in mutation:", error);
       toast({
