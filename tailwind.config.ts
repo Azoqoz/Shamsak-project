@@ -4,11 +4,6 @@ export default {
   darkMode: ["class"],
   content: ["./client/index.html", "./client/src/**/*.{js,jsx,ts,tsx}"],
   theme: {
-    fontFamily: {
-      'sans': ['Poppins', 'Cairo', 'system-ui', 'sans-serif'],
-      'arabic': ['Cairo', 'sans-serif'],
-      'english': ['Poppins', 'sans-serif'],
-    },
     extend: {
       borderRadius: {
         lg: "var(--radius)",
@@ -16,8 +11,6 @@ export default {
         sm: "calc(var(--radius) - 4px)",
       },
       colors: {
-        ecoGreen: "hsl(150 70% 50%)",
-        sunnyYellow: "hsl(48 100% 50%)",
         background: "hsl(var(--background))",
         foreground: "hsl(var(--foreground))",
         card: {
