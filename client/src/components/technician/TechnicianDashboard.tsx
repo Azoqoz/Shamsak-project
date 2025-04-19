@@ -67,7 +67,7 @@ const ServiceRequestDetailsDialog = ({ serviceRequest, userId }: { serviceReques
       return await res.json();
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['/api/service-requests/technician', userId] });
+      queryClient.invalidateQueries({ queryKey: ['/api/service-requests/technician', technician.id] });
       toast({
         variant: 'success',
         title: t('common.success'),
@@ -196,7 +196,7 @@ const TechnicianDashboard = ({ technician }: { technician: Technician }) => {
     isLoading: serviceRequestsLoading,
     error: serviceRequestsError,
   } = useQuery<ServiceRequest[]>({
-    queryKey: [`/api/service-requests/technician/${technician.id}`],
+    queryKey: ['/api/service-requests/technician', technician.id],
   });
 
   // Mutation to update technician availability
