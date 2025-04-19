@@ -4,8 +4,8 @@ import { IStorage } from '../storage';
 import { stripe } from '../routes';
 import { insertServiceRequestSchema } from '@shared/schema';
 
-// Add new status 'paid' to the enum
-const SERVICE_REQUEST_STATUSES = ['pending', 'assigned', 'completed', 'cancelled', 'paid'] as const;
+// Add all service request statuses to the enum
+const SERVICE_REQUEST_STATUSES = ['pending', 'assigned', 'in_progress', 'completed', 'cancelled', 'paid'] as const;
 
 export function registerServiceRequestRoutes(app: Express, prefix: string, storage: IStorage) {
   // Get all service requests (admin)
