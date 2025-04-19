@@ -38,7 +38,12 @@ import { CheckCircle2, StarIcon, Drill, Clock } from 'lucide-react';
 
 // Extend the schema with validation
 const extendedSchema = insertServiceRequestSchema.extend({
-  email: z.string().email({ message: 'serviceForm.invalidEmail' }),
+  name: z.string().min(1, { message: 'serviceForm.requiredField' }),
+  phone: z.string().min(1, { message: 'serviceForm.requiredField' }),
+  email: z.string().min(1, { message: 'serviceForm.requiredField' }).email({ message: 'serviceForm.invalidEmail' }),
+  city: z.string().min(1, { message: 'serviceForm.requiredField' }),
+  propertyType: z.string().min(1, { message: 'serviceForm.requiredField' }),
+  serviceType: z.string().min(1, { message: 'serviceForm.requiredField' }),
   terms: z.boolean().refine(val => val === true, {
     message: 'serviceForm.requiredField',
   }),
@@ -204,6 +209,8 @@ const ServiceRequestForm = () => {
   });
 
   const onSubmit = (data: FormValues) => {
+    console.log("Form submitted with data:", data);
+    
     // Check if a technician is selected
     if (!selectedTechnicianId || !servicePrice) {
       toast({
@@ -211,6 +218,7 @@ const ServiceRequestForm = () => {
         description: t('serviceForm.noTechnicianSelected'),
         variant: 'destructive',
       });
+      console.log("Submission blocked: No technician or price selected");
       return;
     }
     
@@ -224,7 +232,18 @@ const ServiceRequestForm = () => {
       price: servicePrice
     };
     
-    mutate(bookingData);
+    console.log("Sending booking data:", bookingData);
+    
+    try {
+      mutate(bookingData);
+    } catch (error) {
+      console.error("Error in mutation:", error);
+      toast({
+        title: t('common.error'),
+        description: "Error submitting form: " + (error instanceof Error ? error.message : "Unknown error"),
+        variant: 'destructive',
+      });
+    }
   };
 
   // Reset success state when user starts typing again
@@ -252,7 +271,14 @@ const ServiceRequestForm = () => {
           
           <Form {...form}>
             <form 
-              onSubmit={form.handleSubmit(onSubmit)} 
+              onSubmit={form.handleSubmit(onSubmit, errors => {
+                console.log("Form validation errors:", errors);
+                toast({
+                  title: t('common.error'),
+                  description: t('serviceForm.requiredField'),
+                  variant: 'destructive',
+                });
+              })}
               className="bg-neutral-100 p-6 md:p-8 rounded-lg shadow-md"
             >
               <FormField
