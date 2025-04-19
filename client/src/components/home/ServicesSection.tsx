@@ -45,24 +45,31 @@ const ServicesSection = () => {
           {services.map((service, index) => (
             <div 
               key={index} 
-              className="bg-white p-6 rounded-lg shadow-md hover:shadow-lg transition-shadow"
+              className="bg-white p-6 rounded-lg shadow-md hover:shadow-lg transition-all hover:transform hover:-translate-y-1 group"
             >
-              <div className="bg-green-600 text-white p-4 rounded-full w-16 h-16 flex items-center justify-center mb-4 shadow-md">
-                {service.icon}
+              <div className="relative mb-6">
+                <div className="absolute inset-0 bg-green-200 rounded-lg opacity-50 transform group-hover:scale-110 transition-transform"></div>
+                <div className="bg-gradient-to-r from-green-500 to-green-600 text-white p-5 rounded-xl w-20 h-20 flex items-center justify-center shadow-md relative z-10 transform group-hover:rotate-3 transition-transform">
+                  {service.icon}
+                </div>
               </div>
-              <h3 className="text-xl font-bold mb-2">
+              <h3 className="text-2xl font-bold mb-3 text-gray-800 group-hover:text-green-600 transition-colors">
                 {t(service.titleKey)}
               </h3>
-              <p className="text-neutral-800 mb-4">
-                {t(service.descriptionKey)}
-              </p>
-              <Link 
-                href={`/request-service?service=${service.type}`} 
-                className="text-primary hover:underline flex items-center"
-              >
-                {t('services.requestService')}
-                <ArrowRight className={`${direction === 'rtl' ? 'mr-2 transform rotate-180' : 'ml-2'} h-4 w-4`} />
-              </Link>
+              <div className="bg-gray-50 p-4 rounded-md my-4 min-h-[100px] flex items-center">
+                <p className="text-neutral-700">
+                  {t(service.descriptionKey)}
+                </p>
+              </div>
+              <div className="mt-4 flex justify-end">
+                <Link 
+                  href={`/request-service?service=${service.type}`} 
+                  className="bg-primary text-white px-5 py-2 rounded-md inline-flex items-center hover:bg-opacity-90 transition-colors group-hover:shadow-md"
+                >
+                  {t('services.requestService')}
+                  <ArrowRight className={`${direction === 'rtl' ? 'mr-2 transform rotate-180' : 'ml-2'} h-4 w-4 transform group-hover:translate-x-1 transition-transform`} />
+                </Link>
+              </div>
             </div>
           ))}
         </div>

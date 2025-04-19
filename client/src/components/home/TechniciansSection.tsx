@@ -72,9 +72,9 @@ const TechniciansSection = () => {
             ))
           ) : technicians && technicians.length > 0 ? (
             technicians.map((technician) => (
-              <div key={technician.id} className="bg-white p-6 rounded-lg shadow-md hover:shadow-lg transition-shadow">
-                <div className="mb-4 relative">
-                  <div className="w-24 h-24 rounded-full mx-auto bg-gray-200 flex items-center justify-center overflow-hidden">
+              <div key={technician.id} className="bg-white p-6 rounded-lg shadow-md hover:shadow-lg transition-all hover:transform hover:scale-[1.02] border border-transparent hover:border-green-100">
+                <div className="mb-4 relative flex justify-center">
+                  <div className="w-28 h-28 rounded-full bg-gradient-to-br from-green-50 to-green-100 flex items-center justify-center overflow-hidden shadow-md ring-2 ring-green-200 ring-opacity-50">
                     {technician.profileImage ? (
                       <img 
                         src={technician.profileImage} 
@@ -89,31 +89,44 @@ const TechniciansSection = () => {
                         }}
                       />
                     ) : (
-                      <span className="text-4xl text-gray-400 font-bold">
+                      <span className="text-5xl text-green-500 font-bold">
                         {technician.user.name.charAt(0).toUpperCase()}
                       </span>
                     )}
-                    <span className="fallback-initial hidden text-4xl text-gray-400 font-bold">
+                    <span className="fallback-initial hidden text-5xl text-green-500 font-bold">
                       {technician.user.name.charAt(0).toUpperCase()}
                     </span>
                   </div>
-
-                </div>
-                <div className="text-center">
-                  <div className="mb-1">
-                    <h3 className="text-xl font-bold">{technician.user.name}</h3>
+                  <div className="absolute -bottom-2 bg-green-100 text-green-800 px-3 py-1 rounded-full text-xs font-semibold">
+                    {technician.specialty}
                   </div>
-                  <p className="text-primary mb-2">{technician.user.city}</p>
+                </div>
+                <div className="text-center mt-6">
+                  <div className="mb-1">
+                    <h3 className="text-xl font-bold text-gray-800">{technician.user.name}</h3>
+                  </div>
+                  <p className="text-primary mb-2 flex items-center justify-center">
+                    <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                    </svg>
+                    {technician.user.city}
+                  </p>
                   <div className="flex justify-center mb-3">
-                    <div className="flex text-accent">
+                    <div className="flex text-yellow-500">
                       {renderStars(technician.rating || 0)}
                     </div>
-                    <span className="text-sm text-neutral-800 ml-2">
+                    <span className="text-sm text-neutral-600 ml-2">
                       {technician.rating ? `${technician.rating.toFixed(1)} (${technician.reviewCount} ${t('technicians.reviews')})` : 'New'}
                     </span>
                   </div>
-                  <p className="text-sm text-neutral-800 mb-4">{technician.bio}</p>
-                  <Link href={`/technicians/${technician.id}`} className="text-primary hover:underline">
+                  <div className="bg-gray-50 p-3 rounded-md mb-4 h-16 overflow-hidden text-ellipsis">
+                    <p className="text-sm text-neutral-600 line-clamp-2">{technician.bio}</p>
+                  </div>
+                  <Link 
+                    href={`/technicians/${technician.id}`} 
+                    className="bg-primary text-white px-5 py-2 rounded-md inline-block hover:bg-opacity-90 transition-colors text-sm font-medium"
+                  >
                     {t('technicians.viewProfile')}
                   </Link>
                 </div>
