@@ -8,8 +8,33 @@ import {
   Contact, 
   InsertContact,
   Review,
-  InsertReview
+  InsertReview,
+  Notification,
+  InsertNotification,
+  Payment,
+  InsertPayment,
+  TechnicianAvailability,
+  InsertTechnicianAvailability,
+  ServiceType,
+  InsertServiceType,
+  MediaGallery,
+  InsertMediaGallery,
+  users,
+  technicians,
+  serviceRequests,
+  contacts,
+  reviews,
+  notifications,
+  payments,
+  technicianAvailability,
+  serviceTypes,
+  mediaGallery
 } from "@shared/schema";
+import { db } from "./db";
+import { eq, desc, asc, and, isNull, not, or, like, lt, gt, gte, lte } from "drizzle-orm";
+import session from "express-session";
+import connectPg from "connect-pg-simple";
+import { pool } from "./db";
 
 // Interface for all storage operations
 export interface IStorage {
@@ -503,4 +528,326 @@ export class MemStorage implements IStorage {
   }
 }
 
-export const storage = new MemStorage();
+// Database implementation of the storage interface using Drizzle ORM
+export class DatabaseStorage implements IStorage {
+  sessionStore: session.Store;
+
+  constructor() {
+    const PostgresSessionStore = connectPg(session);
+    this.sessionStore = new PostgresSessionStore({ 
+      pool, 
+      createTableIfMissing: true 
+    });
+  }
+
+  // User methods
+  async getUser(id: number): Promise<User | undefined> {
+    const [user] = await db.select().from(users).where(eq(users.id, id));
+    return user || undefined;
+  }
+
+  async getUserByUsername(username: string): Promise<User | undefined> {
+    const [user] = await db.select().from(users).where(eq(users.username, username));
+    return user || undefined;
+  }
+
+  async createUser(insertUser: InsertUser): Promise<User> {
+    const [user] = await db.insert(users).values({
+      ...insertUser,
+      updatedAt: new Date()
+    }).returning();
+    return user;
+  }
+
+  async updateUser(id: number, userData: Partial<User>): Promise<User | undefined> {
+    const [user] = await db
+      .update(users)
+      .set({
+        ...userData,
+        updatedAt: new Date(),
+      })
+      .where(eq(users.id, id))
+      .returning();
+    return user || undefined;
+  }
+
+  async getUsers(): Promise<User[]> {
+    return await db.select().from(users);
+  }
+
+  // Technician methods
+  async getTechnician(id: number): Promise<(Technician & { user: User }) | undefined> {
+    const [technician] = await db
+      .select()
+      .from(technicians)
+      .where(eq(technicians.id, id));
+
+    if (!technician) return undefined;
+
+    const [user] = await db
+      .select()
+      .from(users)
+      .where(eq(users.id, technician.userId));
+
+    if (!user) return undefined;
+
+    return { ...technician, user };
+  }
+
+  async getTechnicianByUserId(userId: number): Promise<Technician | undefined> {
+    const [technician] = await db
+      .select()
+      .from(technicians)
+      .where(eq(technicians.userId, userId));
+    return technician || undefined;
+  }
+
+  async getTechnicians(): Promise<(Technician & { user: User })[]> {
+    const techs = await db.select().from(technicians);
+    const result: (Technician & { user: User })[] = [];
+
+    for (const tech of techs) {
+      const [user] = await db
+        .select()
+        .from(users)
+        .where(eq(users.id, tech.userId));
+
+      if (user) {
+        result.push({ ...tech, user });
+      }
+    }
+
+    return result;
+  }
+
+  async getFeaturedTechnicians(limit: number = 3): Promise<(Technician & { user: User })[]> {
+    const techs = await db
+      .select()
+      .from(technicians)
+      .orderBy(desc(technicians.rating))
+      .limit(limit);
+
+    const result: (Technician & { user: User })[] = [];
+
+    for (const tech of techs) {
+      const [user] = await db
+        .select()
+        .from(users)
+        .where(eq(users.id, tech.userId));
+
+      if (user) {
+        result.push({ ...tech, user });
+      }
+    }
+
+    return result;
+  }
+
+  async createTechnician(insertTechnician: InsertTechnician): Promise<Technician> {
+    const [technician] = await db
+      .insert(technicians)
+      .values({
+        ...insertTechnician,
+        updatedAt: new Date(),
+      })
+      .returning();
+    return technician;
+  }
+
+  async updateTechnician(id: number, technicianData: Partial<Technician>): Promise<Technician | undefined> {
+    const [technician] = await db
+      .update(technicians)
+      .set({
+        ...technicianData,
+        updatedAt: new Date(),
+      })
+      .where(eq(technicians.id, id))
+      .returning();
+    return technician || undefined;
+  }
+
+  async updateTechnicianRating(id: number, rating: number): Promise<Technician | undefined> {
+    // Get the current technician
+    const [technician] = await db
+      .select()
+      .from(technicians)
+      .where(eq(technicians.id, id));
+
+    if (!technician) return undefined;
+
+    // Calculate new rating
+    const currentRating = technician.rating || 0;
+    const currentReviews = technician.reviewCount || 0;
+    const newRating = currentReviews === 0
+      ? rating
+      : (currentRating * currentReviews + rating) / (currentReviews + 1);
+
+    // Update the technician with new rating
+    const [updatedTechnician] = await db
+      .update(technicians)
+      .set({
+        rating: newRating,
+        reviewCount: currentReviews + 1,
+        updatedAt: new Date(),
+      })
+      .where(eq(technicians.id, id))
+      .returning();
+
+    return updatedTechnician || undefined;
+  }
+
+  // Service Request methods
+  async getServiceRequest(id: number): Promise<ServiceRequest | undefined> {
+    const [serviceRequest] = await db
+      .select()
+      .from(serviceRequests)
+      .where(eq(serviceRequests.id, id));
+    return serviceRequest || undefined;
+  }
+
+  async getServiceRequests(): Promise<ServiceRequest[]> {
+    return await db
+      .select()
+      .from(serviceRequests)
+      .orderBy(desc(serviceRequests.createdAt));
+  }
+
+  async getServiceRequestsByTechnician(technicianId: number): Promise<ServiceRequest[]> {
+    return await db
+      .select()
+      .from(serviceRequests)
+      .where(eq(serviceRequests.technicianId, technicianId))
+      .orderBy(desc(serviceRequests.createdAt));
+  }
+
+  async getUserServiceRequests(userId: number): Promise<ServiceRequest[]> {
+    return await db
+      .select()
+      .from(serviceRequests)
+      .where(eq(serviceRequests.userId, userId))
+      .orderBy(desc(serviceRequests.createdAt));
+  }
+
+  async createServiceRequest(insertServiceRequest: InsertServiceRequest): Promise<ServiceRequest> {
+    const [serviceRequest] = await db
+      .insert(serviceRequests)
+      .values({
+        ...insertServiceRequest,
+        updatedAt: new Date(),
+      })
+      .returning();
+    return serviceRequest;
+  }
+
+  async updateServiceRequestStatus(id: number, status: string): Promise<ServiceRequest | undefined> {
+    const [serviceRequest] = await db
+      .update(serviceRequests)
+      .set({
+        status: status as any, // Type cast to handle enum
+        updatedAt: new Date(),
+      })
+      .where(eq(serviceRequests.id, id))
+      .returning();
+    return serviceRequest || undefined;
+  }
+
+  async assignTechnicianToServiceRequest(id: number, technicianId: number): Promise<ServiceRequest | undefined> {
+    const [serviceRequest] = await db
+      .update(serviceRequests)
+      .set({
+        technicianId,
+        status: 'assigned' as any, // Type cast to handle enum
+        updatedAt: new Date(),
+      })
+      .where(eq(serviceRequests.id, id))
+      .returning();
+    return serviceRequest || undefined;
+  }
+
+  async updateServiceRequestPaymentIntent(id: number, paymentIntentId: string): Promise<ServiceRequest | undefined> {
+    const [serviceRequest] = await db
+      .update(serviceRequests)
+      .set({
+        paymentIntentId,
+        updatedAt: new Date(),
+      })
+      .where(eq(serviceRequests.id, id))
+      .returning();
+    return serviceRequest || undefined;
+  }
+
+  // Contact methods
+  async getContact(id: number): Promise<Contact | undefined> {
+    const [contact] = await db
+      .select()
+      .from(contacts)
+      .where(eq(contacts.id, id));
+    return contact || undefined;
+  }
+
+  async getContacts(): Promise<Contact[]> {
+    return await db
+      .select()
+      .from(contacts)
+      .orderBy(desc(contacts.createdAt));
+  }
+
+  async createContact(insertContact: InsertContact): Promise<Contact> {
+    const [contact] = await db
+      .insert(contacts)
+      .values({
+        ...insertContact,
+        updatedAt: new Date(),
+      })
+      .returning();
+    return contact;
+  }
+
+  async markContactResponded(id: number, responded: boolean = true): Promise<Contact | undefined> {
+    const [contact] = await db
+      .update(contacts)
+      .set({
+        responded,
+        respondedAt: responded ? new Date() : null,
+        updatedAt: new Date(),
+      })
+      .where(eq(contacts.id, id))
+      .returning();
+    return contact || undefined;
+  }
+
+  // Review methods
+  async getReview(id: number): Promise<Review | undefined> {
+    const [review] = await db
+      .select()
+      .from(reviews)
+      .where(eq(reviews.id, id));
+    return review || undefined;
+  }
+
+  async getReviewsByTechnician(technicianId: number): Promise<Review[]> {
+    return await db
+      .select()
+      .from(reviews)
+      .where(eq(reviews.technicianId, technicianId))
+      .orderBy(desc(reviews.createdAt));
+  }
+
+  async createReview(insertReview: InsertReview): Promise<Review> {
+    const [review] = await db
+      .insert(reviews)
+      .values({
+        ...insertReview,
+        updatedAt: new Date(),
+      })
+      .returning();
+    
+    // Update technician rating
+    await this.updateTechnicianRating(review.technicianId, review.rating);
+    
+    return review;
+  }
+}
+
+// Use the database storage implementation
+export const storage = new DatabaseStorage();
