@@ -250,6 +250,7 @@ const enTranslations = {
     newPasswordRequired: 'New password is required',
     passwordsMustMatch: 'Passwords must match',
     passwordSuccess: 'Password changed successfully',
+    notLoggedIn: 'You need to log in to view your profile',
   },
 };
 
