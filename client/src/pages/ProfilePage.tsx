@@ -9,6 +9,7 @@ import { useToast } from '@/hooks/use-toast';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { CITIES } from '@/lib/constants';
 import { useQuery } from '@tanstack/react-query';
+import { useLocation } from 'wouter';
 
 import {
   Form,
@@ -95,6 +96,7 @@ const ProfilePage = () => {
   const { direction } = useLanguage();
   const { user, loading: isLoading, updateProfile, changePassword } = useAuth();
   const { toast } = useToast();
+  const [, setLocation] = useLocation();
   const [profileUpdateError, setProfileUpdateError] = useState<string>('');
   const [passwordUpdateError, setPasswordUpdateError] = useState<string>('');
   const [isUpdatingProfile, setIsUpdatingProfile] = useState(false);
@@ -193,14 +195,22 @@ const ProfilePage = () => {
     );
   }
 
+  // Redirect to login if not authenticated
+  useEffect(() => {
+    if (!isLoading && !user) {
+      toast({
+        variant: "destructive",
+        title: t('common.error'),
+        description: t('profile.notLoggedIn')
+      });
+      setLocation('/login');
+    }
+  }, [isLoading, user, setLocation, toast, t]);
+  
   if (!user) {
     return (
       <div className="min-h-[70vh] flex items-center justify-center">
-        <Alert className="max-w-md">
-          <AlertDescription>
-            {t('profile.notLoggedIn')}
-          </AlertDescription>
-        </Alert>
+        <LoaderCircle className="h-12 w-12 animate-spin text-primary" />
       </div>
     );
   }
