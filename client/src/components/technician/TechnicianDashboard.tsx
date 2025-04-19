@@ -5,6 +5,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { apiRequest } from '@/lib/queryClient';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { Technician, ServiceRequest } from '@shared/schema';
+import ServiceRequestProgress from '../service-requests/ServiceRequestProgress';
 
 import {
   Card,
@@ -136,6 +137,9 @@ const ServiceRequestDetailsDialog = ({ serviceRequest, userId, technicianId }: {
       </DialogHeader>
       
       <div className="space-y-4">
+        {/* Progress tracker */}
+        <ServiceRequestProgress serviceRequest={serviceRequest} className="mb-6" />
+      
         <div className="grid grid-cols-2 gap-4">
           <div>
             <h4 className="text-sm font-medium">{t('profile.client')}</h4>
