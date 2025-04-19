@@ -6,6 +6,7 @@ import { registerServiceRequestRoutes } from "./controllers/serviceRequests";
 import { registerTechnicianRoutes } from "./controllers/technicians";
 import { registerContactRoutes } from "./controllers/contacts";
 import { registerAuthRoutes } from "./controllers/auth";
+import { registerReviewRoutes } from "./controllers/reviews";
 
 // Initialize Stripe with the secret key
 if (!process.env.STRIPE_SECRET_KEY) {
@@ -25,6 +26,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   registerTechnicianRoutes(app, apiPrefix, storage);
   registerContactRoutes(app, apiPrefix, storage);
   registerAuthRoutes(app, apiPrefix, storage);
+  registerReviewRoutes(app, apiPrefix, storage);
 
   // Health check route
   app.get(`${apiPrefix}/health`, (req, res) => {

@@ -158,17 +158,19 @@ export class MemStorage implements IStorage {
     });
 
     // Create some service requests
-    const serviceTypes = ["installation", "maintenance", "assessment"];
+    const requestServiceTypes = ["installation", "maintenance", "assessment"];
     const propertyTypes = ["residential", "commercial"];
     
     for (let i = 0; i < 5; i++) {
       const serviceRequest: ServiceRequest = {
         id: this.currentIds.serviceRequest++,
-        serviceType: serviceTypes[i % serviceTypes.length],
+        serviceType: requestServiceTypes[i % requestServiceTypes.length],
         name: `Customer ${i + 1}`,
         email: `customer${i + 1}@example.com`,
         phone: `+9669876543${i + 1}`,
         city: cities[i % cities.length],
+        latitude: "24.774265",
+        longitude: "46.738586",
         propertyType: propertyTypes[i % propertyTypes.length],
         additionalDetails: `Details for request ${i + 1}`,
         status: i < 2 ? "pending" : i < 4 ? "assigned" : "completed",
@@ -194,6 +196,61 @@ export class MemStorage implements IStorage {
       };
       this.contacts.set(contact.id, contact);
     }
+    
+    // Create sample reviews for each technician
+    const reviewComments = [
+      [
+        "Mohammed did an excellent job installing our solar panels. He was punctual, professional, and the entire installation was completed in just two days. His knowledge about solar energy systems is impressive, and he took the time to explain everything to us.",
+        "We had a great experience with Mohammed who installed solar panels on our villa. He was very meticulous and made sure everything was done correctly. The system has been working flawlessly since installation.",
+        "I'm very satisfied with the solar panel installation. Mohammed was friendly, efficient, and cleaned up everything after completing the job. My energy bills have dropped significantly!",
+        "Mohammed was recommended by a friend, and I'm glad I chose him for our solar panel installation. He was transparent about costs and timeline, and delivered exactly what was promised."
+      ],
+      [
+        "Khaled was extremely thorough in his energy assessment. He identified several areas where we could improve efficiency and provided a detailed report with cost-effective solutions.",
+        "I appreciated how Khaled explained complex energy concepts in simple terms. His recommendations were practical and have already resulted in noticeable savings on our electricity bill.",
+        "The commercial energy assessment provided by Khaled was comprehensive and revealed inefficiencies we weren't aware of. His expertise in solar systems for businesses is outstanding.",
+        "Khaled's assessment of our property was detailed and professional. He found several ways we could optimize our energy usage and provided clear steps for implementation."
+      ],
+      [
+        "Ahmed quickly identified and fixed an issue with our solar inverter. His maintenance service was prompt, and he explained what went wrong and how to prevent future problems.",
+        "Regular maintenance by Ahmed has kept our solar system running at peak efficiency. He's always responsive when we need him and very knowledgeable about troubleshooting.",
+        "Ahmed saved us from a potentially expensive repair by identifying an early issue during routine maintenance. His attention to detail is impressive.",
+        "When our solar system stopped working properly, Ahmed came the same day and resolved the issue quickly. His maintenance service is excellent and reasonably priced."
+      ]
+    ];
+    
+    const userNames = [
+      ["Abdullah Al-Qahtani", "Saad Al-Shamrani", "Fahad Al-Otaibi", "Majid Al-Dosari"],
+      ["Omar Al-Ghamdi", "Waleed Al-Shehri", "Nasser Al-Qahtani", "Saleh Al-Malki"],
+      ["Ibrahim Al-Harbi", "Turki Al-Mutairi", "Saud Al-Sahli", "Bandar Al-Qahtani"]
+    ];
+    
+    const ratings = [
+      [5, 4, 5, 4],
+      [5, 5, 5, 4],
+      [4, 5, 4, 4]
+    ];
+    
+    // Generate reviews for each technician
+    for (let techIndex = 0; techIndex < 3; techIndex++) {
+      const technicianId = techIndex + 1;
+      
+      // Each technician has 4 reviews
+      for (let reviewIndex = 0; reviewIndex < 4; reviewIndex++) {
+        const review: Review = {
+          id: this.currentIds.review++,
+          technicianId,
+          userId: reviewIndex + 5, // Just random user IDs starting from 5
+          userName: userNames[techIndex][reviewIndex],
+          serviceType: techIndex === 0 ? "installation" : techIndex === 1 ? "assessment" : "maintenance",
+          rating: ratings[techIndex][reviewIndex],
+          comment: reviewComments[techIndex][reviewIndex],
+          date: new Date(Date.now() - (reviewIndex * 7 + techIndex * 3) * 86400000) // Different dates for variety
+        };
+        
+        this.reviews.set(review.id, review);
+      }
+    }
   }
 
   // User methods
@@ -209,7 +266,12 @@ export class MemStorage implements IStorage {
 
   async createUser(insertUser: InsertUser): Promise<User> {
     const id = this.currentIds.user++;
-    const user: User = { ...insertUser, id, createdAt: new Date() };
+    const user: User = { 
+      ...insertUser, 
+      id, 
+      role: insertUser.role || 'user',
+      createdAt: new Date() 
+    };
     this.users.set(id, user);
     return user;
   }
