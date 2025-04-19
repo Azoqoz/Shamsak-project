@@ -8,6 +8,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import { useToast } from '@/hooks/use-toast';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { CITIES } from '@/lib/constants';
+import { useQuery } from '@tanstack/react-query';
 
 import {
   Form,
@@ -30,7 +31,8 @@ import {
   SelectTrigger,
   SelectValue
 } from '@/components/ui/select';
-import { LoaderCircle, UserCircle, Phone, Mail, MapPin, CheckCircle, LockKeyhole } from 'lucide-react';
+import { LoaderCircle, UserCircle, Phone, Mail, MapPin, CheckCircle, LockKeyhole, LayoutDashboard } from 'lucide-react';
+import TechnicianDashboard from '@/components/technician/TechnicianDashboard';
 
 // Schema for profile update form
 const profileFormSchema = z.object({
@@ -232,7 +234,13 @@ const ProfilePage = () => {
                   onValueChange={setActiveTab}
                   className="w-full"
                 >
-                  <TabsList className="grid w-full grid-cols-2">
+                  <TabsList className="grid w-full grid-cols-3">
+                    {user.role === 'technician' && (
+                      <TabsTrigger value="dashboard">
+                        <LayoutDashboard className="h-4 w-4 mr-2" />
+                        {t('technician.dashboard')}
+                      </TabsTrigger>
+                    )}
                     <TabsTrigger value="profile">
                       {t('profile.profileInfo')}
                     </TabsTrigger>
