@@ -68,7 +68,7 @@ const Footer = () => {
             <h3 className="text-lg font-bold mb-4">{t('footer.quickLinks')}</h3>
             <ul className="space-y-2">
               <li>
-                <Link href="/" className="text-neutral-300 hover:text-white transition-colors">
+                <Link href="/about" className="text-neutral-300 hover:text-white transition-colors">
                   {t('footer.aboutUs')}
                 </Link>
               </li>
@@ -78,12 +78,12 @@ const Footer = () => {
                 </Link>
               </li>
               <li>
-                <Link href="/login" className="text-neutral-300 hover:text-white transition-colors">
+                <Link href="/become-technician" className="text-neutral-300 hover:text-white transition-colors">
                   {t('footer.becomeTech')}
                 </Link>
               </li>
               <li>
-                <Link href="/" className="text-neutral-300 hover:text-white transition-colors">
+                <Link href="/faq" className="text-neutral-300 hover:text-white transition-colors">
                   {t('footer.faq')}
                 </Link>
               </li>
@@ -117,10 +117,10 @@ const Footer = () => {
               {t('footer.rights')}
             </p>
             <div className={`flex space-x-6 ${direction === 'rtl' ? 'space-x-reverse' : ''}`}>
-              <Link href="/" className="text-neutral-300 hover:text-white text-sm transition-colors">
+              <Link href="/privacy" className="text-neutral-300 hover:text-white text-sm transition-colors">
                 {t('footer.privacy')}
               </Link>
-              <Link href="/" className="text-neutral-300 hover:text-white text-sm transition-colors">
+              <Link href="/terms" className="text-neutral-300 hover:text-white text-sm transition-colors">
                 {t('footer.terms')}
               </Link>
             </div>

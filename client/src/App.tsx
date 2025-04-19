@@ -23,8 +23,8 @@ import BecomeTechnicianPage from "@/pages/BecomeTechnicianPage";
 import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
 
-// Wrapper component for ContactPage
-const ContactPageWrapper = (_props: RouteComponentProps) => <ContactPage />;
+// Wrapper component for ContactPage that correctly handles the props
+const ContactPageWrapper = (_props: RouteComponentProps) => <ContactPage inHomePage={false} />;
 
 function Router() {
   return (
@@ -37,7 +37,7 @@ function Router() {
           <Route path="/technicians" component={TechniciansPage} />
           <Route path="/technicians/:id" component={TechnicianProfilePage} />
           <Route path="/find-technicians" component={TechnicianMapPage} />
-          <Route path="/contact" component={ContactPage} />
+          <Route path="/contact" component={ContactPageWrapper} />
           <Route path="/login" component={LoginPage} />
           <Route path="/register" component={RegisterPage} />
           <Route path="/admin" component={AdminDashboardPage} />
