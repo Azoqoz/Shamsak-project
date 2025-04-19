@@ -73,7 +73,6 @@ const ServiceRequestDetailsDialog = ({ serviceRequest, userId, technicianId }: {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['/api/service-requests/technician', technicianId] });
       toast({
-        variant: 'success',
         title: t('common.success'),
         description: t('technician.jobUpdated'),
       });
@@ -217,9 +216,8 @@ const TechnicianDashboard = ({ technician }: { technician: Technician }) => {
     onSuccess: (data) => {
       queryClient.setQueryData([`/api/technicians/user/${technician.userId}`], data);
       toast({
-        variant: 'success',
         title: t('common.success'),
-        description: available 
+        description: data.available 
           ? t('technician.availabilityOn') 
           : t('technician.availabilityOff'),
       });
@@ -355,6 +353,7 @@ const TechnicianDashboard = ({ technician }: { technician: Technician }) => {
                                   <ServiceRequestDetailsDialog 
                                     serviceRequest={job} 
                                     userId={technician.userId} 
+                                    technicianId={technician.id}
                                   />
                                 </Dialog>
                               </TableCell>
@@ -406,6 +405,7 @@ const TechnicianDashboard = ({ technician }: { technician: Technician }) => {
                                   <ServiceRequestDetailsDialog 
                                     serviceRequest={job} 
                                     userId={technician.userId} 
+                                    technicianId={technician.id}
                                   />
                                 </Dialog>
                               </TableCell>
@@ -431,8 +431,9 @@ const TechnicianDashboard = ({ technician }: { technician: Technician }) => {
                           <TableRow>
                             <TableHead>{t('serviceForm.serviceType')}</TableHead>
                             <TableHead>{t('profile.client')}</TableHead>
-                            <TableHead>{t('checkout.status')}</TableHead>
+                            <TableHead>{t('profile.location')}</TableHead>
                             <TableHead>{t('technician.completedOn')}</TableHead>
+                            <TableHead>{t('checkout.paymentStatus')}</TableHead>
                             <TableHead>{t('common.actions')}</TableHead>
                           </TableRow>
                         </TableHeader>
@@ -443,13 +444,14 @@ const TechnicianDashboard = ({ technician }: { technician: Technician }) => {
                                 {t(`serviceForm.${job.serviceType}`)}
                               </TableCell>
                               <TableCell>{job.name}</TableCell>
+                              <TableCell>{job.city}</TableCell>
                               <TableCell>
-                                <Badge className={job.status === 'paid' ? 'bg-green-600' : ''}>
-                                  {t(`technician.status${job.status.charAt(0).toUpperCase() + job.status.slice(1)}`)}
-                                </Badge>
+                                {new Date(job.updatedAt || job.createdAt || '').toLocaleDateString()}
                               </TableCell>
                               <TableCell>
-                                {new Date(job.completedDate || job.updatedAt || job.createdAt || '').toLocaleDateString()}
+                                <Badge variant={job.status === 'paid' ? 'success' : 'outline'}>
+                                  {job.status === 'paid' ? t('checkout.paid') : t('checkout.pending')}
+                                </Badge>
                               </TableCell>
                               <TableCell>
                                 <Dialog>
@@ -460,7 +462,8 @@ const TechnicianDashboard = ({ technician }: { technician: Technician }) => {
                                   </DialogTrigger>
                                   <ServiceRequestDetailsDialog 
                                     serviceRequest={job} 
-                                    userId={technician.userId} 
+                                    userId={technician.userId}
+                                    technicianId={technician.id}
                                   />
                                 </Dialog>
                               </TableCell>
