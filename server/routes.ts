@@ -19,17 +19,20 @@ export const stripe = new Stripe(process.env.STRIPE_SECRET_KEY || '', {
 });
 
 export async function registerRoutes(app: Express): Promise<Server> {
-  // Set up session middleware
+  // Set up session middleware with improved configuration
   app.use(session({
     secret: process.env.SESSION_SECRET || 'shamsak-secret-key',
-    resave: true,
-    saveUninitialized: true,
+    resave: false,
+    saveUninitialized: false,
+    rolling: true, // Refresh cookie expiration on every response
+    store: storage.sessionStore, // Use the database for session storage
     cookie: {
       secure: process.env.NODE_ENV === 'production',
       httpOnly: true,
-      maxAge: 24 * 60 * 60 * 1000, // 24 hours
+      maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
       sameSite: 'lax'
-    }
+    },
+    name: 'shamsak.sid' // Custom name to avoid conflicts
   }));
   
   // API prefix for all routes

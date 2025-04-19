@@ -202,15 +202,7 @@ const TechnicianDashboard = ({ technician }: { technician: Technician }) => {
   } = useQuery<ServiceRequest[]>({
     queryKey: ['/api/service-requests/technician', technician.id],
     retry: 2,
-    retryDelay: 1000,
-    onError: (error: Error) => {
-      console.error("Error fetching service requests:", error);
-      toast({
-        variant: 'destructive',
-        title: t('common.error'),
-        description: error.message || t('serviceRequests.fetchError')
-      });
-    }
+    retryDelay: 1000
   });
 
   // Mutation to update technician availability
@@ -244,10 +236,16 @@ const TechnicianDashboard = ({ technician }: { technician: Technician }) => {
     },
   });
 
-  // Filter service requests by status
-  const pendingJobs = serviceRequests?.filter(req => req.status === 'assigned') || [];
-  const activeJobs = serviceRequests?.filter(req => req.status === 'in_progress') || [];
-  const completedJobs = serviceRequests?.filter(req => ['completed', 'paid'].includes(req.status)) || [];
+  // Filter service requests by status with proper typing
+  const pendingJobs = Array.isArray(serviceRequests) 
+    ? serviceRequests.filter((req: ServiceRequest) => req.status === 'assigned') 
+    : [];
+  const activeJobs = Array.isArray(serviceRequests) 
+    ? serviceRequests.filter((req: ServiceRequest) => req.status === 'in_progress') 
+    : [];
+  const completedJobs = Array.isArray(serviceRequests) 
+    ? serviceRequests.filter((req: ServiceRequest) => ['completed', 'paid'].includes(req.status)) 
+    : [];
 
   // Toggle technician availability
   const handleAvailabilityToggle = () => {
@@ -357,7 +355,7 @@ const TechnicianDashboard = ({ technician }: { technician: Technician }) => {
                           </TableRow>
                         </TableHeader>
                         <TableBody>
-                          {pendingJobs.map((job) => (
+                          {pendingJobs.map((job: ServiceRequest) => (
                             <TableRow key={job.id}>
                               <TableCell>
                                 {t(`serviceForm.${job.serviceType}`)}
