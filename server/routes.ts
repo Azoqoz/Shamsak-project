@@ -44,7 +44,6 @@ export async function registerRoutes(app: Express): Promise<Server> {
         console.log(`Session after ${req.method} ${req.path}:`, {
           id: req.sessionID, 
           userId: req.session.userId,
-          new: req.session.isNew,
           cookie: req.session.cookie?.originalMaxAge
         });
       }

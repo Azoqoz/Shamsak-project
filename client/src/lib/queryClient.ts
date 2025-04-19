@@ -1,5 +1,8 @@
 import { QueryClient, QueryFunction } from "@tanstack/react-query";
 
+/**
+ * Utility function to throw an error if the response is not OK
+ */
 async function throwIfResNotOk(res: Response) {
   if (!res.ok) {
     const text = (await res.text()) || res.statusText;
@@ -7,6 +10,9 @@ async function throwIfResNotOk(res: Response) {
   }
 }
 
+/**
+ * Make an API request with automatic retries for server errors
+ */
 export async function apiRequest(
   method: string,
   url: string,
@@ -70,13 +76,19 @@ export async function apiRequest(
 }
 
 type UnauthorizedBehavior = "returnNull" | "throw";
-export const getQueryFn: <T>(options: {
+
+/**
+ * Create a query function with proper generic typing
+ */
+export function getQueryFn<TQueryFnData>(options: {
   on401: UnauthorizedBehavior;
-}) => QueryFunction<T> =
-  ({ on401: unauthorizedBehavior }) =>
-  async ({ queryKey }) => {
+}): QueryFunction<TQueryFnData> {
+  const { on401: unauthorizedBehavior } = options;
+  
+  return async ({ queryKey }) => {
     const url = queryKey[0] as string;
-    const doFetch = async (attempt: number, maxAttempts: number = 2): Promise<T> => {
+    
+    const doFetch = async (attempt: number, maxAttempts: number = 2): Promise<TQueryFnData> => {
       try {
         console.log(`Query: GET ${url}${attempt > 0 ? ` (attempt ${attempt + 1})` : ''}`);
         
@@ -92,7 +104,7 @@ export const getQueryFn: <T>(options: {
 
         if (unauthorizedBehavior === "returnNull" && res.status === 401) {
           console.log(`Auth required for ${url}, configured to return null`);
-          return null as T;
+          return null as unknown as TQueryFnData;
         }
 
         if (!res.ok) {
@@ -128,11 +140,15 @@ export const getQueryFn: <T>(options: {
     
     return doFetch(0);
   };
+}
 
+/**
+ * Configure and export the global query client
+ */
 export const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
-      queryFn: getQueryFn({ on401: "throw" }),
+      queryFn: getQueryFn<unknown>({ on401: "throw" }),
       refetchInterval: false,
       refetchOnWindowFocus: true,
       staleTime: 60000, // 1 minute
