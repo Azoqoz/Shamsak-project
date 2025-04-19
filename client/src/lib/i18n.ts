@@ -509,6 +509,7 @@ const arTranslations = {
     newPasswordRequired: 'كلمة المرور الجديدة مطلوبة',
     passwordsMustMatch: 'يجب أن تتطابق كلمات المرور',
     passwordSuccess: 'تم تغيير كلمة المرور بنجاح',
+    notLoggedIn: 'تحتاج إلى تسجيل الدخول لعرض ملفك الشخصي',
   },
 };
 
