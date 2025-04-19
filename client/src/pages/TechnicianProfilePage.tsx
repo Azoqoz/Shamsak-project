@@ -237,7 +237,7 @@ const TechnicianProfilePage = () => {
                   </TabsContent>
 
                   <TabsContent value="reviews">
-                    <h2 className="text-2xl font-bold mb-6">{t('technicians.customerReviews')}</h2>
+                    <h2 className="text-2xl font-bold mb-6">Customer Reviews</h2>
                     <ReviewsSection technician={technician} />
                   </TabsContent>
 

@@ -108,7 +108,7 @@ const ReviewsSection = ({ technician }: ReviewsSectionProps) => {
                     </div>
                     <div className="text-right">
                       <Badge variant="outline" className="mb-2">
-                        {t(review.serviceType)}
+                        {review.serviceType.charAt(0).toUpperCase() + review.serviceType.slice(1)}
                       </Badge>
                       <p className="text-xs text-muted-foreground">
                         {review.date ? formatDistanceToNow(new Date(review.date), { addSuffix: true }) : ''}
@@ -128,14 +128,14 @@ const ReviewsSection = ({ technician }: ReviewsSectionProps) => {
                 onClick={showMoreReviews}
                 className="mx-auto"
               >
-                {t("Show More Reviews")}
+                Show More Reviews
               </Button>
             </div>
           )}
         </>
       ) : (
         <p className="text-center text-muted-foreground italic">
-          {t("No reviews yet for this technician.")}
+          No reviews yet for this technician.
         </p>
       )}
     </div>
