@@ -33,7 +33,7 @@ import {
   SelectValue
 } from '@/components/ui/select';
 import { LoaderCircle, UserCircle, Phone, Mail, MapPin, CheckCircle, LockKeyhole, LayoutDashboard } from 'lucide-react';
-import TechnicianDashboard from '@/components/technician/TechnicianDashboard';
+import { TechnicianDashboard } from '@/components/technician/TechnicianDashboard';
 import { Technician } from '@shared/schema';
 
 // Component to fetch technician data and render dashboard
@@ -86,7 +86,7 @@ const TechnicianDashboardLoader = ({ userId }: { userId: number }) => {
     );
   }
   
-  return <TechnicianDashboard technician={technician} />;
+  return <TechnicianDashboard userId={userId} />;
 };
 
 // Schema for profile update form
