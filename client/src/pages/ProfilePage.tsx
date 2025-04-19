@@ -273,12 +273,12 @@ const ProfilePage = () => {
               {/* Main content */}
               <div className="md:col-span-3">
                 <Tabs 
-                  defaultValue="profile" 
+                  defaultValue={user.role === 'technician' ? 'dashboard' : 'profile'} 
                   value={activeTab}
                   onValueChange={setActiveTab}
                   className="w-full"
                 >
-                  <TabsList className="grid w-full grid-cols-3">
+                  <TabsList className={`grid w-full ${user.role === 'technician' ? 'grid-cols-3' : 'grid-cols-2'}`}>
                     {user.role === 'technician' && (
                       <TabsTrigger value="dashboard">
                         <LayoutDashboard className="h-4 w-4 mr-2" />
