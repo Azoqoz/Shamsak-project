@@ -168,7 +168,7 @@ export function TechnicianServiceRequests({ technician }: TechnicianServiceReque
             <Badge className={getStatusColor(request.status)}>
               <div className="flex items-center">
                 {getStatusIcon(request.status)}
-                {t(`technician.status${request.status.charAt(0).toUpperCase() + request.status.slice(1)}`)}
+                {t(`technician.status${request.status === 'in_progress' ? 'InProgress' : request.status.charAt(0).toUpperCase() + request.status.slice(1)}`)}
               </div>
             </Badge>
           </div>
