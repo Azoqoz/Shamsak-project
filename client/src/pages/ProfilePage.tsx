@@ -32,8 +32,9 @@ import {
   SelectTrigger,
   SelectValue
 } from '@/components/ui/select';
-import { LoaderCircle, UserCircle, Phone, Mail, MapPin, CheckCircle, LockKeyhole, LayoutDashboard } from 'lucide-react';
+import { LoaderCircle, UserCircle, Phone, Mail, MapPin, CheckCircle, LockKeyhole, LayoutDashboard, ClipboardList } from 'lucide-react';
 import { TechnicianDashboard } from '@/components/technician/TechnicianDashboard';
+import { CustomerDashboard } from '@/components/service-requests/CustomerDashboard';
 import { Technician } from '@shared/schema';
 
 // Component to fetch technician data and render dashboard
@@ -293,16 +294,22 @@ const ProfilePage = () => {
               {/* Main content */}
               <div className="md:col-span-3">
                 <Tabs 
-                  defaultValue={user.role === 'technician' ? 'dashboard' : 'profile'} 
+                  defaultValue={user.role === 'technician' ? 'dashboard' : (user.role === 'user' ? 'services' : 'profile')} 
                   value={activeTab}
                   onValueChange={setActiveTab}
                   className="w-full"
                 >
-                  <TabsList className={`grid w-full ${user.role === 'technician' ? 'grid-cols-3' : 'grid-cols-2'}`}>
+                  <TabsList className={`grid w-full ${user.role === 'technician' ? 'grid-cols-4' : 'grid-cols-3'}`}>
                     {user.role === 'technician' && (
                       <TabsTrigger value="dashboard">
                         <LayoutDashboard className="h-4 w-4 mr-2" />
                         {t('technician.dashboard')}
+                      </TabsTrigger>
+                    )}
+                    {user.role === 'user' && (
+                      <TabsTrigger value="services">
+                        <ClipboardList className="h-4 w-4 mr-2" />
+                        {t('serviceRequests.customerDashboard')}
                       </TabsTrigger>
                     )}
                     <TabsTrigger value="profile">
@@ -440,6 +447,14 @@ const ProfilePage = () => {
                   </TabsContent>
 
                   {/* Security tab */}
+                  {/* Technician Dashboard Tab */}
+                  {/* Customer Service Requests Tab */}
+                  {user.role === 'user' && (
+                    <TabsContent value="services">
+                      <CustomerDashboard userId={user.id} />
+                    </TabsContent>
+                  )}
+
                   {/* Technician Dashboard Tab */}
                   {user.role === 'technician' && (
                     <TabsContent value="dashboard">
