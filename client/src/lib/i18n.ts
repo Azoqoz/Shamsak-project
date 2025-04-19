@@ -3,6 +3,23 @@ import { initReactI18next } from 'react-i18next';
 
 // English translations
 const enTranslations = {
+  serviceRequests: {
+    cancelled: 'Service Request Cancelled',
+    cancelledExplanation: 'This service request has been cancelled.',
+    pending: 'Pending',
+    pendingDescription: 'Your service request has been submitted and is awaiting assignment to a technician.',
+    assigned: 'Assigned',
+    assignedDescription: 'A technician has been assigned to your service request and will begin work soon.',
+    inProgress: 'In Progress',
+    inProgressDescription: 'Your technician is currently working on this service request.',
+    completed: 'Completed',
+    completedDescription: 'The work on your service request has been completed successfully.',
+    paid: 'Paid',
+    paidDescription: 'Payment has been received for this service request.',
+    clientId: 'Client ID',
+    viewDetails: 'View Details',
+    fetchError: 'Failed to fetch service requests',
+  },
   technician: {
     dashboard: 'Technician Dashboard',
     serviceRequests: 'Service Requests',
@@ -315,6 +332,23 @@ const enTranslations = {
 
 // Arabic translations
 const arTranslations = {
+  serviceRequests: {
+    cancelled: 'تم إلغاء طلب الخدمة',
+    cancelledExplanation: 'تم إلغاء طلب الخدمة هذا.',
+    pending: 'قيد الانتظار',
+    pendingDescription: 'تم تقديم طلب الخدمة الخاص بك وهو ينتظر التعيين لفني.',
+    assigned: 'تم تعيينه',
+    assignedDescription: 'تم تعيين فني لطلب الخدمة الخاص بك وسيبدأ العمل قريبًا.',
+    inProgress: 'قيد التنفيذ',
+    inProgressDescription: 'الفني يعمل حاليًا على طلب الخدمة هذا.',
+    completed: 'مكتمل',
+    completedDescription: 'تم الانتهاء من العمل على طلب الخدمة الخاص بك بنجاح.',
+    paid: 'مدفوع',
+    paidDescription: 'تم استلام الدفع لطلب الخدمة هذا.',
+    clientId: 'معرف العميل',
+    viewDetails: 'عرض التفاصيل',
+    fetchError: 'فشل في جلب طلبات الخدمة',
+  },
   technician: {
     dashboard: 'لوحة تحكم الفني',
     serviceRequests: 'طلبات الخدمة',
