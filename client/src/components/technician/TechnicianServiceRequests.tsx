@@ -155,7 +155,10 @@ export function TechnicianServiceRequests({ technician }: TechnicianServiceReque
         <div className="flex justify-between items-start">
           <CardTitle className="text-lg">{request.title}</CardTitle>
           <Badge className={getStatusColor(request.status)}>
-            {t(`technician.status${request.status.charAt(0).toUpperCase() + request.status.slice(1)}`)}
+            <div className="flex items-center">
+              {getStatusIcon(request.status)}
+              {t(`technician.status${request.status.charAt(0).toUpperCase() + request.status.slice(1)}`)}
+            </div>
           </Badge>
         </div>
         <CardDescription>
@@ -220,7 +223,7 @@ export function TechnicianServiceRequests({ technician }: TechnicianServiceReque
             {updatingRequestId === request.id ? (
               <><Loader2 className="mr-2 h-4 w-4 animate-spin" /> {t('common.loading')}</>
             ) : (
-              t('technician.acceptRequest')
+              <><UserIcon className="mr-2 h-4 w-4" /> {t('technician.acceptRequest')}</>
             )}
           </Button>
         )}
@@ -233,7 +236,7 @@ export function TechnicianServiceRequests({ technician }: TechnicianServiceReque
             {updatingRequestId === request.id ? (
               <><Loader2 className="mr-2 h-4 w-4 animate-spin" /> {t('common.loading')}</>
             ) : (
-              t('technician.startJob')
+              <><Wrench className="mr-2 h-4 w-4" /> {t('technician.startJob')}</>
             )}
           </Button>
         )}
@@ -246,7 +249,7 @@ export function TechnicianServiceRequests({ technician }: TechnicianServiceReque
             {updatingRequestId === request.id ? (
               <><Loader2 className="mr-2 h-4 w-4 animate-spin" /> {t('common.loading')}</>
             ) : (
-              t('technician.completeJob')
+              <><CheckCircle2 className="mr-2 h-4 w-4" /> {t('technician.completeJob')}</>
             )}
           </Button>
         )}
@@ -291,8 +294,12 @@ export function TechnicianServiceRequests({ technician }: TechnicianServiceReque
         
         <TabsContent value="pending">
           {pendingRequests.length === 0 ? (
-            <div className="text-center py-12 bg-neutral-50 rounded-lg">
-              <p className="text-muted-foreground">{t('technician.noPendingJobs')}</p>
+            <div className="text-center py-12 bg-neutral-50 rounded-lg border border-neutral-100">
+              <Clock className="h-12 w-12 mx-auto mb-4 text-neutral-300" />
+              <h3 className="text-lg font-medium mb-2">{t('technician.noPendingJobs')}</h3>
+              <p className="text-muted-foreground max-w-md mx-auto">
+                {t('technician.noPendingJobsDescription')}
+              </p>
             </div>
           ) : (
             <div className="space-y-4">
@@ -303,8 +310,12 @@ export function TechnicianServiceRequests({ technician }: TechnicianServiceReque
         
         <TabsContent value="active">
           {activeRequests.length === 0 ? (
-            <div className="text-center py-12 bg-neutral-50 rounded-lg">
-              <p className="text-muted-foreground">{t('technician.noActiveJobs')}</p>
+            <div className="text-center py-12 bg-neutral-50 rounded-lg border border-neutral-100">
+              <Wrench className="h-12 w-12 mx-auto mb-4 text-neutral-300" />
+              <h3 className="text-lg font-medium mb-2">{t('technician.noActiveJobs')}</h3>
+              <p className="text-muted-foreground max-w-md mx-auto">
+                {t('technician.noActiveJobsDescription')}
+              </p>
             </div>
           ) : (
             <div className="space-y-4">
@@ -315,8 +326,12 @@ export function TechnicianServiceRequests({ technician }: TechnicianServiceReque
         
         <TabsContent value="completed">
           {completedRequests.length === 0 ? (
-            <div className="text-center py-12 bg-neutral-50 rounded-lg">
-              <p className="text-muted-foreground">{t('technician.noCompletedJobs')}</p>
+            <div className="text-center py-12 bg-neutral-50 rounded-lg border border-neutral-100">
+              <CheckCircle2 className="h-12 w-12 mx-auto mb-4 text-neutral-300" />
+              <h3 className="text-lg font-medium mb-2">{t('technician.noCompletedJobs')}</h3>
+              <p className="text-muted-foreground max-w-md mx-auto">
+                {t('technician.noCompletedJobsDescription')}
+              </p>
             </div>
           ) : (
             <div className="space-y-4">
