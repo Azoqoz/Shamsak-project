@@ -53,13 +53,11 @@ export function TechnicianServiceRequests({ technician }: TechnicianServiceReque
     queryKey: [`/api/service-requests/technician/${technician.id}`],
   });
   
-  // Function to fetch user details for each service request
-  const useUserDetails = (userId: number) => {
-    return useQuery<User>({
-      queryKey: [`/api/auth/profile/${userId}`],
-      enabled: !!userId, // Only fetch if we have a userId
-    });
-  };
+  // Fetch all user details we need at once
+  const { data: usersData } = useQuery<User[]>({
+    queryKey: ['/api/auth/users'],
+    enabled: !!serviceRequests?.length,
+  });
   
   // Mutation to update service request status
   const updateStatusMutation = useMutation({
@@ -159,8 +157,8 @@ export function TechnicianServiceRequests({ technician }: TechnicianServiceReque
 
   // Render each service request card
   const renderServiceCard = (request: ServiceRequest) => {
-    // Fetch customer details
-    const { data: customerData, isLoading: customerLoading } = useUserDetails(request.userId);
+    // Get customer details from the usersData array
+    const customerData = usersData?.find(user => user.id === request.userId);
     
     return (
       <Card key={request.id} className="mb-4">
@@ -188,7 +186,7 @@ export function TechnicianServiceRequests({ technician }: TechnicianServiceReque
                 <div className="space-y-2 text-sm">
                   <div className="flex items-center">
                     <UserIcon className="h-4 w-4 mr-2 text-neutral-500" />
-                    {customerLoading ? (
+                    {!usersData ? (
                       <span className="flex items-center"><Loader2 className="h-3 w-3 mr-1 animate-spin" /> {t('common.loading')}</span>
                     ) : customerData ? (
                       <span>{customerData.name}</span>
