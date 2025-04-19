@@ -6,6 +6,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { LanguageProvider } from "./contexts/LanguageContext";
 import { AuthProvider } from "./contexts/AuthContext";
 import { ProtectedRoute } from "./lib/ProtectedRoute";
+import { TechnicianRedirect } from "@/components/auth/TechnicianRedirect";
 import NotFound from "@/pages/not-found";
 import HomePage from "@/pages/HomePage";
 import ServiceRequestPage from "@/pages/ServiceRequestPage";
@@ -78,6 +79,7 @@ function App() {
         <AuthProvider>
           <TooltipProvider>
             <Toaster />
+            <TechnicianRedirect />
             <Router />
           </TooltipProvider>
         </AuthProvider>
