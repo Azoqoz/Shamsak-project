@@ -30,6 +30,13 @@ export function registerAuthRoutes(app: Express, prefix: string, storage: IStora
   // Get current user endpoint
   app.get(`${prefix}/auth/user`, async (req: Request, res: Response) => {
     try {
+      // Add debug logging to track session issues
+      console.log('Session data:', {
+        id: req.sessionID,
+        cookie: req.session?.cookie,
+        userId: req.session?.userId
+      });
+      
       // Check if there's a userId in the session (this would be set after login in a real app)
       // In a real application, we would use passport or a similar library to handle sessions
       const userId = req.session?.userId;
@@ -40,8 +47,16 @@ export function registerAuthRoutes(app: Express, prefix: string, storage: IStora
       
       const user = await storage.getUser(userId);
       if (!user) {
+        console.warn(`User with ID ${userId} from session not found in database`);
+        // Clear the invalid session
+        req.session.destroy((err) => {
+          if (err) console.error('Error destroying invalid session:', err);
+        });
         return res.status(404).json({ message: 'User not found' });
       }
+      
+      // Add a success log
+      console.log(`User ${user.username} (ID: ${user.id}) authenticated successfully`);
       
       // Return user info (excluding password)
       const { password, ...userWithoutPassword } = user;
@@ -85,9 +100,24 @@ export function registerAuthRoutes(app: Express, prefix: string, storage: IStora
       // Store user ID in session
       req.session.userId = user.id;
       
-      // Return user info (excluding password)
-      const { password: _, ...userWithoutPassword } = user;
-      res.json(userWithoutPassword);
+      // Save session explicitly to ensure it's stored
+      req.session.save((err) => {
+        if (err) {
+          console.error('Error saving session:', err);
+          return res.status(500).json({ message: 'Session error' });
+        }
+        
+        console.log(`User ${user.username} (ID: ${user.id}) logged in successfully`);
+        console.log('Session saved:', {
+          id: req.sessionID,
+          cookie: req.session?.cookie,
+          userId: req.session?.userId
+        });
+        
+        // Return user info (excluding password)
+        const { password: _, ...userWithoutPassword } = user;
+        res.json(userWithoutPassword);
+      });
     } catch (error) {
       console.error('Error during login:', error);
       res.status(500).json({ message: 'Error during login' });
@@ -127,10 +157,25 @@ export function registerAuthRoutes(app: Express, prefix: string, storage: IStora
       
       // Store user ID in session
       req.session.userId = newUser.id;
-
-      // Return user info (excluding password)
-      const { password, ...userWithoutPassword } = newUser;
-      res.status(201).json(userWithoutPassword);
+      
+      // Save session explicitly to ensure it's stored
+      req.session.save((err) => {
+        if (err) {
+          console.error('Error saving session during registration:', err);
+          return res.status(500).json({ message: 'Session error' });
+        }
+        
+        console.log(`New user ${newUser.username} (ID: ${newUser.id}) registered and logged in successfully`);
+        console.log('Session saved:', {
+          id: req.sessionID,
+          cookie: req.session?.cookie,
+          userId: req.session?.userId
+        });
+        
+        // Return user info (excluding password)
+        const { password, ...userWithoutPassword } = newUser;
+        res.status(201).json(userWithoutPassword);
+      });
     } catch (error) {
       console.error('Error during registration:', error);
       res.status(500).json({ message: 'Error during registration' });

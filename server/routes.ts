@@ -20,7 +20,7 @@ export const stripe = new Stripe(process.env.STRIPE_SECRET_KEY || '', {
 
 export async function registerRoutes(app: Express): Promise<Server> {
   // Set up session middleware with improved configuration
-  app.use(session({
+  const sessionMiddleware = session({
     secret: process.env.SESSION_SECRET || 'shamsak-secret-key',
     resave: false,
     saveUninitialized: false,
@@ -30,10 +30,30 @@ export async function registerRoutes(app: Express): Promise<Server> {
       secure: process.env.NODE_ENV === 'production',
       httpOnly: true,
       maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
-      sameSite: 'lax'
+      sameSite: 'lax',
+      path: '/'
     },
-    name: 'shamsak.sid' // Custom name to avoid conflicts
-  }));
+    name: 'shamsak.sid', // Custom name to avoid conflicts
+  });
+  
+  // Debug middleware for session monitoring in development
+  app.use((req, res, next) => {
+    const oldEnd = res.end;
+    res.end = function() {
+      if (req.session && req.path.startsWith('/api/auth')) {
+        console.log(`Session after ${req.method} ${req.path}:`, {
+          id: req.sessionID, 
+          userId: req.session.userId,
+          new: req.session.isNew,
+          cookie: req.session.cookie?.originalMaxAge
+        });
+      }
+      return oldEnd.apply(this, arguments as any);
+    };
+    next();
+  });
+  
+  app.use(sessionMiddleware);
   
   // API prefix for all routes
   const apiPrefix = '/api';

@@ -407,7 +407,7 @@ const TechnicianDashboard = ({ technician }: { technician: Technician }) => {
                           </TableRow>
                         </TableHeader>
                         <TableBody>
-                          {activeJobs.map((job) => (
+                          {activeJobs.map((job: ServiceRequest) => (
                             <TableRow key={job.id}>
                               <TableCell>
                                 {t(`serviceForm.${job.serviceType}`)}
@@ -460,7 +460,7 @@ const TechnicianDashboard = ({ technician }: { technician: Technician }) => {
                           </TableRow>
                         </TableHeader>
                         <TableBody>
-                          {completedJobs.map((job) => (
+                          {completedJobs.map((job: ServiceRequest) => (
                             <TableRow key={job.id}>
                               <TableCell>
                                 {t(`serviceForm.${job.serviceType}`)}
