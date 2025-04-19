@@ -4,6 +4,7 @@ import { queryClient } from "./lib/queryClient";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { LanguageProvider } from "./contexts/LanguageContext";
+import { AuthProvider } from "./contexts/AuthContext";
 import NotFound from "@/pages/not-found";
 import HomePage from "@/pages/HomePage";
 import ServiceRequestPage from "@/pages/ServiceRequestPage";
@@ -11,6 +12,7 @@ import TechniciansPage from "@/pages/TechniciansPage";
 import ContactPage from "@/pages/ContactPage";
 import LoginPage from "@/pages/LoginPage";
 import RegisterPage from "@/pages/RegisterPage";
+import ProfilePage from "@/pages/ProfilePage";
 import AdminDashboardPage from "@/pages/AdminDashboardPage";
 import TechnicianProfilePage from "@/pages/TechnicianProfilePage";
 import CheckoutPage from "@/pages/CheckoutPage";
@@ -40,6 +42,7 @@ function Router() {
           <Route path="/contact" component={ContactPageWrapper} />
           <Route path="/login" component={LoginPage} />
           <Route path="/register" component={RegisterPage} />
+          <Route path="/profile" component={ProfilePage} />
           <Route path="/admin" component={AdminDashboardPage} />
           <Route path="/checkout/:id" component={CheckoutPage} />
           <Route path="/about" component={AboutPage} />
