@@ -1,8 +1,10 @@
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { Technician, ServiceRequest, User } from '@shared/schema';
 import { format } from 'date-fns';
+import { useToast } from '@/hooks/use-toast';
+import { apiRequest } from '@/lib/queryClient';
 
 import {
   Tabs,
@@ -40,12 +42,45 @@ interface TechnicianServiceRequestsProps {
 
 export function TechnicianServiceRequests({ technician }: TechnicianServiceRequestsProps) {
   const { t } = useTranslation();
+  const { toast } = useToast();
+  const queryClient = useQueryClient();
   const [activeTab, setActiveTab] = useState('pending');
+  const [updatingRequestId, setUpdatingRequestId] = useState<number | null>(null);
   
   // Fetch service requests for this technician
   const { data: serviceRequests, isLoading, error } = useQuery<ServiceRequest[]>({
     queryKey: [`/api/service-requests/technician/${technician.id}`],
   });
+  
+  // Mutation to update service request status
+  const updateStatusMutation = useMutation({
+    mutationFn: async ({ id, status }: { id: number; status: string }) => {
+      const res = await apiRequest('PATCH', `/api/service-requests/${id}/status`, { status });
+      return await res.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: [`/api/service-requests/technician/${technician.id}`] });
+      toast({
+        title: t('common.success'),
+        description: t('technician.jobUpdated'),
+      });
+      setUpdatingRequestId(null);
+    },
+    onError: (error) => {
+      toast({
+        variant: 'destructive',
+        title: t('common.error'),
+        description: error instanceof Error ? error.message : t('common.error'),
+      });
+      setUpdatingRequestId(null);
+    }
+  });
+  
+  // Handle status update
+  const handleStatusUpdate = (id: number, newStatus: string) => {
+    setUpdatingRequestId(id);
+    updateStatusMutation.mutate({ id, status: newStatus });
+  };
 
   if (isLoading) {
     return (
@@ -164,18 +199,42 @@ export function TechnicianServiceRequests({ technician }: TechnicianServiceReque
       
       <CardFooter className="flex justify-end pt-0">
         {request.status === 'pending' && (
-          <Button variant="default">
-            {t('technician.acceptRequest')}
+          <Button 
+            variant="default"
+            onClick={() => handleStatusUpdate(request.id, 'assigned')}
+            disabled={updatingRequestId === request.id}
+          >
+            {updatingRequestId === request.id ? (
+              <><Loader2 className="mr-2 h-4 w-4 animate-spin" /> {t('common.loading')}</>
+            ) : (
+              t('technician.acceptRequest')
+            )}
           </Button>
         )}
         {request.status === 'assigned' && (
-          <Button variant="default">
-            {t('technician.startJob')}
+          <Button 
+            variant="default"
+            onClick={() => handleStatusUpdate(request.id, 'in_progress')}
+            disabled={updatingRequestId === request.id}
+          >
+            {updatingRequestId === request.id ? (
+              <><Loader2 className="mr-2 h-4 w-4 animate-spin" /> {t('common.loading')}</>
+            ) : (
+              t('technician.startJob')
+            )}
           </Button>
         )}
         {request.status === 'in_progress' && (
-          <Button variant="default">
-            {t('technician.completeJob')}
+          <Button 
+            variant="default"
+            onClick={() => handleStatusUpdate(request.id, 'completed')}
+            disabled={updatingRequestId === request.id}
+          >
+            {updatingRequestId === request.id ? (
+              <><Loader2 className="mr-2 h-4 w-4 animate-spin" /> {t('common.loading')}</>
+            ) : (
+              t('technician.completeJob')
+            )}
           </Button>
         )}
       </CardFooter>
