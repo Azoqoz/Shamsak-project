@@ -41,27 +41,45 @@ export function registerTechnicianRoutes(app: Express, prefix: string, storage: 
   // Get technician by user ID
   app.get(`${prefix}/technicians/user/:userId`, async (req: Request, res: Response) => {
     try {
+      // Get and validate user ID
       const userId = parseInt(req.params.userId);
       if (isNaN(userId)) {
-        return res.status(400).json({ message: 'Invalid user ID' });
+        return res.status(400).json({ message: 'Invalid user ID format' });
+      }
+
+      // Check if the user exists
+      const user = await storage.getUser(userId);
+      if (!user) {
+        return res.status(404).json({ message: 'User not found' });
+      }
+
+      // Check if the user is a technician
+      if (user.role !== 'technician') {
+        return res.status(403).json({ message: 'User is not a technician' });
       }
 
       // First, check if the technician exists for the user
       const technician = await storage.getTechnicianByUserId(userId);
       if (!technician) {
+        console.warn(`No technician profile found for user ${userId} despite having technician role`);
         return res.status(404).json({ message: 'No technician profile found for this user' });
       }
       
       // Get the full technician profile with user data
       const technicianWithUser = await storage.getTechnician(technician.id);
       if (!technicianWithUser) {
-        return res.status(404).json({ message: 'Technician not found' });
+        console.error(`Inconsistency: Technician record exists but getTechnician(${technician.id}) returned nothing`);
+        return res.status(404).json({ message: 'Technician profile incomplete' });
       }
 
+      // Return the complete technician profile
       res.json(technicianWithUser);
     } catch (error) {
       console.error('Error getting technician by user ID:', error);
-      res.status(500).json({ message: 'Error retrieving technician data' });
+      res.status(500).json({ 
+        message: 'Error retrieving technician data',
+        error: error instanceof Error ? error.message : 'Unknown error'
+      });
     }
   });
 
