@@ -33,6 +33,40 @@ import {
 } from '@/components/ui/select';
 import { LoaderCircle, UserCircle, Phone, Mail, MapPin, CheckCircle, LockKeyhole, LayoutDashboard } from 'lucide-react';
 import TechnicianDashboard from '@/components/technician/TechnicianDashboard';
+import { Technician } from '@shared/schema';
+
+// Component to fetch technician data and render dashboard
+const TechnicianDashboardLoader = ({ userId }: { userId: number }) => {
+  const { t } = useTranslation();
+  
+  // Fetch technician data by user ID
+  const { data: technician, isLoading, error } = useQuery<Technician & { user: any }>({
+    queryKey: [`/api/technicians/user/${userId}`],
+  });
+  
+  if (isLoading) {
+    return (
+      <div className="p-8 text-center">
+        <LoaderCircle className="h-8 w-8 animate-spin mx-auto mb-4 text-primary" />
+        <p>{t('common.loading')}</p>
+      </div>
+    );
+  }
+  
+  if (error || !technician) {
+    return (
+      <Alert variant="destructive" className="mb-4">
+        <AlertDescription>
+          {error instanceof Error 
+            ? error.message 
+            : t('common.error')}
+        </AlertDescription>
+      </Alert>
+    );
+  }
+  
+  return <TechnicianDashboard technician={technician} />;
+};
 
 // Schema for profile update form
 const profileFormSchema = z.object({
@@ -376,6 +410,14 @@ const ProfilePage = () => {
                   </TabsContent>
 
                   {/* Security tab */}
+                  {/* Technician Dashboard Tab */}
+                  {user.role === 'technician' && (
+                    <TabsContent value="dashboard">
+                      {/* Fetch technician data */}
+                      <TechnicianDashboardLoader userId={user.id} />
+                    </TabsContent>
+                  )}
+
                   <TabsContent value="security">
                     <Card>
                       <CardHeader>
