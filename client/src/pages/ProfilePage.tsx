@@ -86,15 +86,17 @@ const ProfilePage = () => {
   });
 
   // Update profile form when user data changes
-  if (user && !profileForm.formState.isDirty) {
-    profileForm.reset({
-      name: user.name,
-      email: user.email,
-      phone: user.phone,
-      city: user.city,
-      address: user.address || '',
-    });
-  }
+  useEffect(() => {
+    if (user) {
+      profileForm.reset({
+        name: user.name,
+        email: user.email,
+        phone: user.phone,
+        city: user.city,
+        address: user.address || '',
+      });
+    }
+  }, [user, profileForm]);
 
   const onProfileSubmit = async (data: ProfileFormValues) => {
     if (!user) return;
@@ -105,7 +107,7 @@ const ProfilePage = () => {
     try {
       await updateProfile(user.id, data);
       toast({
-        title: t('profile.updateSuccess'),
+        title: t('common.success'),
         description: t('profile.profileUpdated'),
       });
     } catch (error) {
@@ -136,8 +138,8 @@ const ProfilePage = () => {
       });
       
       toast({
-        title: t('profile.passwordSuccess'),
-        description: t('profile.passwordUpdated'),
+        title: t('common.success'),
+        description: t('profile.passwordChanged'),
       });
     } catch (error) {
       console.error('Password change error:', error);
