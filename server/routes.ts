@@ -1,5 +1,6 @@
 import type { Express } from "express";
 import { createServer, type Server } from "http";
+import session from "express-session";
 import Stripe from "stripe";
 import { storage } from "./storage";
 import { registerServiceRequestRoutes } from "./controllers/serviceRequests";
@@ -18,6 +19,18 @@ export const stripe = new Stripe(process.env.STRIPE_SECRET_KEY || '', {
 });
 
 export async function registerRoutes(app: Express): Promise<Server> {
+  // Set up session middleware
+  app.use(session({
+    secret: process.env.SESSION_SECRET || 'shamsak-secret-key',
+    resave: false,
+    saveUninitialized: false,
+    cookie: {
+      secure: process.env.NODE_ENV === 'production',
+      httpOnly: true,
+      maxAge: 24 * 60 * 60 * 1000 // 24 hours
+    }
+  }));
+  
   // API prefix for all routes
   const apiPrefix = '/api';
 
