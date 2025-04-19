@@ -39,11 +39,23 @@ import { Technician } from '@shared/schema';
 // Component to fetch technician data and render dashboard
 const TechnicianDashboardLoader = ({ userId }: { userId: number }) => {
   const { t } = useTranslation();
+  const { toast } = useToast();
   
   // Fetch technician data by user ID
-  const { data: technician, isLoading, error } = useQuery<Technician & { user: any }>({
+  const { data: technician, isLoading, error, refetch } = useQuery<Technician & { user: any }>({
     queryKey: [`/api/technicians/user/${userId}`],
+    retry: 2,
+    retryDelay: 1000,
   });
+  
+  // If there's an error, set up a retry button
+  const handleRetry = () => {
+    refetch();
+    toast({
+      title: t('common.retrying'),
+      description: t('common.fetchingData'),
+    });
+  };
   
   if (isLoading) {
     return (
@@ -56,13 +68,21 @@ const TechnicianDashboardLoader = ({ userId }: { userId: number }) => {
   
   if (error || !technician) {
     return (
-      <Alert variant="destructive" className="mb-4">
-        <AlertDescription>
-          {error instanceof Error 
-            ? error.message 
-            : t('common.error')}
-        </AlertDescription>
-      </Alert>
+      <div className="space-y-4">
+        <Alert variant="destructive" className="mb-4">
+          <AlertDescription>
+            {error instanceof Error 
+              ? error.message 
+              : t('common.error')}
+          </AlertDescription>
+        </Alert>
+        <div className="text-center">
+          <Button onClick={handleRetry} variant="outline">
+            <LoaderCircle className="mr-2 h-4 w-4" />
+            {t('common.retry')}
+          </Button>
+        </div>
+      </div>
     );
   }
   
