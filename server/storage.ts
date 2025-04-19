@@ -6,7 +6,9 @@ import {
   ServiceRequest, 
   InsertServiceRequest, 
   Contact, 
-  InsertContact 
+  InsertContact,
+  Review,
+  InsertReview
 } from "@shared/schema";
 
 // Interface for all storage operations
@@ -42,6 +44,11 @@ export interface IStorage {
   getContacts(): Promise<Contact[]>;
   createContact(contact: InsertContact): Promise<Contact>;
   markContactResponded(id: number, responded: boolean): Promise<Contact | undefined>;
+  
+  // Review methods
+  getReview(id: number): Promise<Review | undefined>;
+  getReviewsByTechnician(technicianId: number): Promise<Review[]>;
+  createReview(review: InsertReview): Promise<Review>;
 }
 
 // In-memory implementation of the storage interface
@@ -50,11 +57,13 @@ export class MemStorage implements IStorage {
   private technicians: Map<number, Technician>;
   private serviceRequests: Map<number, ServiceRequest>;
   private contacts: Map<number, Contact>;
+  private reviews: Map<number, Review>;
   private currentIds: {
     user: number;
     technician: number;
     serviceRequest: number;
     contact: number;
+    review: number;
   };
 
   constructor() {
@@ -62,11 +71,13 @@ export class MemStorage implements IStorage {
     this.technicians = new Map();
     this.serviceRequests = new Map();
     this.contacts = new Map();
+    this.reviews = new Map();
     this.currentIds = {
       user: 1,
       technician: 1,
       serviceRequest: 1,
-      contact: 1
+      contact: 1,
+      review: 1
     };
 
     // Initialize with demo data
@@ -401,6 +412,32 @@ export class MemStorage implements IStorage {
     const updatedContact = { ...contact, responded };
     this.contacts.set(id, updatedContact);
     return updatedContact;
+  }
+
+  // Review methods
+  async getReview(id: number): Promise<Review | undefined> {
+    return this.reviews.get(id);
+  }
+
+  async getReviewsByTechnician(technicianId: number): Promise<Review[]> {
+    return Array.from(this.reviews.values())
+      .filter(review => review.technicianId === technicianId)
+      .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+  }
+
+  async createReview(insertReview: InsertReview): Promise<Review> {
+    const id = this.currentIds.review++;
+    const review: Review = {
+      ...insertReview,
+      id,
+      date: new Date()
+    };
+    this.reviews.set(id, review);
+    
+    // Update technician rating
+    await this.updateTechnicianRating(insertReview.technicianId, insertReview.rating);
+    
+    return review;
   }
 }
 
