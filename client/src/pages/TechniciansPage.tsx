@@ -152,9 +152,9 @@ const TechniciansPage = () => {
                 <div key={technician.id} className="bg-white p-6 rounded-lg shadow-md hover:shadow-lg transition-all hover:transform hover:scale-[1.02] border border-transparent hover:border-green-100">
                   <div className="mb-4 relative flex justify-center">
                     <div className="w-28 h-28 rounded-full bg-gradient-to-br from-green-50 to-green-100 flex items-center justify-center overflow-hidden shadow-md ring-2 ring-green-200 ring-opacity-50">
-                      {technician.profileImage ? (
+                      {technician.user.profileImage ? (
                         <img 
-                          src={technician.profileImage} 
+                          src={technician.user.profileImage} 
                           alt={technician.user.name} 
                           className="w-full h-full object-cover" 
                           onError={(e) => {
