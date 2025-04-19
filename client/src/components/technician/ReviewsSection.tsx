@@ -51,8 +51,7 @@ const ReviewsSection = ({ technician }: ReviewsSectionProps) => {
 
   if (isLoading) {
     return (
-      <div className="space-y-4 mt-8">
-        <h3 className="text-2xl font-bold">{t("Customer Reviews")}</h3>
+      <div className="space-y-4 mt-4">
         {[1, 2, 3].map((i) => (
           <Card key={i} className="mb-4">
             <CardContent className="p-6">
@@ -75,17 +74,14 @@ const ReviewsSection = ({ technician }: ReviewsSectionProps) => {
 
   if (error) {
     return (
-      <div className="mt-8 text-center">
-        <h3 className="text-2xl font-bold mb-4">{t("Customer Reviews")}</h3>
-        <p className="text-destructive">{t("Error loading reviews. Please try again later.")}</p>
+      <div className="mt-4 text-center">
+        <p className="text-destructive">Error loading reviews. Please try again later.</p>
       </div>
     );
   }
 
   return (
-    <div className="mt-8">
-      <h3 className="text-2xl font-bold mb-6">{t("Customer Reviews")}</h3>
-      
+    <div className="mt-4">
       {reviews && reviews.length > 0 ? (
         <>
           <div className="space-y-6">
