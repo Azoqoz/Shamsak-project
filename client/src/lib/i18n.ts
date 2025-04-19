@@ -371,8 +371,6 @@ const arTranslations = {
     manageTasks: 'إدارة مهامك وحالة التوفر الخاصة بك',
     jobUpdated: 'تم تحديث طلب الخدمة بنجاح',
     rating: 'تقييمك',
-    manageTasks: 'إدارة مهامك وحالة التوفر الخاصة بك',
-    jobUpdated: 'تم تحديث طلب الخدمة بنجاح',
   },
   common: {
     appName: 'شمسك',
