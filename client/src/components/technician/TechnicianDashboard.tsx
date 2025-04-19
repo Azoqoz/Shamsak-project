@@ -141,11 +141,11 @@ const ServiceRequestDetailsDialog = ({ serviceRequest, userId, technicianId }: {
             <h4 className="text-sm font-medium">{t('profile.client')}</h4>
             <p className="text-sm flex items-center">
               <User className="h-4 w-4 mr-2 text-neutral-500" />
-              {serviceRequest.name}
+              {t('serviceRequests.clientId')}: {serviceRequest.userId}
             </p>
             <p className="text-sm flex items-center">
               <PhoneCall className="h-4 w-4 mr-2 text-neutral-500" />
-              {serviceRequest.phone}
+              {t('common.contactDetails')}
             </p>
           </div>
           <div>
@@ -338,7 +338,7 @@ const TechnicianDashboard = ({ technician }: { technician: Technician }) => {
                               <TableCell>
                                 {t(`serviceForm.${job.serviceType}`)}
                               </TableCell>
-                              <TableCell>{job.name}</TableCell>
+                              <TableCell>{t('serviceRequests.clientId')}: {job.userId}</TableCell>
                               <TableCell>{job.city}</TableCell>
                               <TableCell>
                                 {new Date(job.scheduledDate || job.createdAt || '').toLocaleDateString()}
