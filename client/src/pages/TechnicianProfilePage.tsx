@@ -151,9 +151,9 @@ const TechnicianProfilePage = () => {
                 <div className="md:w-1/3 flex justify-center">
                   <div className="relative">
                     <div className="w-48 h-48 rounded-full bg-gray-200 flex items-center justify-center overflow-hidden">
-                      {technician.profileImage ? (
+                      {technician.user.profileImage ? (
                         <img
-                          src={technician.profileImage}
+                          src={technician.user.profileImage}
                           alt={technician.user.name}
                           className="w-full h-full object-cover"
                         />
