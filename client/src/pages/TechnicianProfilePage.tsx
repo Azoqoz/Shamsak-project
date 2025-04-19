@@ -168,7 +168,7 @@ const TechnicianProfilePage = () => {
                     <h1 className="text-3xl font-bold">{technician.user.name}</h1>
                   </div>
                   <div className="flex items-center mb-2">
-                    <MapPin className={`h-4 w-4 text-primary ${direction === 'rtl' ? 'ml-2' : 'mr-2'}`} />
+                    <MapPin className={`h-4 w-4 text-black ${direction === 'rtl' ? 'ml-2' : 'mr-2'}`} />
                     <span>{technician.user.city}</span>
                   </div>
                   <div className="flex items-center mb-4">
@@ -215,14 +215,16 @@ const TechnicianProfilePage = () => {
                       {services.map((service, index) => (
                         <Card key={index} className="hover:shadow-md transition-shadow">
                           <CardContent className="p-6">
-                            <div className="bg-primary bg-opacity-10 text-primary text-2xl p-4 rounded-full w-16 h-16 flex items-center justify-center mb-4">
-                              {service.icon}
+                            <div className="bg-black bg-opacity-10 rounded-full w-16 h-16 flex items-center justify-center mb-4">
+                              <div className="text-black text-2xl">
+                                {service.icon}
+                              </div>
                             </div>
                             <h3 className="text-xl font-bold mb-2">{t(service.titleKey)}</h3>
                             <p className="text-neutral-800 mb-4">{t(service.descriptionKey)}</p>
                             <Link
                               href={`/request-service?service=${service.titleKey}&technician=${technician.id}`}
-                              className="text-primary hover:underline flex items-center"
+                              className="text-black hover:underline flex items-center font-medium"
                             >
                               {t('services.requestService')}
                             </Link>
@@ -237,14 +239,14 @@ const TechnicianProfilePage = () => {
                     <div className="bg-neutral-100 p-6 rounded-lg">
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
                         <div className="flex items-start">
-                          <Phone className={`text-primary mt-1 h-5 w-5 ${direction === 'rtl' ? 'ml-3' : 'mr-3'}`} />
+                          <Phone className={`text-black mt-1 h-5 w-5 ${direction === 'rtl' ? 'ml-3' : 'mr-3'}`} />
                           <div>
                             <h3 className="font-bold mb-1">{t('contact.phoneTitle')}</h3>
                             <p>{technician.user.phone}</p>
                           </div>
                         </div>
                         <div className="flex items-start">
-                          <Mail className={`text-primary mt-1 h-5 w-5 ${direction === 'rtl' ? 'ml-3' : 'mr-3'}`} />
+                          <Mail className={`text-black mt-1 h-5 w-5 ${direction === 'rtl' ? 'ml-3' : 'mr-3'}`} />
                           <div>
                             <h3 className="font-bold mb-1">{t('contact.emailTitle')}</h3>
                             <p>{technician.user.email}</p>
