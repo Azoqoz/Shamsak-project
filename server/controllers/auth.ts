@@ -182,6 +182,24 @@ export function registerAuthRoutes(app: Express, prefix: string, storage: IStora
     }
   });
 
+  // Get all users
+  app.get(`${prefix}/auth/users`, async (_req: Request, res: Response) => {
+    try {
+      const users = await storage.getUsers();
+      
+      // Return users without passwords
+      const usersWithoutPasswords = users.map(user => {
+        const { password, ...userWithoutPassword } = user;
+        return userWithoutPassword;
+      });
+      
+      res.json(usersWithoutPasswords);
+    } catch (error) {
+      console.error('Error getting users:', error);
+      res.status(500).json({ message: 'Error retrieving users' });
+    }
+  });
+
   // Get user profile
   app.get(`${prefix}/auth/profile/:id`, async (req: Request, res: Response) => {
     try {
