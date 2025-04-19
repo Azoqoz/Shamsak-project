@@ -3,6 +3,13 @@ import { initReactI18next } from 'react-i18next';
 
 // English translations
 const enTranslations = {
+  serviceProgress: {
+    pending: 'Request Submitted',
+    assigned: 'Technician Assigned',
+    inProgress: 'Work in Progress',
+    completed: 'Work Completed',
+    cancelled: 'Request Cancelled',
+  },
   serviceRequests: {
     cancelled: 'Service Request Cancelled',
     cancelledExplanation: 'This service request has been cancelled.',
@@ -335,6 +342,13 @@ const enTranslations = {
 
 // Arabic translations
 const arTranslations = {
+  serviceProgress: {
+    pending: 'تم تقديم الطلب',
+    assigned: 'تم تعيين الفني',
+    inProgress: 'العمل قيد التنفيذ',
+    completed: 'تم اكتمال العمل',
+    cancelled: 'تم إلغاء الطلب',
+  },
   serviceRequests: {
     cancelled: 'تم إلغاء طلب الخدمة',
     cancelledExplanation: 'تم إلغاء طلب الخدمة هذا.',
