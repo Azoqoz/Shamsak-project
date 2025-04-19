@@ -198,8 +198,19 @@ const TechnicianDashboard = ({ technician }: { technician: Technician }) => {
     data: serviceRequests, 
     isLoading: serviceRequestsLoading,
     error: serviceRequestsError,
+    refetch: refetchServiceRequests
   } = useQuery<ServiceRequest[]>({
     queryKey: ['/api/service-requests/technician', technician.id],
+    retry: 2,
+    retryDelay: 1000,
+    onError: (error: Error) => {
+      console.error("Error fetching service requests:", error);
+      toast({
+        variant: 'destructive',
+        title: t('common.error'),
+        description: error.message || t('serviceRequests.fetchError')
+      });
+    }
   });
 
   // Mutation to update technician availability
@@ -307,9 +318,22 @@ const TechnicianDashboard = ({ technician }: { technician: Technician }) => {
                 <p>{t('common.loading')}</p>
               </div>
             ) : serviceRequestsError ? (
-              <div className="py-8 text-center text-destructive">
-                <XCircle className="h-8 w-8 mx-auto mb-4" />
-                <p>{t('common.error')}</p>
+              <div className="py-8 text-center space-y-4">
+                <div className="text-destructive">
+                  <XCircle className="h-8 w-8 mx-auto mb-4" />
+                  <p>{t('common.error')}</p>
+                  <p className="text-sm mt-2 max-w-md mx-auto">
+                    {serviceRequestsError instanceof Error ? serviceRequestsError.message : t('serviceRequests.fetchError')}
+                  </p>
+                </div>
+                <Button 
+                  variant="outline" 
+                  onClick={() => refetchServiceRequests()}
+                  className="mx-auto"
+                >
+                  <LoaderCircle className="mr-2 h-4 w-4" />
+                  {t('common.retry')}
+                </Button>
               </div>
             ) : (
               <>
