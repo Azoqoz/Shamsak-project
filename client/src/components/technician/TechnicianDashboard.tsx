@@ -390,7 +390,7 @@ const TechnicianDashboard = ({ technician }: { technician: Technician }) => {
                               <TableCell>
                                 {t(`serviceForm.${job.serviceType}`)}
                               </TableCell>
-                              <TableCell>{job.name}</TableCell>
+                              <TableCell>{t("serviceRequests.clientId")}: {job.userId}</TableCell>
                               <TableCell>{job.city}</TableCell>
                               <TableCell>
                                 {new Date(job.updatedAt || job.createdAt || '').toLocaleDateString()}
@@ -443,7 +443,7 @@ const TechnicianDashboard = ({ technician }: { technician: Technician }) => {
                               <TableCell>
                                 {t(`serviceForm.${job.serviceType}`)}
                               </TableCell>
-                              <TableCell>{job.name}</TableCell>
+                              <TableCell>{t("serviceRequests.clientId")}: {job.userId}</TableCell>
                               <TableCell>{job.city}</TableCell>
                               <TableCell>
                                 {new Date(job.updatedAt || job.createdAt || '').toLocaleDateString()}
