@@ -57,7 +57,7 @@ type PasswordFormValues = z.infer<typeof passwordFormSchema>;
 const ProfilePage = () => {
   const { t } = useTranslation();
   const { direction } = useLanguage();
-  const { user, isLoading, updateProfile, changePassword } = useAuth();
+  const { user, loading: isLoading, updateProfile, changePassword } = useAuth();
   const { toast } = useToast();
   const [profileUpdateError, setProfileUpdateError] = useState<string>('');
   const [passwordUpdateError, setPasswordUpdateError] = useState<string>('');
@@ -126,8 +126,7 @@ const ProfilePage = () => {
       await changePassword(
         user.id,
         data.currentPassword,
-        data.newPassword,
-        data.confirmPassword
+        data.newPassword
       );
       
       passwordForm.reset({
