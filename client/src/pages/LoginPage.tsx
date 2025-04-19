@@ -1,13 +1,12 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Helmet } from 'react-helmet';
 import { useTranslation } from 'react-i18next';
 import { useLocation, Link } from 'wouter';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
-import { useMutation } from '@tanstack/react-query';
-import { apiRequest } from '@/lib/queryClient';
 import { useToast } from '@/hooks/use-toast';
+import { useAuth } from '@/contexts/AuthContext';
 
 import {
   Form,
@@ -35,6 +34,20 @@ const LoginPage = () => {
   const { toast } = useToast();
   const [, navigate] = useLocation();
   const [loginError, setLoginError] = useState<string>('');
+  const { login, user } = useAuth();
+  
+  // Redirect if already logged in
+  useEffect(() => {
+    if (user) {
+      if (user.role === 'admin') {
+        navigate('/admin');
+      } else if (user.role === 'technician') {
+        navigate('/technician/dashboard');
+      } else {
+        navigate('/');
+      }
+    }
+  }, [user, navigate]);
 
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
@@ -44,34 +57,34 @@ const LoginPage = () => {
     },
   });
 
-  const { mutate, isPending } = useMutation({
-    mutationFn: async (data: FormValues) => {
-      const res = await apiRequest('POST', '/api/auth/login', data);
-      return res.json();
-    },
-    onSuccess: (data) => {
+  const [isPending, setIsPending] = useState(false);
+
+  const onSubmit = async (data: FormValues) => {
+    setLoginError('');
+    setIsPending(true);
+    
+    try {
+      const user = await login(data.username, data.password);
+      
       toast({
         title: t('common.success'),
         description: t('login.successMessage'),
       });
       
       // Redirect based on user role
-      if (data.role === 'admin') {
+      if (user.role === 'admin') {
         navigate('/admin');
-      } else if (data.role === 'technician') {
+      } else if (user.role === 'technician') {
         navigate('/technician/dashboard');
       } else {
         navigate('/');
       }
-    },
-    onError: (error) => {
-      setLoginError(error.message || t('login.error'));
-    },
-  });
-
-  const onSubmit = (data: FormValues) => {
-    setLoginError('');
-    mutate(data);
+    } catch (error) {
+      console.error('Login error:', error);
+      setLoginError(error instanceof Error ? error.message : t('login.error'));
+    } finally {
+      setIsPending(false);
+    }
   };
 
   return (

@@ -3,6 +3,13 @@ import { z } from 'zod';
 import { IStorage } from '../storage';
 import { insertUserSchema } from '@shared/schema';
 
+// Extend express session with userId
+declare module 'express-session' {
+  interface SessionData {
+    userId?: number;
+  }
+}
+
 export function registerAuthRoutes(app: Express, prefix: string, storage: IStorage) {
   // Logout endpoint
   app.post(`${prefix}/auth/logout`, async (req: Request, res: Response) => {

@@ -1,151 +1,193 @@
-import { createContext, ReactNode, useContext, useEffect, useState } from "react";
-import { useMutation, useQuery } from "@tanstack/react-query";
-import { apiRequest, queryClient } from "@/lib/queryClient";
-import { useToast } from "@/hooks/use-toast";
-import { User } from "@shared/schema";
+import { createContext, ReactNode, useContext, useState, useEffect } from 'react';
+import { apiRequest } from '@/lib/queryClient';
+import { useToast } from '@/hooks/use-toast';
+import { User, InsertUser } from '@shared/schema';
 
-type AuthContextType = {
+interface AuthContextType {
   user: User | null;
-  isLoading: boolean;
+  loading: boolean;
   error: Error | null;
   login: (username: string, password: string) => Promise<User>;
   logout: () => Promise<void>;
-  register: (userData: any) => Promise<User>;
-  updateProfile: (id: number, userData: Partial<User>) => Promise<User>;
-  changePassword: (id: number, currentPassword: string, newPassword: string, confirmPassword: string) => Promise<void>;
-};
+  register: (userData: Omit<InsertUser, 'confirmPassword'>) => Promise<User>;
+  updateProfile: (userId: number, userData: Partial<User>) => Promise<User>;
+  changePassword: (userId: number, currentPassword: string, newPassword: string) => Promise<void>;
+}
 
 const AuthContext = createContext<AuthContextType | null>(null);
 
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
+  const [user, setUser] = useState<User | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<Error | null>(null);
   const { toast } = useToast();
-  const [currentUser, setCurrentUser] = useState<User | null>(null);
 
-  // Fetch the current user
-  const { isLoading, error } = useQuery<User>({
-    queryKey: ['/api/auth/user'],
-    queryFn: async () => {
+  // Fetch current user on mount
+  useEffect(() => {
+    const fetchCurrentUser = async () => {
       try {
-        const res = await fetch('/api/auth/user', {
-          credentials: 'include',
-        });
+        setLoading(true);
+        const response = await apiRequest('GET', '/api/auth/user');
         
-        if (!res.ok) {
-          if (res.status === 401) {
-            return null;
-          }
-          throw new Error('Failed to fetch user');
+        if (response.ok) {
+          const userData = await response.json();
+          setUser(userData);
+        } else {
+          // Not authenticated, that's okay
+          setUser(null);
         }
-        
-        return await res.json();
-      } catch (err) {
-        console.error('Error fetching user:', err);
-        return null;
+      } catch (error) {
+        console.error('Error fetching current user:', error);
+        setUser(null);
+      } finally {
+        setLoading(false);
       }
-    },
-    onSuccess: (data) => {
-      setCurrentUser(data);
-    },
-  });
+    };
 
-  // Login function
+    fetchCurrentUser();
+  }, []);
+
   const login = async (username: string, password: string): Promise<User> => {
     try {
-      const res = await apiRequest('POST', '/api/auth/login', { username, password });
-      const user = await res.json();
-      setCurrentUser(user);
-      queryClient.invalidateQueries({ queryKey: ['/api/auth/user'] });
-      return user;
+      const response = await apiRequest('POST', '/api/auth/login', { username, password });
+      
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || 'Login failed');
+      }
+      
+      const userData = await response.json();
+      setUser(userData);
+      return userData;
     } catch (error) {
-      console.error('Login error:', error);
-      throw error;
+      if (error instanceof Error) {
+        setError(error);
+        throw error;
+      }
+      const newError = new Error('Login failed');
+      setError(newError);
+      throw newError;
     }
   };
 
-  // Logout function
   const logout = async (): Promise<void> => {
     try {
-      await apiRequest('POST', '/api/auth/logout');
-      setCurrentUser(null);
-      queryClient.invalidateQueries({ queryKey: ['/api/auth/user'] });
-      toast({
-        title: "Logged out",
-        description: "You have been logged out successfully.",
-      });
+      const response = await apiRequest('POST', '/api/auth/logout');
+      
+      if (!response.ok) {
+        throw new Error('Logout failed');
+      }
+      
+      setUser(null);
     } catch (error) {
-      console.error('Logout error:', error);
-      throw error;
+      if (error instanceof Error) {
+        setError(error);
+        throw error;
+      }
+      const newError = new Error('Logout failed');
+      setError(newError);
+      throw newError;
     }
   };
 
-  // Register function
-  const register = async (userData: any): Promise<User> => {
+  const register = async (userData: Omit<InsertUser, 'confirmPassword'>): Promise<User> => {
     try {
-      const res = await apiRequest('POST', '/api/auth/register', userData);
-      const user = await res.json();
-      setCurrentUser(user);
-      queryClient.invalidateQueries({ queryKey: ['/api/auth/user'] });
-      return user;
+      const response = await apiRequest('POST', '/api/auth/register', userData);
+      
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || 'Registration failed');
+      }
+      
+      const newUser = await response.json();
+      setUser(newUser);
+      return newUser;
     } catch (error) {
-      console.error('Registration error:', error);
-      throw error;
+      if (error instanceof Error) {
+        setError(error);
+        throw error;
+      }
+      const newError = new Error('Registration failed');
+      setError(newError);
+      throw newError;
     }
   };
 
-  // Update profile function
-  const updateProfile = async (id: number, userData: Partial<User>): Promise<User> => {
+  const updateProfile = async (userId: number, userData: Partial<User>): Promise<User> => {
     try {
-      const res = await apiRequest('PATCH', `/api/auth/profile/${id}`, userData);
-      const updatedUser = await res.json();
-      setCurrentUser(updatedUser);
-      queryClient.invalidateQueries({ queryKey: ['/api/auth/user'] });
+      const response = await apiRequest('PATCH', `/api/auth/profile/${userId}`, userData);
+      
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || 'Update profile failed');
+      }
+      
+      const updatedUser = await response.json();
+      
+      // Update user state if it's the current user
+      if (user && user.id === userId) {
+        setUser(updatedUser);
+      }
+      
       return updatedUser;
     } catch (error) {
-      console.error('Profile update error:', error);
-      throw error;
+      if (error instanceof Error) {
+        setError(error);
+        throw error;
+      }
+      const newError = new Error('Update profile failed');
+      setError(newError);
+      throw newError;
     }
   };
 
-  // Change password function
-  const changePassword = async (id: number, currentPassword: string, newPassword: string, confirmPassword: string): Promise<void> => {
+  const changePassword = async (userId: number, currentPassword: string, newPassword: string): Promise<void> => {
     try {
-      await apiRequest('POST', `/api/auth/change-password/${id}`, {
+      const response = await apiRequest('POST', `/api/auth/change-password/${userId}`, {
         currentPassword,
         newPassword,
-        confirmPassword,
+        confirmPassword: newPassword
       });
+      
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || 'Change password failed');
+      }
+      
+      // Show success toast
       toast({
-        title: "Password Changed",
-        description: "Your password has been changed successfully.",
+        title: 'Success',
+        description: 'Password changed successfully',
       });
     } catch (error) {
-      console.error('Password change error:', error);
-      throw error;
+      if (error instanceof Error) {
+        setError(error);
+        throw error;
+      }
+      const newError = new Error('Change password failed');
+      setError(newError);
+      throw newError;
     }
   };
 
-  return (
-    <AuthContext.Provider
-      value={{
-        user: currentUser,
-        isLoading,
-        error: error as Error,
-        login,
-        logout,
-        register,
-        updateProfile,
-        changePassword,
-      }}
-    >
-      {children}
-    </AuthContext.Provider>
-  );
+  const value = {
+    user,
+    loading,
+    error,
+    login,
+    logout,
+    register,
+    updateProfile,
+    changePassword,
+  };
+
+  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 };
 
-export const useAuth = () => {
+export const useAuth = (): AuthContextType => {
   const context = useContext(AuthContext);
   if (!context) {
-    throw new Error("useAuth must be used within an AuthProvider");
+    throw new Error('useAuth must be used within an AuthProvider');
   }
   return context;
 };

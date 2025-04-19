@@ -1,13 +1,12 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Helmet } from 'react-helmet';
 import { useTranslation } from 'react-i18next';
 import { useLocation, Link } from 'wouter';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
-import { useMutation } from '@tanstack/react-query';
-import { apiRequest } from '@/lib/queryClient';
 import { useToast } from '@/hooks/use-toast';
+import { useAuth } from '@/contexts/AuthContext';
 import { insertUserSchema } from '@shared/schema';
 
 import {
@@ -48,6 +47,20 @@ const RegisterPage = () => {
   const { toast } = useToast();
   const [, navigate] = useLocation();
   const [registerError, setRegisterError] = useState<string>('');
+  const { register, user } = useAuth();
+
+  // Redirect if already logged in
+  useEffect(() => {
+    if (user) {
+      if (user.role === 'admin') {
+        navigate('/admin');
+      } else if (user.role === 'technician') {
+        navigate('/technician/dashboard');
+      } else {
+        navigate('/');
+      }
+    }
+  }, [user, navigate]);
 
   const form = useForm<FormValues>({
     resolver: zodResolver(extendedSchema),
@@ -63,26 +76,29 @@ const RegisterPage = () => {
     },
   });
 
-  const { mutate, isPending } = useMutation({
-    mutationFn: async (data: FormValues) => {
-      const res = await apiRequest('POST', '/api/auth/register', data);
-      return res.json();
-    },
-    onSuccess: (data) => {
+  const [isPending, setIsPending] = useState(false);
+
+  const onSubmit = async (data: FormValues) => {
+    setRegisterError('');
+    setIsPending(true);
+    
+    try {
+      // Remove confirmPassword as it's not needed in the API call
+      const { confirmPassword, ...userData } = data;
+      
+      await register(userData);
+      
       toast({
         title: t('common.success'),
         description: t('register.successMessage'),
       });
-      navigate('/login');
-    },
-    onError: (error: any) => {
-      setRegisterError(error.message || t('register.error'));
-    },
-  });
-
-  const onSubmit = (data: FormValues) => {
-    setRegisterError('');
-    mutate(data);
+      navigate('/');
+    } catch (error) {
+      console.error('Registration error:', error);
+      setRegisterError(error instanceof Error ? error.message : t('register.error'));
+    } finally {
+      setIsPending(false);
+    }
   };
 
   return (
