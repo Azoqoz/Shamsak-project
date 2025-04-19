@@ -12,12 +12,15 @@ async function seed() {
   console.log("Seeding database...");
 
   try {
-    // First check if data already exists
-    const existingUsers = await db.select().from(users);
-    if (existingUsers.length > 0) {
-      console.log("Data already exists. Skipping seed operation.");
-      return;
-    }
+    // Clear all existing data
+    console.log("Clearing existing data...");
+    await db.delete(reviews);
+    await db.delete(contacts);
+    await db.delete(serviceRequests);
+    await db.delete(serviceTypes);
+    await db.delete(technicians);
+    await db.delete(users);
+    console.log("Database cleared successfully");
 
     // 1. Create admin user
     const [adminUser] = await db.insert(users).values({
@@ -29,6 +32,7 @@ async function seed() {
       phone: "+966 51 234 567",
       city: "Riyadh",
       address: "Al Olaya Street",
+      profileImage: null,
       createdAt: new Date(),
       updatedAt: new Date(),
     }).returning();
@@ -149,6 +153,7 @@ async function seed() {
       // Create technician user
       const [user] = await db.insert(users).values({
         ...data.user,
+        profileImage: null,
         createdAt: new Date(),
         updatedAt: new Date(),
       }).returning();
@@ -175,6 +180,7 @@ async function seed() {
       phone: "+966 51 234 444",
       city: "Riyadh",
       address: "Al Nakheel District",
+      profileImage: null,
       createdAt: new Date(),
       updatedAt: new Date(),
     }).returning();
@@ -185,33 +191,43 @@ async function seed() {
     const [serviceRequest1] = await db.insert(serviceRequests).values({
       userId: regularUser.id,
       technicianId: 1, // Mohammed
-      serviceType: "installation", // Note: using string here since it's an enum
-      propertyType: "residential",
+      serviceType: "installation" as any, // Cast as any for type compatibility
+      propertyType: "residential" as any, // Cast as any for type compatibility
       title: "Solar panel installation for villa",
       description: "Need installation of 10kW solar system for my residential villa",
       address: "Al Yasmin District, Street 15",
       city: "Riyadh",
-      status: "completed",
+      status: "completed" as any, // Cast as any for type compatibility
       price: 12000,
       isPaid: true,
       scheduledDate: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000), // 7 days ago
       completedDate: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000), // 2 days ago
       createdAt: new Date(Date.now() - 14 * 24 * 60 * 60 * 1000), // 14 days ago
       updatedAt: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000), // 2 days ago
+      latitude: null,
+      longitude: null,
+      paymentIntentId: null,
     }).returning();
 
     const [serviceRequest2] = await db.insert(serviceRequests).values({
       userId: regularUser.id,
       technicianId: null,
-      serviceType: "maintenance",
-      propertyType: "residential",
+      serviceType: "maintenance" as any, // Cast as any for type compatibility
+      propertyType: "residential" as any, // Cast as any for type compatibility
       title: "Annual maintenance for solar system",
       description: "Need regular maintenance for my existing solar panel installation",
       address: "Al Yasmin District, Street 15",
       city: "Riyadh",
-      status: "pending",
+      status: "pending" as any, // Cast as any for type compatibility
+      price: 1200,
+      isPaid: false,
+      scheduledDate: null,
+      completedDate: null,
       createdAt: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000), // 1 day ago
       updatedAt: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000), // 1 day ago
+      latitude: null,
+      longitude: null,
+      paymentIntentId: null,
     }).returning();
 
     console.log("Created service requests:", serviceRequest1.id, serviceRequest2.id);
@@ -223,7 +239,7 @@ async function seed() {
         userId: regularUser.id,
         serviceRequestId: serviceRequest1.id,
         userName: regularUser.name,
-        serviceType: "installation",
+        serviceType: "installation" as any, // Cast as any for type compatibility
         rating: 5,
         comment: "Mohammed did an excellent job installing our solar panels. He was punctual, professional, and the entire installation was completed in just two days. His knowledge about solar energy systems is impressive, and he took the time to explain everything to us.",
         createdAt: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000), // 1 day ago
@@ -234,7 +250,7 @@ async function seed() {
         userId: null,
         serviceRequestId: null,
         userName: "Saad Al-Shamrani",
-        serviceType: "installation",
+        serviceType: "installation" as any, // Cast as any for type compatibility
         rating: 4,
         comment: "We had a great experience with Mohammed who installed solar panels on our villa. He was very meticulous and made sure everything was done correctly. The system has been working flawlessly since installation.",
         createdAt: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000), // 30 days ago
@@ -245,7 +261,7 @@ async function seed() {
         userId: null,
         serviceRequestId: null,
         userName: "Omar Al-Ghamdi",
-        serviceType: "assessment",
+        serviceType: "assessment" as any, // Cast as any for type compatibility
         rating: 5,
         comment: "Khaled was extremely thorough in his energy assessment. He identified several areas where we could improve efficiency and provided a detailed report with cost-effective solutions.",
         createdAt: new Date(Date.now() - 15 * 24 * 60 * 60 * 1000), // 15 days ago
@@ -256,7 +272,7 @@ async function seed() {
         userId: null,
         serviceRequestId: null,
         userName: "Ibrahim Al-Harbi",
-        serviceType: "maintenance",
+        serviceType: "maintenance" as any, // Cast as any for type compatibility
         rating: 4,
         comment: "Ahmed quickly identified and fixed an issue with our solar inverter. His maintenance service was prompt, and he explained what went wrong and how to prevent future problems.",
         createdAt: new Date(Date.now() - 20 * 24 * 60 * 60 * 1000), // 20 days ago
@@ -274,6 +290,10 @@ async function seed() {
         subject: "Question about installation cost",
         message: "I am interested in installing solar panels for my business. Could you provide an estimate of the costs and potential savings?",
         responded: false,
+        userId: null,
+        responseMessage: null,
+        respondedBy: null,
+        respondedAt: null,
         createdAt: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000), // 2 days ago
         updatedAt: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000), // 2 days ago
       },
@@ -283,6 +303,7 @@ async function seed() {
         subject: "Solar system maintenance inquiry",
         message: "My solar panels were installed 2 years ago and I've never had them serviced. What kind of maintenance do they need and how often?",
         responded: true,
+        userId: null,
         respondedBy: adminUser.id,
         responseMessage: "Thank you for your inquiry. We recommend annual maintenance for solar panel systems to ensure optimal performance. I've sent you details about our maintenance packages by email.",
         respondedAt: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000), // 3 days ago
