@@ -71,15 +71,8 @@ const HeroSection = () => {
         </div>
       </div>
       
-      {/* Visual indicators */}
+      {/* Gradient overlay at bottom */}
       <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black to-transparent h-20 opacity-40"></div>
-      <div className="absolute bottom-5 left-0 right-0 flex justify-center">
-        <div className="flex space-x-2">
-          <span className="h-2 w-2 bg-white rounded-full opacity-90"></span>
-          <span className="h-2 w-2 bg-white rounded-full opacity-60"></span>
-          <span className="h-2 w-2 bg-white rounded-full opacity-60"></span>
-        </div>
-      </div>
     </section>
   );
 };
