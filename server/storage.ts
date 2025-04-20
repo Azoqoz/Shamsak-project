@@ -154,7 +154,7 @@ export class MemStorage implements IStorage {
         specialty: index === 0 ? "Solar Panel Installation" : 
                   index === 1 ? "Energy Efficiency Assessment" : 
                   "Maintenance and Repair",
-        experience: `${5 + index} years`,
+        experience: 5 + index,
         certifications: "Saudi Renewable Energy Certificate",
         bio: `Experienced solar technician specializing in ${
           index === 0 ? "residential solar panel installation" : 

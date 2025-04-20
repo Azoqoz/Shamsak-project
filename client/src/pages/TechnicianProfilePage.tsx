@@ -220,9 +220,7 @@ const TechnicianProfilePage = () => {
                     </Badge>
                     <Badge variant="outline" className="flex items-center">
                       <Clock className={`h-3 w-3 ${direction === 'rtl' ? 'ml-1' : 'mr-1'}`} />
-                      {language === 'ar' 
-                        ? `${technician.experience} ${t('technicians.years')}` 
-                        : `${technician.experience} ${t('technicians.years')}`}
+                      {technician.experience} {t('technicians.years')}
                     </Badge>
                   </div>
                   <Link href={`/request-service?technician=${technician.id}`}>
