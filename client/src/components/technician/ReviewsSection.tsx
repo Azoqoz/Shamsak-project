@@ -3,7 +3,9 @@ import { useQuery } from "@tanstack/react-query";
 import { Review, Technician, User } from "@shared/schema";
 import { formatDistanceToNow } from "date-fns";
 import { useTranslation } from "react-i18next";
+import { useLanguage } from "@/contexts/LanguageContext";
 import AddReviewForm from "./AddReviewForm";
+import { getTranslatedText, reviewContents, specialties } from "@/lib/technicianTranslations";
 
 // UI components 
 import { Card, CardContent } from "@/components/ui/card";
@@ -19,6 +21,7 @@ interface ReviewsSectionProps {
 
 const ReviewsSection = ({ technician }: ReviewsSectionProps) => {
   const { t } = useTranslation();
+  const { language } = useLanguage();
   const [visibleReviews, setVisibleReviews] = useState(3);
   const [showAddReviewForm, setShowAddReviewForm] = useState(false);
   
