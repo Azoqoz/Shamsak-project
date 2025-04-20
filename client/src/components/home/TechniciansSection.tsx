@@ -4,9 +4,12 @@ import { useQuery } from '@tanstack/react-query';
 import { Button } from '@/components/ui/button';
 import { StarIcon } from 'lucide-react';
 import type { Technician, User } from '@shared/schema';
+import { useLanguage } from '@/contexts/LanguageContext';
+import { getTranslatedText, technicianNames, specialties, technicianBios } from '@/lib/technicianTranslations';
 
 const TechniciansSection = () => {
   const { t } = useTranslation();
+  const { language } = useLanguage();
 
   const { data: technicians, isLoading } = useQuery<(Technician & { user: User })[]>({
     queryKey: ['/api/technicians/featured'],
@@ -98,19 +101,25 @@ const TechniciansSection = () => {
                     </span>
                   </div>
                   <div className="absolute -bottom-2 bg-green-100 text-green-800 px-3 py-1 rounded-full text-xs font-semibold">
-                    {technician.specialty}
+                    {language === 'ar' 
+                      ? getTranslatedText(technician.specialty, specialties)
+                      : technician.specialty}
                   </div>
                 </div>
                 <div className="text-center mt-6">
                   <div className="mb-1">
-                    <h3 className="text-xl font-bold text-gray-800">{technician.user.name}</h3>
+                    <h3 className="text-xl font-bold text-gray-800">
+                      {language === 'ar' 
+                        ? getTranslatedText(technician.user.name, technicianNames)
+                        : technician.user.name}
+                    </h3>
                   </div>
                   <p className="text-primary mb-2 flex items-center justify-center">
                     <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
                     </svg>
-                    {technician.user.city}
+                    {language === 'ar' ? t(`serviceForm.${technician.user.city.toLowerCase()}`) : technician.user.city}
                   </p>
                   <div className="flex justify-center mb-3">
                     <div className="flex text-yellow-500">
@@ -121,7 +130,11 @@ const TechniciansSection = () => {
                     </span>
                   </div>
                   <div className="bg-gray-50 p-3 rounded-md mb-4 h-16 overflow-hidden text-ellipsis">
-                    <p className="text-sm text-neutral-600 line-clamp-2">{technician.bio}</p>
+                    <p className="text-sm text-neutral-600 line-clamp-2">
+                      {language === 'ar' 
+                        ? getTranslatedText(technician.bio, technicianBios)
+                        : technician.bio}
+                    </p>
                   </div>
                   <Link 
                     href={`/technicians/${technician.id}`} 
