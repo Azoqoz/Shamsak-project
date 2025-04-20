@@ -214,6 +214,13 @@ const enTranslations = {
     unavailable: 'Unavailable',
     rating: 'Rating',
   },
+  reviews: {
+    title: 'Customer Reviews',
+    showMore: 'Show More Reviews',
+    noReviews: 'No reviews yet for this technician.',
+    writeReview: 'Write a Review',
+    closeForm: 'Close Form',
+  },
   contact: {
     title: 'Contact Us',
     subtitle: 'Have questions about solar services? Get in touch with our team.',
@@ -578,6 +585,13 @@ const arTranslations = {
     noTechniciansAvailable: 'لا يوجد فنيون متاحون حاليًا',
     filterByCity: 'تصفية حسب المدينة',
     allCities: 'جميع المدن',
+  },
+  reviews: {
+    title: 'تقييمات العملاء',
+    showMore: 'عرض المزيد من التقييمات',
+    noReviews: 'لا توجد تقييمات بعد لهذا الفني.',
+    writeReview: 'كتابة تقييم',
+    closeForm: 'إغلاق النموذج',
   },
   contact: {
     title: 'اتصل بنا',
