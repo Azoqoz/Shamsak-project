@@ -1,14 +1,12 @@
 import { useState } from 'react';
 import { Helmet } from 'react-helmet';
 import { useTranslation } from 'react-i18next';
-import { Link } from 'wouter';
 import { useQuery } from '@tanstack/react-query';
-import { StarIcon } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { CITIES } from '@/lib/constants';
 import type { Technician, User } from '@shared/schema';
-import { getTranslatedText, technicianNames, specialties, technicianBios } from '@/lib/technicianTranslations';
+import TechnicianCard from '@/components/technician/TechnicianCard';
 
 import {
   Select,
