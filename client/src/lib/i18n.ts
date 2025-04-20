@@ -364,6 +364,12 @@ const enTranslations = {
 
 // Arabic translations
 const arTranslations = {
+  serviceTypes: {
+    installation: 'تركيب الألواح الشمسية',
+    maintenance: 'الصيانة والإصلاح',
+    assessment: 'تقييم النظام',
+    consultation: 'استشارات الطاقة الشمسية',
+  },
   serviceProgress: {
     pending: 'تم تقديم الطلب',
     assigned: 'تم تعيين الفني',
