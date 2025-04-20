@@ -19,7 +19,7 @@ import ReviewsSection from '@/components/technician/ReviewsSection';
 const TechnicianProfilePage = () => {
   const { t } = useTranslation();
   const { toast } = useToast();
-  const { direction } = useLanguage();
+  const { direction, language } = useLanguage();
   const params = useParams();
   const id = params?.id || '0';
   const technicianId = parseInt(id);
@@ -139,9 +139,16 @@ const TechnicianProfilePage = () => {
     <>
       <Helmet>
         <title>
-          {technician.user.name} | {t('common.appName')}
+          {language === 'ar' 
+            ? `${getTranslatedText(technician.user.name, technicianNames)} | ${t('common.appName')}`
+            : `${technician.user.name} | ${t('common.appName')}`
+          }
         </title>
-        <meta name="description" content={technician.bio} />
+        <meta name="description" content={
+          language === 'ar' 
+            ? getTranslatedText(technician.bio, technicianBios)
+            : technician.bio
+        } />
       </Helmet>
 
       <div className="bg-neutral-50 py-16 fade-in">
@@ -155,11 +162,19 @@ const TechnicianProfilePage = () => {
                       {technician.user.profileImage ? (
                         <img
                           src={technician.user.profileImage}
-                          alt={technician.user.name}
+                          alt={language === 'ar' 
+                            ? getTranslatedText(technician.user.name, technicianNames)
+                            : technician.user.name
+                          }
                           className="w-full h-full object-cover"
                         />
                       ) : (
-                        <span className="text-7xl text-gray-400">{technician.user.name.charAt(0)}</span>
+                        <span className="text-7xl text-gray-400">
+                          {language === 'ar' 
+                            ? getTranslatedText(technician.user.name, technicianNames).charAt(0)
+                            : technician.user.name.charAt(0)
+                          }
+                        </span>
                       )}
                     </div>
 
@@ -167,7 +182,11 @@ const TechnicianProfilePage = () => {
                 </div>
                 <div className="md:w-2/3">
                   <div className="mb-2">
-                    <h1 className="text-3xl font-bold">{technician.user.name}</h1>
+                    <h1 className="text-3xl font-bold">
+                      {language === 'ar' 
+                        ? getTranslatedText(technician.user.name, technicianNames) 
+                        : technician.user.name}
+                    </h1>
                   </div>
                   <div className="flex items-center mb-2">
                     <MapPin className={`h-4 w-4 text-black ${direction === 'rtl' ? 'ml-2' : 'mr-2'}`} />
@@ -181,15 +200,23 @@ const TechnicianProfilePage = () => {
                         : 'New'}
                     </span>
                   </div>
-                  <p className="mb-6">{technician.bio}</p>
+                  <p className="mb-6">
+                    {language === 'ar' 
+                      ? getTranslatedText(technician.bio, technicianBios) 
+                      : technician.bio}
+                  </p>
                   <div className="flex flex-wrap gap-3 mb-6">
                     <Badge variant="outline" className="flex items-center">
                       <Drill className={`h-3 w-3 ${direction === 'rtl' ? 'ml-1' : 'mr-1'}`} />
-                      {technician.specialty}
+                      {language === 'ar' 
+                        ? getTranslatedText(technician.specialty, specialties) 
+                        : technician.specialty}
                     </Badge>
                     <Badge variant="outline" className="flex items-center">
                       <Award className={`h-3 w-3 ${direction === 'rtl' ? 'ml-1' : 'mr-1'}`} />
-                      {technician.certifications}
+                      {language === 'ar' 
+                        ? getTranslatedText(technician.certifications, certifications) 
+                        : technician.certifications}
                     </Badge>
                     <Badge variant="outline" className="flex items-center">
                       <Clock className={`h-3 w-3 ${direction === 'rtl' ? 'ml-1' : 'mr-1'}`} />
@@ -238,7 +265,7 @@ const TechnicianProfilePage = () => {
                   </TabsContent>
 
                   <TabsContent value="reviews">
-                    <h2 className="text-2xl font-bold mb-6">Customer Reviews</h2>
+                    <h2 className="text-2xl font-bold mb-6">{t('reviews.title')}</h2>
                     <ReviewsSection technician={technician} />
                   </TabsContent>
 
