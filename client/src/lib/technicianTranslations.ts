@@ -26,6 +26,9 @@ export const technicianBios: Record<string, string> = {
   
   'Experienced solar technician specializing in residential solar panel installation and system optimization.': 
     'فني طاقة شمسية ذو خبرة متخصص في تركيب الألواح الشمسية السكنية وتحسين النظام.',
+  
+  'Experienced solar technician specializing in residential solar panel installation with 7 years of experience working with top brands.': 
+    'فني طاقة شمسية ذو خبرة متخصص في تركيب الألواح الشمسية السكنية مع 7 سنوات من الخبرة في العمل مع أفضل العلامات التجارية.',
 };
 
 // Review content translations
@@ -48,6 +51,7 @@ export const certifications: Record<string, string> = {
   'Solar System Maintenance Specialist': 'أخصائي صيانة أنظمة الطاقة الشمسية',
   'Energy Efficiency Expert, Solar System Designer': 'خبير كفاءة الطاقة، مصمم أنظمة الطاقة الشمسية',
   'Advanced Solar Installation Certification': 'شهادة متقدمة في تركيب الطاقة الشمسية',
+  'Saudi Renewable Energy Certificate, Advanced Solar Installation': 'شهادة الطاقة المتجددة السعودية، تركيب الطاقة الشمسية المتقدم',
 };
 
 // Helper function to get translated value or return original if no translation exists
