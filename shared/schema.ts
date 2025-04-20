@@ -45,7 +45,7 @@ export const technicians = pgTable("technicians", {
   id: serial("id").primaryKey(),
   userId: integer("user_id").notNull().references(() => users.id).unique(),
   specialty: text("specialty").notNull(),
-  experience: text("experience").notNull(),
+  experience: integer("experience").notNull(),
   certifications: text("certifications").notNull(),
   bio: text("bio").notNull(),
   available: boolean("available").notNull().default(true),
