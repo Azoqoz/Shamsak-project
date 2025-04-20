@@ -54,6 +54,20 @@ export const certifications: Record<string, string> = {
   'Saudi Renewable Energy Certificate, Advanced Solar Installation': 'شهادة الطاقة المتجددة السعودية، تركيب الطاقة الشمسية المتقدم',
 };
 
+// City name translations
+export const cities: Record<string, string> = {
+  'Riyadh': 'الرياض',
+  'Jeddah': 'جدة',
+  'Dammam': 'الدمام',
+  'Mecca': 'مكة',
+  'Medina': 'المدينة',
+  'Abha': 'أبها',
+  'Tabuk': 'تبوك',
+  'Khobar': 'الخبر',
+  'Dhahran': 'الظهران',
+  'Jubail': 'الجبيل',
+};
+
 // Helper function to get translated value or return original if no translation exists
 export function getTranslatedText(originalText: string, translations: Record<string, string>): string {
   return translations[originalText] || originalText;

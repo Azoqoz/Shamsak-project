@@ -11,7 +11,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { insertServiceRequestSchema, type InsertServiceRequest, type Technician, type User } from '@shared/schema';
 import { SERVICE_TYPES, CITIES, PROPERTY_TYPES } from '@/lib/constants';
-import { getTranslatedText, technicianNames, specialties } from '@/lib/technicianTranslations';
+import { getTranslatedText, technicianNames, specialties, cities } from '@/lib/technicianTranslations';
 
 import {
   Form,
@@ -548,7 +548,11 @@ const ServiceRequestForm = () => {
                                           ? getTranslatedText(technician.user.name, technicianNames) 
                                           : technician.user.name}
                                       </h3>
-                                      <p className="text-sm text-neutral-600">{technician.user.city}</p>
+                                      <p className="text-sm text-neutral-600">
+                                        {language === 'ar' 
+                                          ? getTranslatedText(technician.user.city, cities) 
+                                          : technician.user.city}
+                                      </p>
                                       <div className="flex items-center mt-1">
                                         <div className="flex mr-1">
                                           {renderStars(technician.rating || 0)}
