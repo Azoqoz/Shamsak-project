@@ -8,8 +8,10 @@ import { useMutation, useQuery } from '@tanstack/react-query';
 import { queryClient, apiRequest } from '@/lib/queryClient';
 import { useToast } from '@/hooks/use-toast';
 import { useAuth } from '@/contexts/AuthContext';
+import { useLanguage } from '@/contexts/LanguageContext';
 import { insertServiceRequestSchema, type InsertServiceRequest, type Technician, type User } from '@shared/schema';
 import { SERVICE_TYPES, CITIES, PROPERTY_TYPES } from '@/lib/constants';
+import { getTranslatedText, technicianNames, specialties } from '@/lib/technicianTranslations';
 
 import {
   Form,
@@ -89,6 +91,7 @@ const ServiceRequestForm = () => {
   const { t } = useTranslation();
   const { toast } = useToast();
   const { user } = useAuth();
+  const { language } = useLanguage();
   const [, setLocation] = useLocation();
   const [selectedTechnicianId, setSelectedTechnicianId] = useState<number | null>(null);
   const [servicePrice, setServicePrice] = useState<number | null>(null);
@@ -540,7 +543,11 @@ const ServiceRequestForm = () => {
                                 <div className="flex-1">
                                   <div className="flex justify-between items-start">
                                     <div>
-                                      <h3 className="font-bold">{technician.user.name}</h3>
+                                      <h3 className="font-bold">
+                                        {language === 'ar' 
+                                          ? getTranslatedText(technician.user.name, technicianNames) 
+                                          : technician.user.name}
+                                      </h3>
                                       <p className="text-sm text-neutral-600">{technician.user.city}</p>
                                       <div className="flex items-center mt-1">
                                         <div className="flex mr-1">
@@ -553,11 +560,15 @@ const ServiceRequestForm = () => {
                                       <div className="flex flex-wrap gap-2 mt-2">
                                         <Badge variant="outline" className="flex items-center text-xs">
                                           <Drill className="h-3 w-3 mr-1" />
-                                          {technician.specialty}
+                                          {language === 'ar' 
+                                            ? getTranslatedText(technician.specialty, specialties) 
+                                            : technician.specialty}
                                         </Badge>
                                         <Badge variant="outline" className="flex items-center text-xs">
                                           <Clock className="h-3 w-3 mr-1" />
-                                          {technician.experience}
+                                          {language === 'ar' 
+                                            ? `${technician.experience} ${t('technician.yearsExperience')}` 
+                                            : `${technician.experience} years experience`}
                                         </Badge>
                                       </div>
                                     </div>
