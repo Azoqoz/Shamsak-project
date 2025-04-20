@@ -567,8 +567,8 @@ const ServiceRequestForm = () => {
                                         <Badge variant="outline" className="flex items-center text-xs">
                                           <Clock className="h-3 w-3 mr-1" />
                                           {language === 'ar' 
-                                            ? `${technician.experience} ${t('technician.yearsExperience')}` 
-                                            : `${technician.experience} years experience`}
+                                            ? `${technician.experience} ${t('technicians.yearsExperience')}` 
+                                            : `${technician.experience} ${t('technicians.yearsExperience')}`}
                                         </Badge>
                                       </div>
                                     </div>
