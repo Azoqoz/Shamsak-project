@@ -104,11 +104,11 @@ const ReviewsSection = ({ technician }: ReviewsSectionProps) => {
         >
           {showAddReviewForm ? (
             <>
-              <MinusCircle className="h-4 w-4" /> Close Form
+              <MinusCircle className="h-4 w-4" /> {t('reviews.closeForm')}
             </>
           ) : (
             <>
-              <PlusCircle className="h-4 w-4" /> Write a Review
+              <PlusCircle className="h-4 w-4" /> {t('reviews.writeReview')}
             </>
           )}
         </Button>
@@ -140,14 +140,22 @@ const ReviewsSection = ({ technician }: ReviewsSectionProps) => {
                     </div>
                     <div className="text-right">
                       <Badge variant="outline" className="mb-2">
-                        {review.serviceType.charAt(0).toUpperCase() + review.serviceType.slice(1)}
+                        {language === 'ar' 
+                          ? t(`serviceTypes.${review.serviceType}`) 
+                          : review.serviceType.charAt(0).toUpperCase() + review.serviceType.slice(1)
+                        }
                       </Badge>
                       <p className="text-xs text-muted-foreground">
-                        {review.date ? formatDistanceToNow(new Date(review.date), { addSuffix: true }) : ''}
+                        {review.createdAt ? formatDistanceToNow(new Date(review.createdAt), { addSuffix: true }) : ''}
                       </p>
                     </div>
                   </div>
-                  <p className="mt-3 text-muted-foreground">{review.comment}</p>
+                  <p className="mt-3 text-muted-foreground">
+                    {language === 'ar' 
+                      ? getTranslatedText(review.comment, reviewContents) 
+                      : review.comment
+                    }
+                  </p>
                 </CardContent>
               </Card>
             ))}
@@ -160,14 +168,14 @@ const ReviewsSection = ({ technician }: ReviewsSectionProps) => {
                 onClick={showMoreReviews}
                 className="mx-auto"
               >
-                Show More Reviews
+                {t('reviews.showMore')}
               </Button>
             </div>
           )}
         </>
       ) : (
         <p className="text-center text-muted-foreground italic">
-          No reviews yet for this technician.
+          {t('reviews.noReviews')}
         </p>
       )}
     </div>

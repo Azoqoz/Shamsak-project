@@ -6,6 +6,7 @@ import { useQuery } from '@tanstack/react-query';
 import { useToast } from '@/hooks/use-toast';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { Calendar, Mail, MapPin, Phone, Star, StarIcon, Award, Drill, Clock } from 'lucide-react';
+import { getTranslatedText, technicianNames, specialties, technicianBios, certifications } from '@/lib/technicianTranslations';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
